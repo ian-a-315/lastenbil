@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Lastenbil — Interactive Wireframes</title>
+<style>
+  /* ── Reset & Base ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --midnight:    #0D0F14;
+    --asphalt:     #1A1D24;
+    --steel:       #242830;
+    --amber:       #F5A623;
+    --ember:       #E8622A;
+    --warm-white:  #F5F0E8;
+    --road-dust:   #9A9080;
+    --cw-purple:   #4A2472;
+    --success:     #4CAF7D;
+    --danger:      #E85050;
+  }
+
+  body {
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    font-family: -apple-system, 'Inter', 'Segoe UI', sans-serif;
+    color: var(--warm-white);
+  }
+
+  /* ── Desktop chrome ───────────────────────────────────────── */
+  .desktop-bar {
+    width: 100%;
+    background: #0a0a0a;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid #222;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .desktop-bar h1 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: 2px;
+  }
+  .desktop-bar span {
+    font-size: 12px;
+    color: var(--road-dust);
+  }
+  .screen-nav {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .screen-nav button {
+    background: var(--asphalt);
+    border: 1px solid #333;
+    color: var(--road-dust);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .screen-nav button.active {
+    background: var(--amber);
+    color: var(--midnight);
+    border-color: var(--amber);
+    font-weight: 700;
+  }
+  .screen-nav button:hover:not(.active) {
+    border-color: var(--amber);
+    color: var(--warm-white);
+  }
+
+  /* ── Phone shell ──────────────────────────────────────────── */
+  .phone-wrap {
+    padding: 40px 20px;
+    display: flex;
+    gap: 60px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1400px;
+  }
+  .phone-shell {
+    width: 390px;
+    background: #1c1c1e;
+    border-radius: 50px;
+    box-shadow: 0 0 0 2px #333, 0 40px 80px rgba(0,0,0,0.8), 0 0 120px rgba(245,166,35,0.08);
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .phone-notch {
+    background: #1c1c1e;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
+  }
+  .notch-pill {
+    width: 120px;
+    height: 34px;
+    background: #000;
+    border-radius: 0 0 20px 20px;
+  }
+  .phone-screen {
+    height: 780px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--midnight);
+    scrollbar-width: none;
+    position: relative;
+  }
+  .phone-screen::-webkit-scrollbar { display: none; }
+  .phone-home-bar {
+    background: #1c1c1e;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .home-bar-pill {
+    width: 134px;
+    height: 5px;
+    background: #555;
+    border-radius: 3px;
+  }
+
+  /* ── Annotations panel ────────────────────────────────────── */
+  .annotations {
+    width: 320px;
+    padding: 8px 0;
+    flex-shrink: 0;
+  }
+  .annotations h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--amber);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+  .annotations .screen-desc {
+    font-size: 13px;
+    color: var(--road-dust);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .annotation {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+  .ann-num {
+    width: 22px;
+    height: 22px;
+    background: var(--amber);
+    color: var(--midnight);
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .ann-text strong {
+    display: block;
+    font-size: 13px;
+    color: var(--warm-white);
+    margin-bottom: 2px;
+  }
+  .ann-text span {
+    font-size: 12px;
+    color: var(--road-dust);
+    line-height: 1.4;
+  }
+
+  /* ── SCREEN STYLES ────────────────────────────────────────── */
+
+  /* Splash */
+  .screen { display: none; height: 100%; }
+  .screen.active { display: block; }
+
+  .splash {
+    background: var(--midnight);
+    height: 780px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .splash-glow {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 200px;
+    background: radial-gradient(ellipse, rgba(245,166,35,0.15) 0%, transparent 70%);
+  }
+  .headlights {
+    display: flex;
+    gap: 180px;
+    margin-bottom: 32px;
+  }
+  .headlight {
+    width: 28px;
+    height: 28px;
+    background: var(--amber);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(245,166,35,0.6), 0 0 40px rgba(245,166,35,0.3);
+  }
+  .splash h1 {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: var(--warm-white);
+    margin-bottom: 8px;
+  }
+  .splash p {
+    font-size: 14px;
+    color: var(--road-dust);
+    margin-bottom: 60px;
+  }
+  .btn-primary {
+    background: var(--amber);
+    color: var(--midnight);
+    border: none;
+    padding: 16px 40px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 300px;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    margin-bottom: 12px;
+  }
+  .btn-primary:active { transform: scale(0.97); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--road-dust);
+    border: 1px solid #333;
+    padding: 14px 40px;
+    border-radius: 50px;
+    font-size: 14px;
+    cursor: pointer;
+    width: 300px;
+    transition: all 0.2s;
+  }
+  .splash-powered {
+    position: absolute;
+    bottom: 20px;
+    font-size: 11px;
+    color: #3a3530;
+  }
+
+  /* Nav bar */
+  .nav-bar {
+    background: var(--asphalt);
+    padding: 10px 16px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #2a2d35;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .nav-logo {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--warm-white);
+  }
+  .nav-logo span { color: var(--amber); }
+  .nav-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--steel);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  /* Stop Finder */
+  .map-placeholder {
+    background: linear-gradient(160deg, #14171e 0%, #1a1d24 50%, #0f1117 100%);
+    height: 300px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid #2a2d35;
+  }
+  .map-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.08;
+    background-image:
+      linear-gradient(var(--amber) 1px, transparent 1px),
+      linear-gradient(90deg, var(--amber) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .map-road-h {
+    position: absolute;
+    height: 8px;
+    background: #2a2d35;
+    left: 0; right: 0;
+  }
+  .map-road-v {
+    position: absolute;
+    width: 8px;
+    background: #2a2d35;
+    top: 0; bottom: 0;
+  }
+  .map-pin {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transform: translateX(-50%);
+  }
+  .map-pin .pin-bubble {
+    background: var(--amber);
+    color: var(--midnight);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(245,166,35,0.4);
+  }
+  .map-pin .pin-bubble.low {
+    background: var(--steel);
+    color: var(--road-dust);
+    box-shadow: none;
+  }
+  .map-pin .pin-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--amber);
+    border-radius: 50%;
+    margin-top: 2px;
+  }
+  .map-pin .pin-dot.low { background: var(--road-dust); }
+  .map-me {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #4A8FF5;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 0 6px rgba(74,143,245,0.2);
+    transform: translate(-50%, -50%);
+  }
+  .map-search {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    background: var(--asphalt);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--road-dust);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: var(--asphalt);
+    border-bottom: 1px solid #2a2d35;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-chip {
+    background: var(--steel);
+    border: 1px solid #333;
+    color: var(--road-dust);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .filter-chip.on {
+    background: rgba(245,166,35,0.15);
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+  .section-label {
+    padding: 14px 16px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--road-dust);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .stop-card {
+    margin: 0 16px 12px;
+    background: var(--asphalt);
+    border-radius: 16px;
+    padding: 14px 16px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+  .stop-card:active { border-color: var(--amber); }
+  .stop-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .stop-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--warm-white);
+  }
+  .stop-dist {
+    font-size: 12px;
+    color: var(--road-dust);
+    margin-top: 2px;
+  }
+  .stop-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .rating-big {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .rating-count {
+    font-size: 10px;
+    color: var(--road-dust);
+  }
+  .amenity-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .amenity-pill {
+    background: var(--steel);
+    color: var(--road-dust);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .amenity-pill.ok { color: var(--success); }
+  .amenity-pill.warn { color: var(--amber); }
+  .amenity-pill.full { color: var(--danger); }
+  .recency {
+    font-size: 11px;
+    color: var(--road-dust);
+  }
+  .recency span { color: var(--amber); }
+  .flag-banner {
+    background: rgba(232,98,42,0.15);
+    border: 1px solid rgba(232,98,42,0.3);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 11px;
+    color: var(--ember);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Stop Profile */
+  .profile-hero {
+    background: linear-gradient(180deg, var(--asphalt) 0%, var(--midnight) 100%);
+    padding: 16px;
+    border-bottom: 1px solid #2a2d35;
+  }
+  .stop-profile-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--warm-white);
+    margin-bottom: 2px;
+  }
+  .stop-profile-sub {
+    font-size: 13px;
+    color: var(--road-dust);
+    margin-bottom: 14px;
+  }
+  .overall-score-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 10px;
+  }
+  .score-big {
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .score-stars {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  .score-meta {
+    font-size: 12px;
+    color: var(--road-dust);
+  }
+  .score-meta span { color: var(--amber); }
+  .category-row {
+    padding: 14px 16px;
+    border-bottom: 1px solid #2a2d35;
+  }
+  .cat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .cat-icon { font-size: 16px; width: 22px; text-align: center; }
+  .cat-label { font-size: 13px; color: var(--warm-white); width: 70px; flex-shrink: 0; }
+  .cat-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--steel);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .cat-bar {
+    height: 100%;
+    background: var(--amber);
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+  .cat-score {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--amber);
+    width: 28px;
+    text-align: right;
+  }
+  .amenities-section {
+    padding: 14px 16px;
+    border-bottom: 1px solid #2a2d35;
+  }
+  .amenities-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .amenity-item {
+    font-size: 12px;
+    color: var(--road-dust);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .amenity-item.yes { color: var(--warm-white); }
+  .reviews-section {
+    padding: 14px 16px;
+  }
+  .review-card {
+    background: var(--asphalt);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .reviewer-handle {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--amber);
+  }
+  .review-stars { font-size: 12px; }
+  .review-time {
+    font-size: 11px;
+    color: var(--road-dust);
+  }
+  .review-body {
+    font-size: 13px;
+    color: var(--warm-white);
+    line-height: 1.5;
+  }
+  .checkin-btn {
+    position: sticky;
+    bottom: 0;
+    background: var(--asphalt);
+    padding: 12px 16px;
+    border-top: 1px solid #2a2d35;
+  }
+  .checkin-btn button {
+    width: 100%;
+    background: var(--amber);
+    color: var(--midnight);
+    border: none;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+
+  /* Check-in Flow */
+  .checkin-screen {
+    padding: 20px 16px;
+    min-height: 780px;
+  }
+  .checkin-step-label {
+    font-size: 11px;
+    color: var(--road-dust);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .checkin-step-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--warm-white);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .checkin-stop-name {
+    font-size: 14px;
+    color: var(--amber);
+    margin-bottom: 24px;
+  }
+  .star-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .star {
+    font-size: 48px;
+    cursor: pointer;
+    opacity: 0.3;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .star.lit { opacity: 1; filter: drop-shadow(0 0 8px rgba(245,166,35,0.5)); }
+  .cat-rating-section {
+    margin-top: 8px;
+  }
+  .cat-rating-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #2a2d35;
+  }
+  .cat-rating-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--warm-white);
+  }
+  .mini-stars { font-size: 16px; color: var(--amber); letter-spacing: 2px; }
+  .skip-label {
+    font-size: 12px;
+    color: var(--road-dust);
+  }
+  .progress-dots {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--steel);
+    border-radius: 50%;
+  }
+  .dot.done { background: var(--amber); }
+  .dot.active {
+    width: 20px;
+    border-radius: 3px;
+    background: var(--amber);
+  }
+  .confirmation-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 580px;
+    text-align: center;
+    padding: 20px;
+  }
+  .check-circle {
+    width: 80px;
+    height: 80px;
+    background: rgba(76,175,125,0.15);
+    border: 2px solid var(--success);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin-bottom: 20px;
+  }
+  .conf-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--warm-white);
+    margin-bottom: 8px;
+  }
+  .conf-stat {
+    font-size: 14px;
+    color: var(--road-dust);
+    margin-bottom: 4px;
+    line-height: 1.6;
+  }
+  .conf-stat span { color: var(--amber); font-weight: 700; }
+  .conf-count {
+    background: var(--asphalt);
+    border-radius: 12px;
+    padding: 14px 24px;
+    margin: 20px 0;
+    font-size: 14px;
+    color: var(--road-dust);
+    line-height: 1.6;
+  }
+  .conf-count strong { color: var(--amber); font-size: 28px; display: block; }
+
+  /* Driver Profile */
+  .profile-screen {
+    padding-bottom: 20px;
+  }
+  .profile-top {
+    background: linear-gradient(180deg, var(--asphalt) 0%, var(--midnight) 100%);
+    padding: 20px 16px;
+    border-bottom: 1px solid #2a2d35;
+  }
+  .profile-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: var(--steel);
+    border: 2px solid var(--amber);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+  .profile-info .handle {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--warm-white);
+    margin-bottom: 2px;
+  }
+  .profile-info .real-name {
+    font-size: 13px;
+    color: var(--road-dust);
+    margin-bottom: 4px;
+  }
+  .profile-info .location {
+    font-size: 12px;
+    color: var(--road-dust);
+  }
+  .follow-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 14px;
+  }
+  .follow-stat strong {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--warm-white);
+    display: block;
+  }
+  .follow-stat span {
+    font-size: 11px;
+    color: var(--road-dust);
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .stat-tile {
+    background: var(--steel);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .stat-tile .stat-val {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--amber);
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .stat-tile .stat-label {
+    font-size: 11px;
+    color: var(--road-dust);
+  }
+  .badges-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 12px 16px;
+    border-bottom: 1px solid #2a2d35;
+  }
+  .badge-chip {
+    background: var(--steel);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--warm-white);
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .badge-chip.founding {
+    background: rgba(245,166,35,0.15);
+    border: 1px solid rgba(245,166,35,0.4);
+    color: var(--amber);
+  }
+  .recent-stops {
+    padding: 14px 16px;
+  }
+  .recent-stop-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #1f2228;
+  }
+  .recent-stop-info .rs-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--warm-white);
+  }
+  .recent-stop-info .rs-meta {
+    font-size: 12px;
+    color: var(--road-dust);
+  }
+  .rs-rating {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--amber);
+  }
+
+  /* Bottom tab bar */
+  .tab-bar {
+    background: var(--asphalt);
+    border-top: 1px solid #2a2d35;
+    display: flex;
+    padding: 8px 0 4px;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+  }
+  .tab-icon { font-size: 22px; opacity: 0.4; }
+  .tab-icon.active-tab { opacity: 1; filter: none; }
+  .tab-label { font-size: 10px; color: var(--road-dust); }
+  .tab-label.active-tab { color: var(--amber); }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .annotations { display: none; }
+    .phone-wrap { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Desktop navigation bar -->
+<div class="desktop-bar">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div style="width:10px;height:10px;background:var(--amber);border-radius:50%;box-shadow:0 0 8px var(--amber)"></div>
+    <h1>LASTENBIL</h1>
+    <span>Interactive Wireframes · v1.0</span>
+  </div>
+  <div class="screen-nav">
+    <button class="active" onclick="showScreen('splash', this)">1. Splash</button>
+    <button onclick="showScreen('finder', this)">2. Stop Finder</button>
+    <button onclick="showScreen('profile', this)">3. Stop Profile</button>
+    <button onclick="showScreen('checkin', this)">4. Check-In</button>
+    <button onclick="showScreen('driver', this)">5. Driver Profile</button>
+  </div>
+</div>
+
+<div class="phone-wrap">
+
+  <!-- ── PHONE SHELL ─────────────────────────────────────── -->
+  <div class="phone-shell">
+    <div class="phone-notch"><div class="notch-pill"></div></div>
+
+    <div class="phone-screen">
+
+      <!-- SCREEN 1: SPLASH -->
+      <div id="screen-splash" class="screen active">
+        <div class="splash">
+          <div class="splash-glow"></div>
+          <div class="headlights">
+            <div class="headlight"></div>
+            <div class="headlight"></div>
+          </div>
+          <h1>LASTENBIL</h1>
+          <p>Find your next stop.</p>
+          <button class="btn-primary" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">Allow Location →</button>
+          <button class="btn-secondary">Sign in</button>
+          <div class="splash-powered">Powered by Cover Whale</div>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: STOP FINDER -->
+      <div id="screen-finder" class="screen">
+        <div class="nav-bar">
+          <div class="nav-logo">L<span>●</span>STENBIL</div>
+          <div style="display:flex;gap:8px">
+            <div class="nav-icon">🔍</div>
+            <div class="nav-icon">👤</div>
+          </div>
+        </div>
+
+        <!-- Map -->
+        <div class="map-placeholder">
+          <div class="map-grid"></div>
+          <div class="map-road-h" style="top:48%"></div>
+          <div class="map-road-h" style="top:72%"></div>
+          <div class="map-road-v" style="left:30%"></div>
+          <div class="map-road-v" style="left:70%"></div>
+          <div class="map-me" style="left:50%;top:55%"></div>
+          <div class="map-pin" style="left:28%;top:30%" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
+            <div class="pin-bubble">⭐ 4.2</div>
+            <div class="pin-dot"></div>
+          </div>
+          <div class="map-pin" style="left:65%;top:38%" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
+            <div class="pin-bubble">⭐ 4.6</div>
+            <div class="pin-dot"></div>
+          </div>
+          <div class="map-pin" style="left:75%;top:62%">
+            <div class="pin-bubble low">⭐ 3.1</div>
+            <div class="pin-dot low"></div>
+          </div>
+          <div class="map-pin" style="left:42%;top:70%" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
+            <div class="pin-bubble">⭐ 4.4</div>
+            <div class="pin-dot"></div>
+          </div>
+          <div class="map-search">
+            <span style="opacity:0.5">🔍</span>
+            <span>Search any stop or highway...</span>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-row">
+          <div class="filter-chip on">✓ Showers</div>
+          <div class="filter-chip">🅿 Parking</div>
+          <div class="filter-chip">🍔 Food</div>
+          <div class="filter-chip">⛽ Fuel</div>
+          <div class="filter-chip">⚖ CAT Scale</div>
+          <div class="filter-chip">🐕 Dog Park</div>
+        </div>
+
+        <!-- Stop list -->
+        <div class="section-label">Stops near you — 4 found</div>
+
+        <div class="stop-card" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
+          <div class="stop-card-header">
+            <div>
+              <div class="stop-name">Pilot Travel Center #437</div>
+              <div class="stop-dist">📍 2.1 mi · Memphis, TN · I-40 Exit 182</div>
+            </div>
+            <div class="stop-rating">
+              <div class="rating-big">4.2</div>
+              <div class="rating-count">847 reviews</div>
+            </div>
+          </div>
+          <div class="amenity-row">
+            <div class="amenity-pill ok">✓ Parking</div>
+            <div class="amenity-pill ok">✓ Showers</div>
+            <div class="amenity-pill ok">✓ Food</div>
+            <div class="amenity-pill">CAT Scale</div>
+          </div>
+          <div class="recency">Reviewed <span>8 minutes ago</span></div>
+        </div>
+
+        <div class="stop-card" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
+          <div class="flag-banner">⚠ Parking FULL · flagged by @NightOwlNick 45 min ago</div>
+          <div class="stop-card-header">
+            <div>
+              <div class="stop-name">Love's Travel Stop #289</div>
+              <div class="stop-dist">📍 4.7 mi · Memphis, TN · I-40 Exit 178</div>
+            </div>
+            <div class="stop-rating">
+              <div class="rating-big">3.8</div>
+              <div class="rating-count">412 reviews</div>
+            </div>
+          </div>
+          <div class="amenity-row">
+            <div class="amenity-pill full">✗ Parking FULL</div>
+            <div class="amenity-pill ok">✓ Showers</div>
+            <div class="amenity-pill warn">⚠ Food closes 10pm</div>
+          </div>
+          <div class="recency">Reviewed <span>45 minutes ago</span></div>
+        </div>
+
+        <div class="stop-card" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
+          <div class="stop-card-header">
+            <div>
+              <div class="stop-name">TA Travel Center</div>
+              <div class="stop-dist">📍 8.3 mi · Memphis, TN · I-40 Exit 172</div>
+            </div>
+            <div class="stop-rating">
+              <div class="rating-big">4.6</div>
+              <div class="rating-count">1,204 reviews</div>
+            </div>
+          </div>
+          <div class="amenity-row">
+            <div class="amenity-pill ok">✓ Parking</div>
+            <div class="amenity-pill ok">✓ Showers</div>
+            <div class="amenity-pill ok">✓ Restaurant</div>
+            <div class="amenity-pill ok">✓ Laundry</div>
+          </div>
+          <div class="recency">Reviewed <span>2 hours ago</span> · <span style="color:var(--success)">"Best showers on I-40"</span></div>
+        </div>
+
+        <div style="height:60px"></div>
+        <div class="tab-bar">
+          <div class="tab">
+            <div class="tab-icon active-tab">🗺️</div>
+            <div class="tab-label active-tab">Find</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon">📋</div>
+            <div class="tab-label">Feed</div>
+          </div>
+          <div class="tab" onclick="showScreen('driver', document.querySelectorAll('.screen-nav button')[4])">
+            <div class="tab-icon">👤</div>
+            <div class="tab-label">Profile</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: STOP PROFILE -->
+      <div id="screen-profile" class="screen">
+        <div class="nav-bar">
+          <div style="cursor:pointer;color:var(--amber);font-size:18px" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">← </div>
+          <div class="nav-logo" style="font-size:14px;color:var(--road-dust)">Stop Profile</div>
+          <div class="nav-icon">♡</div>
+        </div>
+
+        <div class="profile-hero">
+          <div class="stop-profile-name">Pilot Travel Center #437</div>
+          <div class="stop-profile-sub">Memphis, TN · I-40 Exit 182 · Open 24hrs</div>
+          <div class="overall-score-row">
+            <div class="score-big">4.2</div>
+            <div>
+              <div class="score-stars">★★★★☆</div>
+              <div class="score-meta"><span>847 reviews</span> · <span>Last reviewed 8 min ago</span></div>
+            </div>
+          </div>
+          <div class="flag-banner" style="display:inline-flex">✓ No active flags right now</div>
+        </div>
+
+        <div class="category-row">
+          <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Ratings by Category</div>
+          <div class="cat-item">
+            <div class="cat-icon">🅿</div>
+            <div class="cat-label">Parking</div>
+            <div class="cat-bar-wrap"><div class="cat-bar" style="width:82%"></div></div>
+            <div class="cat-score">4.1</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon">🚿</div>
+            <div class="cat-label">Showers</div>
+            <div class="cat-bar-wrap"><div class="cat-bar" style="width:76%"></div></div>
+            <div class="cat-score">3.8</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon">🍔</div>
+            <div class="cat-label">Food</div>
+            <div class="cat-bar-wrap"><div class="cat-bar" style="width:88%"></div></div>
+            <div class="cat-score">4.4</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon">🔒</div>
+            <div class="cat-label">Safety</div>
+            <div class="cat-bar-wrap"><div class="cat-bar" style="width:80%"></div></div>
+            <div class="cat-score">4.0</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon">⛽</div>
+            <div class="cat-label">Fuel Price</div>
+            <div class="cat-bar-wrap"><div class="cat-bar" style="width:64%"></div></div>
+            <div class="cat-score">3.2</div>
+          </div>
+        </div>
+
+        <div class="amenities-section">
+          <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Amenities</div>
+          <div class="amenities-grid">
+            <div class="amenity-item yes">✓ 200+ truck spaces</div>
+            <div class="amenity-item yes">✓ Showers (paid)</div>
+            <div class="amenity-item yes">✓ Subway + McDonald's</div>
+            <div class="amenity-item yes">✓ CAT Scale</div>
+            <div class="amenity-item yes">✓ DEF available</div>
+            <div class="amenity-item yes">✓ Laundry</div>
+            <div class="amenity-item">✗ Dog park</div>
+            <div class="amenity-item yes">✓ WiFi</div>
+          </div>
+        </div>
+
+        <div class="reviews-section">
+          <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Recent Reviews</div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div>
+                <div class="reviewer-handle">@TexasHauler</div>
+                <div class="review-time">8 minutes ago · Checked in</div>
+              </div>
+              <div class="review-stars">★★★★☆</div>
+            </div>
+            <div class="review-body">"Showers were clean, parking was tight but found a spot on the east side of the lot. Food court is solid."</div>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div>
+                <div class="reviewer-handle">@NightOwlNick</div>
+                <div class="review-time">2 hours ago · Written review</div>
+              </div>
+              <div class="review-stars">★★★★★</div>
+            </div>
+            <div class="review-body">"Best Subway on I-40. Shower tokens from the counter, quick in and out. Safe lot."</div>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div>
+                <div class="reviewer-handle">@MidwestMile</div>
+                <div class="review-time">Yesterday</div>
+              </div>
+              <div class="review-stars">★★★☆☆</div>
+            </div>
+            <div class="review-body">"Fuel is pricey. Everything else is fine. Parking can fill up after midnight."</div>
+          </div>
+        </div>
+
+        <div style="height:80px"></div>
+        <div class="checkin-btn">
+          <button onclick="showScreen('checkin', document.querySelectorAll('.screen-nav button')[3])">
+            ＋ Check In Here
+          </button>
+        </div>
+      </div>
+
+      <!-- SCREEN 4: CHECK-IN FLOW -->
+      <div id="screen-checkin" class="screen">
+        <div class="nav-bar">
+          <div style="cursor:pointer;color:var(--amber);font-size:18px" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">← </div>
+          <div class="nav-logo" style="font-size:14px;color:var(--road-dust)">Check In</div>
+          <div style="width:36px"></div>
+        </div>
+
+        <div class="checkin-screen">
+          <div class="progress-dots">
+            <div class="dot done"></div>
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+
+          <div class="checkin-step-label">Step 2 of 5</div>
+          <div class="checkin-step-title">How was it overall?</div>
+          <div class="checkin-stop-name">📍 Pilot Travel Center #437, Memphis TN</div>
+
+          <div class="star-row" id="star-row">
+            <div class="star" onclick="rateStar(1)">★</div>
+            <div class="star" onclick="rateStar(2)">★</div>
+            <div class="star" onclick="rateStar(3)">★</div>
+            <div class="star lit" onclick="rateStar(4)">★</div>
+            <div class="star" onclick="rateStar(5)">★</div>
+          </div>
+
+          <div style="text-align:center;font-size:14px;color:var(--road-dust);margin-bottom:28px">Tap a star to rate</div>
+
+          <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">Rate by category <span style="color:#444;font-size:10px">— optional</span></div>
+          <div class="cat-rating-section">
+            <div class="cat-rating-row">
+              <div class="cat-rating-label"><span>🅿</span> Parking</div>
+              <div class="mini-stars">★★★★☆</div>
+            </div>
+            <div class="cat-rating-row">
+              <div class="cat-rating-label"><span>🚿</span> Showers</div>
+              <div class="mini-stars">★★★★☆</div>
+            </div>
+            <div class="cat-rating-row">
+              <div class="cat-rating-label"><span>🍔</span> Food</div>
+              <div class="mini-stars">★★★★★</div>
+            </div>
+            <div class="cat-rating-row">
+              <div class="cat-rating-label"><span>🔒</span> Safety</div>
+              <div class="mini-stars">★★★★☆</div>
+            </div>
+            <div class="cat-rating-row">
+              <div class="cat-rating-label"><span>⛽</span> Fuel Price</div>
+              <div class="mini-stars">★★★☆☆</div>
+            </div>
+          </div>
+
+          <div style="margin-top:28px">
+            <button class="btn-primary" onclick="showConfirmation()" style="width:100%">Next →</button>
+          </div>
+        </div>
+
+        <!-- Confirmation state (hidden by default) -->
+        <div id="conf-screen" style="display:none;background:var(--midnight);position:absolute;inset:0;top:58px;">
+          <div class="confirmation-screen">
+            <div class="check-circle">✓</div>
+            <div class="conf-title">Stop logged! 🛑</div>
+            <div class="conf-stat">Pilot Travel Center #437 added<br>to your road diary.</div>
+            <div class="conf-count">
+              <strong>348</strong>
+              total stops in your diary
+            </div>
+            <div class="conf-stat"><span>412 drivers</span> will see your review tonight.</div>
+            <br>
+            <button class="btn-primary" onclick="showScreen('driver', document.querySelectorAll('.screen-nav button')[4])" style="margin-top:10px">View your profile →</button>
+            <button class="btn-secondary" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])" style="margin-top:8px">Back to map</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 5: DRIVER PROFILE -->
+      <div id="screen-driver" class="screen">
+        <div class="nav-bar">
+          <div class="nav-logo">L<span style="color:var(--amber)">●</span>STENBIL</div>
+          <div class="nav-icon">⚙</div>
+        </div>
+
+        <div class="profile-screen">
+          <div class="profile-top">
+            <div class="profile-row">
+              <div class="avatar">🚛</div>
+              <div class="profile-info">
+                <div class="handle">@TexasHauler</div>
+                <div class="real-name">Mike R.</div>
+                <div class="location">📍 Houston, TX · On the road since '09</div>
+              </div>
+            </div>
+            <div class="follow-row">
+              <div class="follow-stat"><strong>84</strong><span>Following</span></div>
+              <div class="follow-stat"><strong>212</strong><span>Followers</span></div>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-tile">
+                <div class="stat-val">348</div>
+                <div class="stat-label">Stops visited</div>
+              </div>
+              <div class="stat-tile">
+                <div class="stat-val">48</div>
+                <div class="stat-label">States covered</div>
+              </div>
+              <div class="stat-tile">
+                <div class="stat-val">291</div>
+                <div class="stat-label">Reviews written</div>
+              </div>
+              <div class="stat-tile">
+                <div class="stat-val">🔥 14</div>
+                <div class="stat-label">Week streak</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Badges -->
+          <div style="padding:14px 16px 6px;font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;">Badges</div>
+          <div class="badges-row">
+            <div class="badge-chip founding">🐋 Founding Driver</div>
+            <div class="badge-chip">🗺️ 48-Stater</div>
+            <div class="badge-chip">🌙 Night Owl</div>
+            <div class="badge-chip">🚿 Shower Scout</div>
+            <div class="badge-chip">📸 Road Photographer</div>
+            <div class="badge-chip">🏠 Regular</div>
+          </div>
+
+          <!-- Recent stops -->
+          <div class="recent-stops">
+            <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Recently Visited</div>
+            <div class="recent-stop-item">
+              <div class="recent-stop-info">
+                <div class="rs-name">Pilot #437 · Memphis, TN</div>
+                <div class="rs-meta">I-40 · 8 minutes ago</div>
+              </div>
+              <div class="rs-rating">★ 4</div>
+            </div>
+            <div class="recent-stop-item">
+              <div class="recent-stop-info">
+                <div class="rs-name">Love's #289 · Memphis, TN</div>
+                <div class="rs-meta">I-40 · Yesterday</div>
+              </div>
+              <div class="rs-rating">★ 3</div>
+            </div>
+            <div class="recent-stop-item">
+              <div class="recent-stop-info">
+                <div class="rs-name">TA Travel Center · Nashville, TN</div>
+                <div class="rs-meta">I-24 · 3 days ago</div>
+              </div>
+              <div class="rs-rating">★ 5</div>
+            </div>
+            <div class="recent-stop-item">
+              <div class="recent-stop-info">
+                <div class="rs-name">Flying J #1204 · Amarillo, TX</div>
+                <div class="rs-meta">I-40 · Last week</div>
+              </div>
+              <div class="rs-rating">★ 4</div>
+            </div>
+          </div>
+
+          <div style="padding:0 16px;margin-top:4px">
+            <button class="btn-primary" style="font-size:14px;padding:14px 40px">See full road diary →</button>
+          </div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">
+            <div class="tab-icon">🗺️</div>
+            <div class="tab-label">Find</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon">📋</div>
+            <div class="tab-label">Feed</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon active-tab">👤</div>
+            <div class="tab-label active-tab">Profile</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /phone-screen -->
+    <div class="phone-home-bar"><div class="home-bar-pill"></div></div>
+  </div><!-- /phone-shell -->
+
+  <!-- ── ANNOTATIONS ────────────────────────────────────── -->
+  <div class="annotations" id="annotations">
+    <!-- Filled by JS -->
+  </div>
+
+</div><!-- /phone-wrap -->
+
+<script>
+const ANNOTATIONS = {
+  splash: {
+    title: "Screen 1 — Splash / Onboarding",
+    desc: "No account required. Value before friction. The only ask is location permission.",
+    notes: [
+      { title: "Headlight mark", text: "The two amber dots are the Lastenbil brand mark — instantly evocative of the road at night." },
+      { title: "Location first", text: "\"Allow Location\" is the only action needed to see value. No email, no form, no friction." },
+      { title: "Powered by Cover Whale", text: "Appears once, at the bottom, small. Builds trust without being intrusive." },
+      { title: "Skip to sign in", text: "Returning users can bypass the splash without friction." },
+    ]
+  },
+  finder: {
+    title: "Screen 2 — Stop Finder",
+    desc: "The core utility screen. Answers the immediate question: where should I stop right now?",
+    notes: [
+      { title: "Map + list", text: "Map gives spatial context. List gives quick scannable detail. Driver chooses how to browse." },
+      { title: "Amber pins = high rated", text: "Strong visual signal — amber means good, muted means proceed with caution." },
+      { title: "Active flag on Love's", text: "\"Parking FULL\" banner is the most valuable real-time data. Saves drivers a wasted detour." },
+      { title: "Recency always visible", text: "\"8 minutes ago\" on each card. Freshness is trust. This is the differentiator from every competitor." },
+      { title: "Filter chips", text: "One-tap filters for the most common needs. \"Showers\" is pre-selected because it's the most common filter." },
+    ]
+  },
+  profile: {
+    title: "Screen 3 — Stop Profile",
+    desc: "Everything a driver needs to decide whether to pull in — at a glance.",
+    notes: [
+      { title: "Overall score + recency", text: "Big number + \"reviewed 8 min ago\" builds immediate trust." },
+      { title: "Weighted category bars", text: "Safety and Parking weighted higher. Drivers care about these most at 2am." },
+      { title: "Active flags", text: "Real-time driver-posted flags appear prominently. Auto-expire after 3 hours." },
+      { title: "Review feed is chronological", text: "Most recent first. No algorithm. Drivers trust drivers, not a ranking system." },
+      { title: "Sticky CTA", text: "\"Check In Here\" is always visible at the bottom. Geofence-gated — only enabled when nearby." },
+    ]
+  },
+  checkin: {
+    title: "Screen 4 — Check-In Flow",
+    desc: "The flywheel moment. Turns a utility action into a diary entry. Must feel effortless.",
+    notes: [
+      { title: "Progress dots", text: "5 steps shown. Driver knows exactly how much is left. Never feels tricked into a long flow." },
+      { title: "One big action", text: "Tapping a star IS the check-in. Everything else is optional enhancement." },
+      { title: "Category ratings pre-populated", text: "Shown with defaults, driver can adjust or leave as-is. Optional = low friction." },
+      { title: "Confirmation = social proof", text: "\"412 drivers will see your review tonight\" makes drivers feel like contributors, not just users." },
+      { title: "Stop count increments", text: "348 → 349. The diary grows. This is the identity moment." },
+    ]
+  },
+  driver: {
+    title: "Screen 5 — Driver Profile",
+    desc: "The road diary. Built automatically from check-ins. This is what makes drivers come back.",
+    notes: [
+      { title: "Stats are career milestones", text: "348 stops, 48 states, 14-week streak. These are achievements, not metrics." },
+      { title: "Founding Driver badge", text: "Amber and prominent. Permanent reward for early adopters. Creates urgency to join." },
+      { title: "Badges are earned, never bought", text: "Night Owl, Shower Scout, 48-Stater — all from real behavior. Authentic identity." },
+      { title: "Recent stops = diary feel", text: "The list of recent stops with ratings is the Letterboxd moment — your road story, visible." },
+      { title: "Full road diary CTA", text: "The full history is always one tap away. Drivers with 300+ stops will check this often." },
+    ]
+  }
+};
+
+function showScreen(id, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  document.getElementById('conf-screen').style.display = 'none';
+  renderAnnotations(id);
+  document.querySelector('.phone-screen').scrollTop = 0;
+}
+
+function renderAnnotations(id) {
+  const data = ANNOTATIONS[id];
+  const el = document.getElementById('annotations');
+  el.innerHTML = `
+    <h2>${data.title}</h2>
+    <div class="screen-desc">${data.desc}</div>
+    ${data.notes.map((n, i) => `
+      <div class="annotation">
+        <div class="ann-num">${i+1}</div>
+        <div class="ann-text">
+          <strong>${n.title}</strong>
+          <span>${n.text}</span>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function rateStar(n) {
+  const stars = document.querySelectorAll('#star-row .star');
+  stars.forEach((s, i) => {
+    s.classList.toggle('lit', i < n);
+  });
+}
+
+function showConfirmation() {
+  document.getElementById('conf-screen').style.display = 'block';
+}
+
+// Initialize
+renderAnnotations('splash');
+</script>
+</body>
+</html>
