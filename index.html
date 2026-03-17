@@ -2069,7 +2069,7 @@
 
           <div class="checkin-step-label">Step 2 of 5</div>
           <div class="checkin-step-title">How was it overall?</div>
-          <div class="checkin-stop-name">📍 Pilot Travel Center #437, Memphis TN</div>
+          <div class="checkin-stop-name" id="checkin-stop-name">📍 Pilot Travel Center #437, Memphis TN</div>
 
           <div class="star-row" id="star-row">
             <div class="star" onclick="rateStar(1)">★</div>
@@ -2106,7 +2106,7 @@
           </div>
 
           <div style="margin-top:28px">
-            <button class="btn-primary" onclick="showConfirmation()" style="width:100%">Next →</button>
+            <button class="btn-primary" id="checkin-submit-btn" onclick="submitCheckin()" style="width:100%">Next →</button>
           </div>
         </div>
 
@@ -2115,9 +2115,9 @@
           <div class="confirmation-screen">
             <div class="check-circle">✓</div>
             <div class="conf-title">Stop logged! 🛑</div>
-            <div class="conf-stat">Pilot Travel Center #437 added<br>to your road diary.</div>
+            <div class="conf-stat"><span id="conf-stop-name">That stop</span> added<br>to your road diary.</div>
             <div class="conf-count">
-              <strong>348</strong>
+              <strong id="conf-checkin-count">1</strong>
               total stops in your diary
             </div>
             <div class="conf-stat"><span>412 drivers</span> will see your review tonight.</div>
@@ -2991,11 +2991,62 @@ function renderAnnotations(id) {
   `;
 }
 
+let selectedRating = 0;
+let currentStop = { name: 'Unknown Stop', place_id: null, address: '' };
+
 function rateStar(n) {
+  selectedRating = n;
   const stars = document.querySelectorAll('#star-row .star');
-  stars.forEach((s, i) => {
-    s.classList.toggle('lit', i < n);
+  stars.forEach((s, i) => s.classList.toggle('lit', i < n));
+}
+
+function selectStop(name, place_id, address) {
+  currentStop = { name, place_id, address };
+  const el = document.getElementById('checkin-stop-name');
+  if (el) el.textContent = '📍 ' + name + (address ? ', ' + address : '');
+  showScreen('checkin', document.querySelectorAll('.screen-nav button')[3]);
+}
+
+async function submitCheckin() {
+  const btn = document.getElementById('checkin-submit-btn');
+  btn.textContent = 'Saving…';
+  btn.disabled = true;
+
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) {
+    btn.textContent = 'Next →';
+    btn.disabled = false;
+    showScreen('splash', document.querySelectorAll('.screen-nav button')[0]);
+    return;
+  }
+
+  const { error } = await _sb.from('checkins').insert({
+    user_id: session.user.id,
+    stop_name: currentStop.name,
+    stop_place_id: currentStop.place_id,
+    stop_address: currentStop.address,
+    rating: selectedRating || null
   });
+
+  btn.textContent = 'Next →';
+  btn.disabled = false;
+
+  if (error) {
+    console.error(error);
+  }
+
+  // Get real check-in count
+  const { count } = await _sb.from('checkins')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', session.user.id);
+
+  const countEl = document.getElementById('conf-checkin-count');
+  if (countEl) countEl.textContent = count || 1;
+
+  const stopEl = document.getElementById('conf-stop-name');
+  if (stopEl) stopEl.textContent = currentStop.name;
+
+  showConfirmation();
 }
 
 // Onboarding
@@ -3182,7 +3233,7 @@ function initFinderMap(lat, lng) {
       const dist = (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1);
 
       return `
-        <div class="stop-card">
+        <div class="stop-card" onclick="selectStop('${place.name.replace(/'/g,"\\'")}', '${place.place_id}', '${addr.replace(/'/g,"\\'")}')">
           <div class="stop-card-header">
             <div>
               <div class="stop-name">${place.name}</div>
@@ -3192,6 +3243,9 @@ function initFinderMap(lat, lng) {
               <div class="rating-big">${rating}</div>
               <div class="rating-count">${count} reviews</div>
             </div>
+          </div>
+          <div style="margin-top:10px">
+            <button class="btn-primary" style="width:100%;padding:10px" onclick="event.stopPropagation();selectStop('${place.name.replace(/'/g,"\\'")}', '${place.place_id}', '${addr.replace(/'/g,"\\'")}')">Check In →</button>
           </div>
         </div>`;
     }).join('');
