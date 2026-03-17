@@ -1816,29 +1816,8 @@
         </div>
 
         <!-- Map -->
-        <div class="map-placeholder">
-          <div class="map-grid"></div>
-          <div class="map-road-h" style="top:48%"></div>
-          <div class="map-road-h" style="top:72%"></div>
-          <div class="map-road-v" style="left:30%"></div>
-          <div class="map-road-v" style="left:70%"></div>
-          <div class="map-me" style="left:50%;top:55%"></div>
-          <div class="map-pin" style="left:28%;top:30%" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
-            <div class="pin-bubble">⭐ 4.2</div>
-            <div class="pin-dot"></div>
-          </div>
-          <div class="map-pin" style="left:65%;top:38%" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
-            <div class="pin-bubble">⭐ 4.6</div>
-            <div class="pin-dot"></div>
-          </div>
-          <div class="map-pin" style="left:75%;top:62%">
-            <div class="pin-bubble low">⭐ 3.1</div>
-            <div class="pin-dot low"></div>
-          </div>
-          <div class="map-pin" style="left:42%;top:70%" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
-            <div class="pin-bubble">⭐ 4.4</div>
-            <div class="pin-dot"></div>
-          </div>
+        <div class="map-placeholder" style="position:relative">
+          <div id="finder-map" style="width:100%;height:100%"></div>
           <div class="map-search">
             <span style="opacity:0.5">🔍</span>
             <span>Search any stop or highway...</span>
@@ -1856,8 +1835,8 @@
         </div>
 
         <!-- Stop list -->
-        <div class="section-label">Stops near you — 4 found</div>
-
+        <div class="section-label" id="stops-label">Finding stops near you...</div>
+        <div id="stops-list">
         <div class="stop-card" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
           <div class="stop-card-header">
             <div>
@@ -1917,6 +1896,7 @@
           </div>
           <div class="recency">Reviewed <span>2 hours ago</span> · <span style="color:var(--success)">"Best showers on I-40"</span></div>
         </div>
+        </div><!-- end #stops-list -->
 
         <div style="height:60px"></div>
         <div class="tab-bar">
@@ -2972,6 +2952,7 @@ function showScreen(id, btn) {
   document.getElementById('conf-screen').style.display = 'none';
   renderAnnotations(id);
   document.querySelector('.phone-screen').scrollTop = 0;
+  if (id === 'finder') loadFinderScreen();
 }
 
 function renderAnnotations(id) {
@@ -3076,6 +3057,127 @@ function react(btn) {
 
 function showConfirmation() {
   document.getElementById('conf-screen').style.display = 'block';
+}
+
+// ── Stop Finder ─────────────────────────────────────────────
+const GOOGLE_KEY = 'AIzaSyD505ZuZ59KfGR3ydqhatUzMI1K76HuTeU';
+let finderLoaded = false;
+let googleMap = null;
+
+function loadFinderScreen() {
+  if (finderLoaded) return;
+  finderLoaded = true;
+
+  if (!navigator.geolocation) {
+    document.getElementById('stops-label').textContent = 'Location not available';
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    loadMapsAPI(lat, lng);
+  }, () => {
+    document.getElementById('stops-label').textContent = 'Allow location access to find stops';
+  });
+}
+
+function loadMapsAPI(lat, lng) {
+  if (window.google && window.google.maps) {
+    initFinderMap(lat, lng);
+    return;
+  }
+  window._finderLat = lat;
+  window._finderLng = lng;
+  const s = document.createElement('script');
+  s.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_KEY}&libraries=places&callback=_mapsReady`;
+  s.async = true;
+  document.head.appendChild(s);
+}
+
+window._mapsReady = function() {
+  initFinderMap(window._finderLat, window._finderLng);
+};
+
+function initFinderMap(lat, lng) {
+  const mapEl = document.getElementById('finder-map');
+  const center = { lat, lng };
+
+  googleMap = new google.maps.Map(mapEl, {
+    center,
+    zoom: 11,
+    disableDefaultUI: true,
+    styles: [
+      { elementType: 'geometry', stylers: [{ color: '#1A1D24' }] },
+      { elementType: 'labels.text.fill', stylers: [{ color: '#9A9080' }] },
+      { elementType: 'labels.text.stroke', stylers: [{ color: '#0D0F14' }] },
+      { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#2a2d35' }] },
+      { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#3a3d48' }] },
+      { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0D0F14' }] },
+    ]
+  });
+
+  // User location pin
+  new google.maps.Marker({
+    position: center,
+    map: googleMap,
+    icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#8B5CF6', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 }
+  });
+
+  // Search for nearby truck stops
+  const service = new google.maps.places.PlacesService(googleMap);
+  service.nearbySearch({
+    location: center,
+    rankBy: google.maps.places.RankBy.DISTANCE,
+    keyword: 'truck stop travel center pilot loves flying j TA petro'
+  }, (results, status) => {
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !results.length) {
+      document.getElementById('stops-label').textContent = 'No stops found nearby';
+      document.getElementById('stops-list').innerHTML = '<div style="padding:20px;text-align:center;color:var(--road-dust)">Try moving to a different area.</div>';
+      return;
+    }
+
+    const stops = results.slice(0, 8);
+    document.getElementById('stops-label').textContent = `Stops near you — ${stops.length} found`;
+
+    // Add map pins
+    stops.forEach(place => {
+      new google.maps.Marker({
+        position: place.geometry.location,
+        map: googleMap,
+        title: place.name,
+        icon: { path: google.maps.SymbolPath.CIRCLE, scale: 6, fillColor: '#F5F0E8', fillOpacity: 1, strokeColor: '#8B5CF6', strokeWeight: 2 }
+      });
+    });
+
+    // Render stop cards
+    document.getElementById('stops-list').innerHTML = stops.map(place => {
+      const rating = place.rating ? place.rating.toFixed(1) : '—';
+      const count = place.user_ratings_total ? place.user_ratings_total.toLocaleString() : '0';
+      const addr = place.vicinity || '';
+
+      // Haversine distance
+      const R = 3958.8;
+      const dLat = (place.geometry.location.lat() - lat) * Math.PI / 180;
+      const dLon = (place.geometry.location.lng() - lng) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat * Math.PI/180) * Math.cos(place.geometry.location.lat() * Math.PI/180) * Math.sin(dLon/2)**2;
+      const dist = (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1);
+
+      return `
+        <div class="stop-card">
+          <div class="stop-card-header">
+            <div>
+              <div class="stop-name">${place.name}</div>
+              <div class="stop-dist">📍 ${dist} mi · ${addr}</div>
+            </div>
+            <div class="stop-rating">
+              <div class="rating-big">${rating}</div>
+              <div class="rating-count">${count} reviews</div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  });
 }
 
 // ── Supabase ────────────────────────────────────────────────
