@@ -1419,6 +1419,266 @@
     margin-bottom: 28px;
   }
 
+  /* ── Onboarding ──────────────────────────────────────────── */
+  .onboard-screen {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 24px 32px;
+    background: var(--midnight);
+  }
+  .onboard-progress {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 36px;
+  }
+  .onboard-pip {
+    height: 3px;
+    flex: 1;
+    border-radius: 3px;
+    background: var(--steel);
+    transition: background 0.3s;
+  }
+  .onboard-pip.done { background: var(--amber); }
+  .onboard-pip.active { background: var(--amber); opacity: 0.5; }
+  .onboard-step-num {
+    font-size: 11px;
+    color: var(--road-dust);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .onboard-headline {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--warm-white);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .onboard-headline span { color: var(--amber); }
+  .onboard-sub {
+    font-size: 14px;
+    color: var(--road-dust);
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+  .onboard-value-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 40px;
+    flex: 1;
+  }
+  .onboard-value-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .onboard-value-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--steel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    border: 1px solid #2a2d35;
+  }
+  .onboard-value-text strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--warm-white);
+    margin-bottom: 2px;
+  }
+  .onboard-value-text span {
+    font-size: 12px;
+    color: var(--road-dust);
+    line-height: 1.4;
+  }
+  .onboard-handle-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .handle-input-row {
+    display: flex;
+    align-items: center;
+    background: var(--steel);
+    border: 2px solid #2a2d35;
+    border-radius: 14px;
+    padding: 0 16px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .handle-input-row:focus-within { border-color: var(--amber); }
+  .handle-at {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--amber);
+    margin-right: 4px;
+  }
+  .handle-input {
+    background: none;
+    border: none;
+    color: var(--warm-white);
+    font-size: 22px;
+    font-weight: 700;
+    padding: 16px 0;
+    width: 100%;
+    font-family: inherit;
+    outline: none;
+  }
+  .handle-hint {
+    font-size: 11px;
+    color: var(--road-dust);
+    margin-bottom: 24px;
+    line-height: 1.4;
+  }
+  .handle-suggestions {
+    margin-bottom: 32px;
+  }
+  .handle-sug-label {
+    font-size: 11px;
+    color: var(--road-dust);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .handle-sug-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .handle-sug-chip {
+    background: var(--steel);
+    border: 1px solid #2a2d35;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--road-dust);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .handle-sug-chip:hover {
+    border-color: var(--amber);
+    color: var(--warm-white);
+  }
+  .rig-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 32px;
+    flex: 1;
+  }
+  .rig-tile {
+    background: var(--asphalt);
+    border: 2px solid #2a2d35;
+    border-radius: 14px;
+    padding: 18px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .rig-tile:hover { border-color: rgba(245,166,35,0.4); }
+  .rig-tile.selected {
+    border-color: var(--amber);
+    background: rgba(245,166,35,0.08);
+  }
+  .rig-tile-icon { font-size: 32px; margin-bottom: 8px; }
+  .rig-tile-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--warm-white);
+  }
+  .rig-tile-sub {
+    font-size: 10px;
+    color: var(--road-dust);
+    margin-top: 3px;
+  }
+  .welcome-card {
+    background: linear-gradient(135deg, var(--asphalt), var(--steel));
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .welcome-card-top {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .welcome-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--midnight);
+    border: 2px solid var(--amber);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+  .welcome-handle {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--warm-white);
+  }
+  .welcome-rig {
+    font-size: 12px;
+    color: var(--road-dust);
+    margin-top: 2px;
+  }
+  .welcome-stats {
+    display: flex;
+    gap: 0;
+    border-top: 1px solid #2a2d35;
+    padding-top: 14px;
+  }
+  .welcome-stat {
+    flex: 1;
+    text-align: center;
+    border-right: 1px solid #2a2d35;
+  }
+  .welcome-stat:last-child { border-right: none; }
+  .welcome-stat-val {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--amber);
+  }
+  .welcome-stat-label {
+    font-size: 10px;
+    color: var(--road-dust);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .founding-badge-big {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(245,166,35,0.1);
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 28px;
+  }
+  .founding-badge-big span {
+    font-size: 13px;
+    color: var(--amber);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .founding-badge-big small {
+    display: block;
+    font-size: 11px;
+    color: var(--road-dust);
+    font-weight: 400;
+  }
+
   /* Responsive */
   @media (max-width: 900px) {
     .annotations { display: none; }
@@ -1444,6 +1704,7 @@
     <button onclick="showScreen('feed', this)">6. Feed</button>
     <button onclick="showScreen('diary', this)">7. Road Diary</button>
     <button onclick="showScreen('flag', this)">8. Flag Flow</button>
+    <button onclick="showScreen('onboard', this)">9. Onboarding</button>
   </div>
 </div>
 
@@ -1466,7 +1727,7 @@
           <h1>KEEP MOVING</h1>
           <p>Find your next stop.</p>
           <button class="btn-primary" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">Allow Location →</button>
-          <button class="btn-secondary">Sign in</button>
+          <button class="btn-secondary" onclick="showScreen('onboard', document.querySelectorAll('.screen-nav button')[8])">Sign in</button>
           <div class="splash-powered">Powered by Cover Whale</div>
         </div>
       </div>
@@ -2340,6 +2601,180 @@
         </div>
       </div>
 
+      <!-- SCREEN 9: ONBOARDING -->
+      <div id="screen-onboard" class="screen">
+
+        <!-- STEP 1: Welcome / value prop -->
+        <div id="onboard-s1" class="onboard-screen">
+          <div class="onboard-progress">
+            <div class="onboard-pip active"></div>
+            <div class="onboard-pip"></div>
+            <div class="onboard-pip"></div>
+            <div class="onboard-pip"></div>
+          </div>
+          <div class="onboard-step-num">Step 1 of 4</div>
+          <div class="onboard-headline">Your road.<br><span>Your diary.</span></div>
+          <div class="onboard-sub">Keep Moving is the first app built around driver identity — not just directions.</div>
+          <div class="onboard-value-list">
+            <div class="onboard-value-item">
+              <div class="onboard-value-icon">🗺️</div>
+              <div class="onboard-value-text">
+                <strong>Find the best stops, right now</strong>
+                <span>Real-time ratings and flags from drivers already on the road.</span>
+              </div>
+            </div>
+            <div class="onboard-value-item">
+              <div class="onboard-value-icon">📓</div>
+              <div class="onboard-value-text">
+                <strong>Log every stop you've ever visited</strong>
+                <span>Rate it, review it, build a road diary that's yours forever.</span>
+              </div>
+            </div>
+            <div class="onboard-value-item">
+              <div class="onboard-value-icon">🤝</div>
+              <div class="onboard-value-text">
+                <strong>Follow drivers you trust</strong>
+                <span>Get stop recommendations from veterans who've run your routes.</span>
+              </div>
+            </div>
+          </div>
+          <button class="btn-primary" style="width:100%" onclick="goOnboard(2)">Let's build your profile →</button>
+          <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--road-dust)">No credit card. No subscription. Always free.</div>
+        </div>
+
+        <!-- STEP 2: Pick your handle -->
+        <div id="onboard-s2" class="onboard-screen" style="display:none">
+          <div class="onboard-progress">
+            <div class="onboard-pip done"></div>
+            <div class="onboard-pip active"></div>
+            <div class="onboard-pip"></div>
+            <div class="onboard-pip"></div>
+          </div>
+          <div class="onboard-step-num">Step 2 of 4</div>
+          <div class="onboard-headline">What do other<br>drivers <span>call you?</span></div>
+          <div class="onboard-sub">Your handle is your road identity. Make it yours.</div>
+          <div class="onboard-handle-wrap">
+            <div class="handle-input-row">
+              <div class="handle-at">@</div>
+              <input class="handle-input" type="text" placeholder="YourHandle" id="handle-input" maxlength="20" oninput="updateHandlePreview()">
+            </div>
+            <div class="handle-hint">Letters, numbers, and underscores only. This is how other drivers will find and follow you.</div>
+            <div class="handle-suggestions">
+              <div class="handle-sug-label">Need inspiration?</div>
+              <div class="handle-sug-row">
+                <div class="handle-sug-chip" onclick="pickHandle('HighwayHauler')">HighwayHauler</div>
+                <div class="handle-sug-chip" onclick="pickHandle('NightOwlRig')">NightOwlRig</div>
+                <div class="handle-sug-chip" onclick="pickHandle('MidwestMile')">MidwestMile</div>
+                <div class="handle-sug-chip" onclick="pickHandle('SteelWheelSam')">SteelWheelSam</div>
+                <div class="handle-sug-chip" onclick="pickHandle('RoadDogRex')">RoadDogRex</div>
+                <div class="handle-sug-chip" onclick="pickHandle('I40Legend')">I40Legend</div>
+              </div>
+            </div>
+          </div>
+          <button class="btn-primary" style="width:100%" onclick="goOnboard(3)">That's my handle →</button>
+          <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="goOnboard(1)">← Back</button>
+        </div>
+
+        <!-- STEP 3: Choose your rig -->
+        <div id="onboard-s3" class="onboard-screen" style="display:none">
+          <div class="onboard-progress">
+            <div class="onboard-pip done"></div>
+            <div class="onboard-pip done"></div>
+            <div class="onboard-pip active"></div>
+            <div class="onboard-pip"></div>
+          </div>
+          <div class="onboard-step-num">Step 3 of 4</div>
+          <div class="onboard-headline">What are you<br><span>rolling in?</span></div>
+          <div class="onboard-sub">We'll personalize your stop recommendations to your rig type.</div>
+          <div class="rig-grid">
+            <div class="rig-tile selected" onclick="selectRig(this,'🚛','Semi / 18-Wheeler')">
+              <div class="rig-tile-icon">🚛</div>
+              <div class="rig-tile-label">Semi</div>
+              <div class="rig-tile-sub">18-Wheeler</div>
+            </div>
+            <div class="rig-tile" onclick="selectRig(this,'🚚','Flatbed')">
+              <div class="rig-tile-icon">🚚</div>
+              <div class="rig-tile-label">Flatbed</div>
+              <div class="rig-tile-sub">Open deck</div>
+            </div>
+            <div class="rig-tile" onclick="selectRig(this,'⛽','Tanker')">
+              <div class="rig-tile-icon">⛽</div>
+              <div class="rig-tile-label">Tanker</div>
+              <div class="rig-tile-sub">Liquid / gas</div>
+            </div>
+            <div class="rig-tile" onclick="selectRig(this,'🛻','Hotshot')">
+              <div class="rig-tile-icon">🛻</div>
+              <div class="rig-tile-label">Hotshot</div>
+              <div class="rig-tile-sub">Pickup + trailer</div>
+            </div>
+            <div class="rig-tile" onclick="selectRig(this,'📦','Box Truck')">
+              <div class="rig-tile-icon">📦</div>
+              <div class="rig-tile-label">Box Truck</div>
+              <div class="rig-tile-sub">Straight truck</div>
+            </div>
+            <div class="rig-tile" onclick="selectRig(this,'🚐','Sprinter')">
+              <div class="rig-tile-icon">🚐</div>
+              <div class="rig-tile-label">Sprinter</div>
+              <div class="rig-tile-sub">Cargo van</div>
+            </div>
+          </div>
+          <button class="btn-primary" style="width:100%" onclick="goOnboard(4)">That's my rig →</button>
+          <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="goOnboard(2)">← Back</button>
+        </div>
+
+        <!-- STEP 4: Welcome — you're in -->
+        <div id="onboard-s4" class="onboard-screen" style="display:none">
+          <div class="onboard-progress">
+            <div class="onboard-pip done"></div>
+            <div class="onboard-pip done"></div>
+            <div class="onboard-pip done"></div>
+            <div class="onboard-pip done"></div>
+          </div>
+          <div class="onboard-step-num" style="color:var(--success)">✓ Profile created</div>
+          <div class="onboard-headline">Welcome to the<br><span>road community.</span></div>
+          <div class="onboard-sub">Your diary starts now. Every stop you log becomes part of your story.</div>
+
+          <!-- New profile card -->
+          <div class="welcome-card">
+            <div class="welcome-card-top">
+              <div class="welcome-avatar" id="welcome-av">🚛</div>
+              <div>
+                <div class="welcome-handle" id="welcome-handle">@YourHandle</div>
+                <div class="welcome-rig" id="welcome-rig">Semi · Day 1 on Keep Moving</div>
+              </div>
+            </div>
+            <div class="welcome-stats">
+              <div class="welcome-stat">
+                <div class="welcome-stat-val">0</div>
+                <div class="welcome-stat-label">Stops</div>
+              </div>
+              <div class="welcome-stat">
+                <div class="welcome-stat-val">0</div>
+                <div class="welcome-stat-label">States</div>
+              </div>
+              <div class="welcome-stat">
+                <div class="welcome-stat-val">0</div>
+                <div class="welcome-stat-label">Reviews</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Founding badge -->
+          <div class="founding-badge-big">
+            <div style="font-size:28px">🐋</div>
+            <span>Founding Driver Badge
+              <small>You're one of the first drivers on Keep Moving. This badge is yours forever.</small>
+            </span>
+          </div>
+
+          <button class="btn-primary" style="width:100%" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">Find my first stop →</button>
+          <div style="text-align:center;margin-top:14px">
+            <div style="font-size:10px;color:var(--road-dust)">Powered by Cover Whale</div>
+          </div>
+        </div>
+
+      </div>
+
     </div><!-- /phone-screen -->
     <div class="phone-home-bar"><div class="home-bar-pill"></div></div>
   </div><!-- /phone-shell -->
@@ -2405,6 +2840,17 @@ const ANNOTATIONS = {
       { title: "Flags bubble to the top", text: "Real-time flags (parking full, hazards) are the highest-urgency content. They get a red accent treatment so they visually pop even when scrolling fast." },
       { title: "'Helpful' reaction", text: "Not a generic 'like' — a Helpful button. Drivers are here for utility, not clout. The language reinforces that every post has practical value." },
       { title: "Milestones build identity", text: "500 stops is a career achievement. Surfacing it in the feed makes drivers feel seen and inspires newer drivers to keep logging. This is the retention flywheel." },
+    ]
+  },
+  onboard: {
+    title: "Screen 9 — Onboarding",
+    desc: "The first impression. Value before friction. A driver goes from zero to road identity in 4 steps — no credit card, no barrier, no reason to bounce.",
+    notes: [
+      { title: "Step 1 — Value first, ask later", text: "Three value props before a single input field. The driver understands what they're signing up FOR before they're asked to give anything. This is the opposite of how most apps work." },
+      { title: "Step 2 — Handle = identity", text: "Asking for a handle instead of a name immediately signals this is a community, not a form. @HighwayHauler is an identity. 'John Smith' is a database entry. Suggestions reduce blank-field anxiety." },
+      { title: "Step 3 — Rig selection", text: "Purely for personalization — a Hotshot doesn't need the same stop recommendations as an 18-wheeler. But it also does something subtle: it makes the driver feel seen. Someone built this for THEIR specific life on the road." },
+      { title: "Step 4 — Founding Driver badge", text: "The whale badge appears on Day 1. It's permanent and can never be earned by later users. This creates urgency to join early and makes founding drivers feel like insiders, not just early adopters." },
+      { title: "0 stops, zero shame", text: "The profile card shows 0 stops proudly. The diary starts now — and the CTA is 'Find my first stop' not 'Get started'. Specific language, not generic." },
     ]
   },
   flag: {
@@ -2475,6 +2921,37 @@ function rateStar(n) {
   stars.forEach((s, i) => {
     s.classList.toggle('lit', i < n);
   });
+}
+
+// Onboarding
+let selectedRigIcon = '🚛';
+let selectedRigLabel = 'Semi';
+
+function goOnboard(step) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('onboard-s' + i);
+    if (el) el.style.display = i === step ? 'flex' : 'none';
+  }
+  if (step === 4) {
+    const raw = document.getElementById('handle-input').value.trim();
+    const handle = raw || 'YourHandle';
+    document.getElementById('welcome-handle').textContent = '@' + handle;
+    document.getElementById('welcome-rig').textContent = selectedRigLabel + ' · Day 1 on Keep Moving';
+    document.getElementById('welcome-av').textContent = selectedRigIcon;
+  }
+}
+
+function pickHandle(name) {
+  document.getElementById('handle-input').value = name;
+}
+
+function updateHandlePreview() {}
+
+function selectRig(tile, icon, label) {
+  document.querySelectorAll('.rig-tile').forEach(t => t.classList.remove('selected'));
+  tile.classList.add('selected');
+  selectedRigIcon = icon;
+  selectedRigLabel = label.split('/')[0].trim();
 }
 
 let selectedFlagIcon = '🅿';
