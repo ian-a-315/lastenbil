@@ -1773,7 +1773,7 @@
   <div style="display:flex;align-items:center;gap:10px;">
     <div style="width:10px;height:10px;background:var(--amber);border-radius:50%;box-shadow:0 0 8px var(--amber)"></div>
     <h1>KEEP MOVING</h1>
-    <span>Interactive Wireframes · v1.0</span>
+    <span>Dev Preview · v0.1</span>
   </div>
   <div class="screen-nav">
     <button class="active" onclick="showScreen('splash', this)">1. Splash</button>
@@ -1806,7 +1806,7 @@
           </div>
           <h1>KEEP MOVING</h1>
           <p>Find your next stop.</p>
-          <button class="btn-primary" onclick="showScreen('onboard', document.querySelectorAll('.screen-nav button')[8])">Get Started →</button>
+          <button class="btn-primary" onclick="requestLocationThenOnboard()">Get Started →</button>
           <button class="btn-secondary" onclick="openSignIn()">Sign In</button>
           <div class="splash-powered">Powered by Cover Whale</div>
         </div>
@@ -3156,6 +3156,17 @@ function timeAgo(iso) {
 async function signOut() {
   await _sb.auth.signOut();
   showScreen('splash', document.querySelectorAll('.screen-nav button')[0]);
+}
+
+// ── Location permission upfront ─────────────────────────────
+function requestLocationThenOnboard() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      () => {}, // success — permission granted, finder will use it later
+      () => {}  // denied — that's ok, finder will handle it gracefully
+    );
+  }
+  showScreen('onboard', document.querySelectorAll('.screen-nav button')[8]);
 }
 
 // ── Stop Finder ─────────────────────────────────────────────
