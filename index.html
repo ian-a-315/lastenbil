@@ -10,6 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Keep Moving">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   /* ── Reset & Base ─────────────────────────────────────────── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1685,6 +1686,61 @@
     font-weight: 400;
   }
 
+  /* ── Auth styles ──────────────────────────────────────────── */
+  .auth-input {
+    width: 100%;
+    background: var(--steel);
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 13px 14px;
+    color: var(--warm-white);
+    font-size: 15px;
+    outline: none;
+    margin-top: 10px;
+  }
+  .auth-input:focus { border-color: var(--amber); }
+  .auth-input::placeholder { color: var(--road-dust); }
+  .auth-error {
+    color: var(--danger);
+    font-size: 12px;
+    margin-top: 8px;
+    display: none;
+    text-align: center;
+  }
+
+  /* Sign-in modal overlay */
+  .signin-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--midnight);
+    z-index: 50;
+    display: none;
+    flex-direction: column;
+    padding: 40px 24px 32px;
+    overflow-y: auto;
+  }
+  .signin-overlay.open { display: flex; }
+  .signin-back {
+    background: none;
+    border: none;
+    color: var(--road-dust);
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    padding: 0;
+    margin-bottom: 32px;
+  }
+  .signin-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+  .signin-sub {
+    font-size: 13px;
+    color: var(--road-dust);
+    margin-bottom: 24px;
+  }
+
   /* Responsive */
   @media (max-width: 900px) {
     .annotations { display: none; }
@@ -1732,9 +1788,20 @@
           </div>
           <h1>KEEP MOVING</h1>
           <p>Find your next stop.</p>
-          <button class="btn-primary" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">Allow Location →</button>
-          <button class="btn-secondary" onclick="showScreen('onboard', document.querySelectorAll('.screen-nav button')[8])">Sign in</button>
+          <button class="btn-primary" onclick="showScreen('onboard', document.querySelectorAll('.screen-nav button')[8])">Create account →</button>
+          <button class="btn-secondary" onclick="openSignIn()">Already have an account</button>
           <div class="splash-powered">Powered by Cover Whale</div>
+        </div>
+
+        <!-- Sign-in overlay -->
+        <div class="signin-overlay" id="signin-overlay">
+          <button class="signin-back" onclick="closeSignIn()">← Back</button>
+          <div class="signin-title">Welcome back.</div>
+          <div class="signin-sub">Sign in to your Keep Moving account.</div>
+          <input class="auth-input" type="email" id="signin-email" placeholder="your@email.com">
+          <input class="auth-input" type="password" id="signin-password" placeholder="Password">
+          <div class="auth-error" id="signin-error"></div>
+          <button class="btn-primary" style="width:100%;margin-top:20px" onclick="signIn()">Sign in →</button>
         </div>
       </div>
 
@@ -2665,6 +2732,9 @@
               <input class="handle-input" type="text" placeholder="YourHandle" id="handle-input" maxlength="20" oninput="updateHandlePreview()">
             </div>
             <div class="handle-hint">Letters, numbers, and underscores only. This is how other drivers will find and follow you.</div>
+            <input class="auth-input" type="email" id="signup-email" placeholder="your@email.com">
+            <input class="auth-input" type="password" id="signup-password" placeholder="Password (8+ characters)">
+            <div class="auth-error" id="signup-error"></div>
             <div class="handle-suggestions">
               <div class="handle-sug-label">Need inspiration?</div>
               <div class="handle-sug-row">
@@ -2724,7 +2794,7 @@
               <div class="rig-tile-sub">Cargo van</div>
             </div>
           </div>
-          <button class="btn-primary" style="width:100%" onclick="goOnboard(4)">That's my rig →</button>
+          <button class="btn-primary" style="width:100%" id="complete-btn" onclick="completeSignUp()">That's my rig →</button>
           <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="goOnboard(2)">← Back</button>
         </div>
 
@@ -3008,8 +3078,117 @@ function showConfirmation() {
   document.getElementById('conf-screen').style.display = 'block';
 }
 
-// Initialize
+// ── Supabase ────────────────────────────────────────────────
+const _sb = supabase.createClient(
+  'https://oytxbbooxoxyaycuhsog.supabase.co',
+  'sb_publishable_kN9Q3su8jUSl0t6n6YvZDA_mn3Zr3VE'
+);
+
+// ── Sign-in overlay ─────────────────────────────────────────
+function openSignIn() {
+  document.getElementById('signin-overlay').classList.add('open');
+}
+function closeSignIn() {
+  document.getElementById('signin-overlay').classList.remove('open');
+  document.getElementById('signin-error').style.display = 'none';
+}
+
+async function signIn() {
+  const email = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value;
+  const errEl = document.getElementById('signin-error');
+  errEl.style.display = 'none';
+
+  if (!email || !password) {
+    errEl.textContent = 'Please enter your email and password.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const { data, error } = await _sb.auth.signInWithPassword({ email, password });
+  if (error) {
+    errEl.textContent = error.message;
+    errEl.style.display = 'block';
+    return;
+  }
+
+  closeSignIn();
+  showScreen('finder', document.querySelectorAll('.screen-nav button')[1]);
+}
+
+// ── Sign-up (onboarding) ────────────────────────────────────
+async function completeSignUp() {
+  const handle = document.getElementById('handle-input').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const errEl = document.getElementById('signup-error');
+  errEl.style.display = 'none';
+
+  if (!handle) {
+    goOnboard(2);
+    document.getElementById('signup-error').textContent = 'Please choose a handle first.';
+    document.getElementById('signup-error').style.display = 'block';
+    return;
+  }
+  if (!email || !password) {
+    goOnboard(2);
+    document.getElementById('signup-error').textContent = 'Please enter your email and password.';
+    document.getElementById('signup-error').style.display = 'block';
+    return;
+  }
+  if (password.length < 8) {
+    goOnboard(2);
+    document.getElementById('signup-error').textContent = 'Password must be at least 8 characters.';
+    document.getElementById('signup-error').style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('complete-btn');
+  btn.textContent = 'Creating your account…';
+  btn.disabled = true;
+
+  // Create auth user
+  const { data: authData, error: authError } = await _sb.auth.signUp({ email, password });
+  if (authError) {
+    btn.textContent = "That's my rig →";
+    btn.disabled = false;
+    goOnboard(2);
+    document.getElementById('signup-error').textContent = authError.message;
+    document.getElementById('signup-error').style.display = 'block';
+    return;
+  }
+
+  // Save profile
+  const { error: profileError } = await _sb.from('profiles').insert({
+    id: authData.user.id,
+    handle: handle,
+    rig_icon: selectedRigIcon,
+    rig_label: selectedRigLabel
+  });
+
+  btn.textContent = "That's my rig →";
+  btn.disabled = false;
+
+  if (profileError && profileError.code !== '23505') {
+    // 23505 = duplicate, ignore (user refreshed)
+    goOnboard(2);
+    document.getElementById('signup-error').textContent = 'Handle already taken. Try another.';
+    document.getElementById('signup-error').style.display = 'block';
+    return;
+  }
+
+  goOnboard(4);
+}
+
+// ── Initialize ──────────────────────────────────────────────
 renderAnnotations('splash');
+
+// Check if already signed in
+_sb.auth.getSession().then(({ data }) => {
+  if (data.session) {
+    showScreen('finder', document.querySelectorAll('.screen-nav button')[1]);
+  }
+});
 
 // Register service worker
 if ('serviceWorker' in navigator) {
