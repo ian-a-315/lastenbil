@@ -1079,6 +1079,188 @@
     color: rgba(255,255,255,0.5);
   }
 
+  /* ── Road Diary ──────────────────────────────────────────── */
+  .diary-header {
+    padding: 16px 16px 10px;
+    background: linear-gradient(180deg, var(--asphalt) 0%, var(--midnight) 100%);
+    border-bottom: 1px solid #2a2d35;
+  }
+  .diary-title {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--warm-white);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+  .diary-career-stats {
+    display: flex;
+    gap: 0;
+    margin-bottom: 14px;
+  }
+  .diary-stat {
+    flex: 1;
+    text-align: center;
+    border-right: 1px solid #2a2d35;
+  }
+  .diary-stat:last-child { border-right: none; }
+  .diary-stat-val {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .diary-stat-label {
+    font-size: 10px;
+    color: var(--road-dust);
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .diary-year-bar {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 10px 16px;
+    border-bottom: 1px solid #2a2d35;
+    background: var(--asphalt);
+    position: sticky;
+    top: 58px;
+    z-index: 5;
+  }
+  .diary-year-btn {
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--road-dust);
+    background: var(--steel);
+    border: 1px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .diary-year-btn.active {
+    background: rgba(245,166,35,0.15);
+    color: var(--amber);
+    border-color: rgba(245,166,35,0.4);
+  }
+  .diary-states-wrap {
+    padding: 10px 16px;
+    border-bottom: 1px solid #2a2d35;
+  }
+  .diary-states-label {
+    font-size: 10px;
+    color: var(--road-dust);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .diary-states-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+  .state-sq {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    background: var(--steel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    color: #444;
+    font-weight: 700;
+  }
+  .state-sq.visited {
+    background: var(--amber);
+    color: var(--midnight);
+  }
+  .diary-grid-wrap {
+    padding: 12px;
+  }
+  .diary-count-label {
+    font-size: 11px;
+    color: var(--road-dust);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .diary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .diary-tile {
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--asphalt);
+    border: 1px solid #2a2d35;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .diary-tile:hover { transform: scale(1.02); border-color: var(--amber); }
+  .diary-tile-top {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    position: relative;
+  }
+  .diary-tile-top.pilot   { background: linear-gradient(135deg,#8B1A1A,#C41B1B); }
+  .diary-tile-top.loves   { background: linear-gradient(135deg,#7A1060,#C41B7F); }
+  .diary-tile-top.ta      { background: linear-gradient(135deg,#0A3060,#1565C0); }
+  .diary-tile-top.flyingj { background: linear-gradient(135deg,#8B4500,#E67E00); }
+  .diary-tile-top.petro   { background: linear-gradient(135deg,#1A4A1A,#2E7D32); }
+  .diary-tile-top.indie   { background: linear-gradient(135deg,#242830,#3a3f4a); }
+  .diary-tile-brand {
+    color: rgba(255,255,255,0.9);
+    font-size: 22px;
+    font-weight: 900;
+  }
+  .diary-tile-stars-top {
+    position: absolute;
+    bottom: 5px;
+    right: 8px;
+    font-size: 9px;
+    color: var(--amber);
+    font-weight: 700;
+  }
+  .diary-tile-body {
+    padding: 8px 10px;
+  }
+  .diary-tile-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--warm-white);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .diary-tile-sub {
+    font-size: 10px;
+    color: var(--road-dust);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .diary-tile-note {
+    font-size: 10px;
+    color: #6a7080;
+    font-style: italic;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
   /* Responsive */
   @media (max-width: 900px) {
     .annotations { display: none; }
@@ -1102,6 +1284,7 @@
     <button onclick="showScreen('checkin', this)">4. Check-In</button>
     <button onclick="showScreen('driver', this)">5. Driver Profile</button>
     <button onclick="showScreen('feed', this)">6. Feed</button>
+    <button onclick="showScreen('diary', this)">7. Road Diary</button>
   </div>
 </div>
 
@@ -1537,7 +1720,7 @@
           </div>
 
           <div style="padding:0 16px;margin-top:4px">
-            <button class="btn-primary" style="font-size:14px;padding:14px 40px">See full road diary →</button>
+            <button class="btn-primary" style="font-size:14px;padding:14px 40px" onclick="showScreen('diary', document.querySelectorAll('.screen-nav button')[6])">See full road diary →</button>
           </div>
         </div>
 
@@ -1693,6 +1876,197 @@
         </div>
       </div>
 
+      <!-- SCREEN 7: ROAD DIARY -->
+      <div id="screen-diary" class="screen">
+        <div class="nav-bar">
+          <div style="cursor:pointer;color:var(--amber);font-size:18px" onclick="showScreen('driver', document.querySelectorAll('.screen-nav button')[4])">←</div>
+          <div class="nav-logo" style="font-size:14px;color:var(--road-dust)">Road Diary</div>
+          <div class="nav-icon">⬇</div>
+        </div>
+
+        <!-- Career stats -->
+        <div class="diary-header">
+          <div class="diary-title">@TexasHauler's Road Diary</div>
+          <div class="diary-career-stats">
+            <div class="diary-stat">
+              <div class="diary-stat-val">348</div>
+              <div class="diary-stat-label">Stops</div>
+            </div>
+            <div class="diary-stat">
+              <div class="diary-stat-val">48</div>
+              <div class="diary-stat-label">States</div>
+            </div>
+            <div class="diary-stat">
+              <div class="diary-stat-val">291</div>
+              <div class="diary-stat-label">Reviews</div>
+            </div>
+            <div class="diary-stat">
+              <div class="diary-stat-val">4.1★</div>
+              <div class="diary-stat-label">Avg rating</div>
+            </div>
+          </div>
+
+          <!-- State coverage -->
+          <div class="diary-states-label">States covered</div>
+          <div class="diary-states-grid">
+            <div class="state-sq visited">AL</div><div class="state-sq visited">AR</div>
+            <div class="state-sq">AK</div><div class="state-sq visited">AZ</div>
+            <div class="state-sq visited">CA</div><div class="state-sq visited">CO</div>
+            <div class="state-sq">CT</div><div class="state-sq">DE</div>
+            <div class="state-sq visited">FL</div><div class="state-sq visited">GA</div>
+            <div class="state-sq">HI</div><div class="state-sq visited">IA</div>
+            <div class="state-sq visited">ID</div><div class="state-sq visited">IL</div>
+            <div class="state-sq visited">IN</div><div class="state-sq visited">KS</div>
+            <div class="state-sq visited">KY</div><div class="state-sq visited">LA</div>
+            <div class="state-sq">MA</div><div class="state-sq visited">MD</div>
+            <div class="state-sq">ME</div><div class="state-sq visited">MI</div>
+            <div class="state-sq visited">MN</div><div class="state-sq visited">MO</div>
+            <div class="state-sq visited">MS</div><div class="state-sq visited">MT</div>
+            <div class="state-sq visited">NC</div><div class="state-sq visited">ND</div>
+            <div class="state-sq visited">NE</div><div class="state-sq">NH</div>
+            <div class="state-sq">NJ</div><div class="state-sq visited">NM</div>
+            <div class="state-sq visited">NV</div><div class="state-sq visited">NY</div>
+            <div class="state-sq visited">OH</div><div class="state-sq visited">OK</div>
+            <div class="state-sq visited">OR</div><div class="state-sq visited">PA</div>
+            <div class="state-sq">RI</div><div class="state-sq visited">SC</div>
+            <div class="state-sq visited">SD</div><div class="state-sq visited">TN</div>
+            <div class="state-sq visited">TX</div><div class="state-sq visited">UT</div>
+            <div class="state-sq">VT</div><div class="state-sq visited">VA</div>
+            <div class="state-sq visited">WA</div><div class="state-sq visited">WI</div>
+            <div class="state-sq visited">WV</div><div class="state-sq visited">WY</div>
+          </div>
+        </div>
+
+        <!-- Year filter -->
+        <div class="diary-year-bar">
+          <div class="diary-year-btn active" onclick="setDiaryYear(this,'all')">All Time</div>
+          <div class="diary-year-btn" onclick="setDiaryYear(this,'2025')">2025</div>
+          <div class="diary-year-btn" onclick="setDiaryYear(this,'2024')">2024</div>
+          <div class="diary-year-btn" onclick="setDiaryYear(this,'2023')">2023</div>
+          <div class="diary-year-btn" onclick="setDiaryYear(this,'2022')">2022</div>
+        </div>
+
+        <!-- Stop grid -->
+        <div class="diary-grid-wrap">
+          <div class="diary-count-label">348 stops logged</div>
+          <div class="diary-grid">
+
+            <div class="diary-tile">
+              <div class="diary-tile-top pilot">
+                <div class="diary-tile-brand">P</div>
+                <div class="diary-tile-stars-top">★★★★☆</div>
+              </div>
+              <div class="diary-tile-body">
+                <div class="diary-tile-name">Pilot #437</div>
+                <div class="diary-tile-sub">Memphis, TN · I-40</div>
+                <div class="diary-tile-note">"Showers clean, parking tight but manageable."</div>
+              </div>
+            </div>
+
+            <div class="diary-tile">
+              <div class="diary-tile-top ta">
+                <div class="diary-tile-brand">TA</div>
+                <div class="diary-tile-stars-top">★★★★★</div>
+              </div>
+              <div class="diary-tile-body">
+                <div class="diary-tile-name">TA Travel Center</div>
+                <div class="diary-tile-sub">Nashville, TN · I-24</div>
+                <div class="diary-tile-note">"Best showers on I-24. No wait, spotless."</div>
+              </div>
+            </div>
+
+            <div class="diary-tile">
+              <div class="diary-tile-top flyingj">
+                <div class="diary-tile-brand">FJ</div>
+                <div class="diary-tile-stars-top">★★★★☆</div>
+              </div>
+              <div class="diary-tile-body">
+                <div class="diary-tile-name">Flying J #1204</div>
+                <div class="diary-tile-sub">Amarillo, TX · I-40</div>
+                <div class="diary-tile-note">"Huge lot, easy in and out. Fuel was fair."</div>
+              </div>
+            </div>
+
+            <div class="diary-tile">
+              <div class="diary-tile-top loves">
+                <div class="diary-tile-brand">L♥</div>
+                <div class="diary-tile-stars-top">★★★☆☆</div>
+              </div>
+              <div class="diary-tile-body">
+                <div class="diary-tile-name">Love's #289</div>
+                <div class="diary-tile-sub">Memphis, TN · I-40</div>
+                <div class="diary-tile-note">"Parking was full at midnight. Move on."</div>
+              </div>
+            </div>
+
+            <div class="diary-tile">
+              <div class="diary-tile-top petro">
+                <div class="diary-tile-brand">PE</div>
+                <div class="diary-tile-stars-top">★★★★★</div>
+              </div>
+              <div class="diary-tile-body">
+                <div class="diary-tile-name">Petro #88</div>
+                <div class="diary-tile-sub">El Paso, TX · I-10</div>
+                <div class="diary-tile-note">"Iron Skillet was worth the stop alone."</div>
+              </div>
+            </div>
+
+            <div class="diary-tile">
+              <div class="diary-tile-top pilot">
+                <div class="diary-tile-brand">P</div>
+                <div class="diary-tile-stars-top">★★★★☆</div>
+              </div>
+              <div class="diary-tile-body">
+                <div class="diary-tile-name">Pilot #812</div>
+                <div class="diary-tile-sub">Albuquerque, NM · I-40</div>
+                <div class="diary-tile-note">"Good lot size. Subway inside was fresh."</div>
+              </div>
+            </div>
+
+            <div class="diary-tile">
+              <div class="diary-tile-top indie">
+                <div class="diary-tile-brand">★</div>
+                <div class="diary-tile-stars-top">★★★★★</div>
+              </div>
+              <div class="diary-tile-body">
+                <div class="diary-tile-name">Rip Griffin</div>
+                <div class="diary-tile-sub">Lubbock, TX · US-84</div>
+                <div class="diary-tile-note">"Hidden gem. Never crowded, great staff."</div>
+              </div>
+            </div>
+
+            <div class="diary-tile">
+              <div class="diary-tile-top ta">
+                <div class="diary-tile-brand">TA</div>
+                <div class="diary-tile-stars-top">★★★☆☆</div>
+              </div>
+              <div class="diary-tile-body">
+                <div class="diary-tile-name">TA #221</div>
+                <div class="diary-tile-sub">Oklahoma City, OK · I-40</div>
+                <div class="diary-tile-note">"Lot needs repaving. Inside is fine."</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div style="height:20px"></div>
+
+        <div class="tab-bar">
+          <div class="tab" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">
+            <div class="tab-icon">🗺️</div>
+            <div class="tab-label">Find</div>
+          </div>
+          <div class="tab" onclick="showScreen('feed', document.querySelectorAll('.screen-nav button')[5])">
+            <div class="tab-icon">📋</div>
+            <div class="tab-label">Feed</div>
+          </div>
+          <div class="tab" onclick="showScreen('driver', document.querySelectorAll('.screen-nav button')[4])">
+            <div class="tab-icon active-tab">👤</div>
+            <div class="tab-label active-tab">Profile</div>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /phone-screen -->
     <div class="phone-home-bar"><div class="home-bar-pill"></div></div>
   </div><!-- /phone-shell -->
@@ -1760,6 +2134,17 @@ const ANNOTATIONS = {
       { title: "Milestones build identity", text: "500 stops is a career achievement. Surfacing it in the feed makes drivers feel seen and inspires newer drivers to keep logging. This is the retention flywheel." },
     ]
   },
+  diary: {
+    title: "Screen 7 — Road Diary",
+    desc: "The Letterboxd moment. A driver's entire road life, visualized as a grid. This is what makes Keep Moving an identity, not just a utility.",
+    notes: [
+      { title: "Grid = pride", text: "A 2-column tile grid mirrors Letterboxd's film grid exactly. 348 stop tiles is a career statement. Drivers with big grids will show this screen to other drivers." },
+      { title: "Brand color headers", text: "Pilot is red, Love's is magenta, TA is blue, Flying J is orange. Color-coded tiles let drivers scan their history by chain at a glance — just like movie posters provide color on Letterboxd." },
+      { title: "State coverage map", text: "Amber squares = visited. Gray squares = not yet. The 48-state challenge is a natural goal. Drivers will chase it. This is the retention mechanic hiding in plain sight." },
+      { title: "Year filter", text: "Drivers can browse by year — 2022, 2023, 2024. It turns the diary into a timeline you can actually navigate. 'What was I doing in 2023?' becomes a question the app can answer." },
+      { title: "Career stats at a glance", text: "348 stops, 48 states, 291 reviews, 4.1★ avg. Four numbers that tell a whole career story. No other app has ever made a driver feel like their stats matter." },
+    ]
+  },
   driver: {
     title: "Screen 5 — Driver Profile",
     desc: "The road diary. Built automatically from check-ins. This is what makes drivers come back.",
@@ -1806,6 +2191,11 @@ function rateStar(n) {
   stars.forEach((s, i) => {
     s.classList.toggle('lit', i < n);
   });
+}
+
+function setDiaryYear(el, year) {
+  document.querySelectorAll('.diary-year-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
 }
 
 function setFeedFilter(el) {
