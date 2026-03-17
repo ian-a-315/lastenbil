@@ -2132,38 +2132,34 @@
       <div id="screen-driver" class="screen">
         <div class="nav-bar">
           <div class="nav-logo">KEEP<span style="color:var(--amber)">●</span>MOVING</div>
-          <div class="nav-icon">⚙</div>
+          <div class="nav-icon" onclick="signOut()" style="cursor:pointer;font-size:13px;color:var(--road-dust)">Sign out</div>
         </div>
 
         <div class="profile-screen">
           <div class="profile-top">
             <div class="profile-row">
-              <div class="avatar">🚛</div>
+              <div class="avatar" id="profile-avatar">🚛</div>
               <div class="profile-info">
-                <div class="handle">@TexasHauler</div>
-                <div class="real-name">Mike R.</div>
-                <div class="location">📍 Houston, TX · On the road since '09</div>
+                <div class="handle" id="profile-handle">@—</div>
+                <div class="real-name" id="profile-rig">—</div>
+                <div class="location">🐋 Founding Driver</div>
               </div>
-            </div>
-            <div class="follow-row">
-              <div class="follow-stat"><strong>84</strong><span>Following</span></div>
-              <div class="follow-stat"><strong>212</strong><span>Followers</span></div>
             </div>
             <div class="stats-grid">
               <div class="stat-tile">
-                <div class="stat-val">348</div>
+                <div class="stat-val" id="profile-stops">—</div>
                 <div class="stat-label">Stops visited</div>
               </div>
               <div class="stat-tile">
-                <div class="stat-val">48</div>
+                <div class="stat-val">0</div>
                 <div class="stat-label">States covered</div>
               </div>
               <div class="stat-tile">
-                <div class="stat-val">291</div>
+                <div class="stat-val" id="profile-reviews">—</div>
                 <div class="stat-label">Reviews written</div>
               </div>
               <div class="stat-tile">
-                <div class="stat-val">🔥 14</div>
+                <div class="stat-val">🔥 1</div>
                 <div class="stat-label">Week streak</div>
               </div>
             </div>
@@ -2173,43 +2169,13 @@
           <div style="padding:14px 16px 6px;font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;">Badges</div>
           <div class="badges-row">
             <div class="badge-chip founding">🐋 Founding Driver</div>
-            <div class="badge-chip">🗺️ 48-Stater</div>
-            <div class="badge-chip">🌙 Night Owl</div>
-            <div class="badge-chip">🚿 Shower Scout</div>
-            <div class="badge-chip">📸 Road Photographer</div>
-            <div class="badge-chip">🏠 Regular</div>
           </div>
 
           <!-- Recent stops -->
           <div class="recent-stops">
             <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Recently Visited</div>
-            <div class="recent-stop-item">
-              <div class="recent-stop-info">
-                <div class="rs-name">Pilot #437 · Memphis, TN</div>
-                <div class="rs-meta">I-40 · 8 minutes ago</div>
-              </div>
-              <div class="rs-rating">★ 4</div>
-            </div>
-            <div class="recent-stop-item">
-              <div class="recent-stop-info">
-                <div class="rs-name">Love's #289 · Memphis, TN</div>
-                <div class="rs-meta">I-40 · Yesterday</div>
-              </div>
-              <div class="rs-rating">★ 3</div>
-            </div>
-            <div class="recent-stop-item">
-              <div class="recent-stop-info">
-                <div class="rs-name">TA Travel Center · Nashville, TN</div>
-                <div class="rs-meta">I-24 · 3 days ago</div>
-              </div>
-              <div class="rs-rating">★ 5</div>
-            </div>
-            <div class="recent-stop-item">
-              <div class="recent-stop-info">
-                <div class="rs-name">Flying J #1204 · Amarillo, TX</div>
-                <div class="rs-meta">I-40 · Last week</div>
-              </div>
-              <div class="rs-rating">★ 4</div>
+            <div id="profile-recent-stops">
+              <div style="color:var(--road-dust);font-size:13px;text-align:center;padding:20px 0">No stops yet — go check one in!</div>
             </div>
           </div>
 
@@ -2971,6 +2937,7 @@ function showScreen(id, btn) {
   renderAnnotations(id);
   document.querySelector('.phone-screen').scrollTop = 0;
   if (id === 'finder') loadFinderScreen();
+  if (id === 'driver') loadDriverProfile();
 }
 
 function renderAnnotations(id) {
@@ -3126,6 +3093,69 @@ function react(btn) {
 
 function showConfirmation() {
   document.getElementById('conf-screen').style.display = 'block';
+}
+
+// ── Driver Profile ──────────────────────────────────────────
+async function loadDriverProfile() {
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) return;
+
+  const userId = session.user.id;
+
+  // Load profile
+  const { data: profile } = await _sb.from('profiles')
+    .select('handle, rig_icon, rig_label')
+    .eq('id', userId)
+    .single();
+
+  if (profile) {
+    document.getElementById('profile-avatar').textContent = profile.rig_icon || '🚛';
+    document.getElementById('profile-handle').textContent = '@' + profile.handle;
+    document.getElementById('profile-rig').textContent = profile.rig_label || 'Driver';
+  }
+
+  // Load check-in count
+  const { count } = await _sb.from('checkins')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId);
+
+  document.getElementById('profile-stops').textContent = count || 0;
+  document.getElementById('profile-reviews').textContent = count || 0;
+
+  // Load recent check-ins
+  const { data: recent } = await _sb.from('checkins')
+    .select('stop_name, stop_address, rating, created_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(5);
+
+  if (recent && recent.length) {
+    document.getElementById('profile-recent-stops').innerHTML = recent.map(c => {
+      const when = timeAgo(c.created_at);
+      const stars = c.rating ? '★ ' + c.rating : '—';
+      return `
+        <div class="recent-stop-item">
+          <div class="recent-stop-info">
+            <div class="rs-name">${c.stop_name}</div>
+            <div class="rs-meta">${c.stop_address || ''} · ${when}</div>
+          </div>
+          <div class="rs-rating">${stars}</div>
+        </div>`;
+    }).join('');
+  }
+}
+
+function timeAgo(iso) {
+  const diff = Math.floor((Date.now() - new Date(iso)) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
+}
+
+async function signOut() {
+  await _sb.auth.signOut();
+  showScreen('splash', document.querySelectorAll('.screen-nav button')[0]);
 }
 
 // ── Stop Finder ─────────────────────────────────────────────
