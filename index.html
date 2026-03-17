@@ -907,6 +907,178 @@
   .tab-label { font-size: 10px; color: var(--road-dust); }
   .tab-label.active-tab { color: var(--amber); }
 
+  /* ── Feed Screen ─────────────────────────────────────────── */
+  .feed-filter-bar {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #2a2d35;
+    background: var(--asphalt);
+    position: sticky;
+    top: 58px;
+    z-index: 5;
+  }
+  .feed-filter {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--road-dust);
+    background: var(--steel);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+  .feed-filter.active {
+    background: rgba(245,166,35,0.15);
+    color: var(--amber);
+    border-color: rgba(245,166,35,0.4);
+  }
+  .feed-list { padding: 10px 14px; }
+  .feed-card {
+    background: var(--asphalt);
+    border: 1px solid #2a2d35;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .feed-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .feed-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--steel);
+    border: 2px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .feed-avatar.flag-av  { border-color: var(--danger); }
+  .feed-avatar.tip-av   { border-color: var(--success); }
+  .feed-avatar.mile-av  { border-color: var(--amber); }
+  .feed-meta { flex: 1; min-width: 0; }
+  .feed-handle {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--warm-white);
+  }
+  .feed-time {
+    font-size: 11px;
+    color: var(--road-dust);
+  }
+  .feed-type-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .badge-checkin  { background: rgba(74,180,125,0.15); color: var(--success); }
+  .badge-flag     { background: rgba(232,80,80,0.15);  color: var(--danger); }
+  .badge-tip      { background: rgba(245,166,35,0.15); color: var(--amber); }
+  .badge-milestone{ background: rgba(74,36,114,0.3);   color: #b88fec; }
+  .feed-body {
+    font-size: 13px;
+    color: var(--warm-white);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .feed-location {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--road-dust);
+    background: var(--steel);
+    padding: 4px 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .feed-flag-banner {
+    background: rgba(232,80,80,0.12);
+    border: 1px solid rgba(232,80,80,0.3);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    color: var(--danger);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .feed-milestone-banner {
+    background: rgba(74,36,114,0.2);
+    border: 1px solid rgba(184,143,236,0.3);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .milestone-num {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .milestone-label {
+    font-size: 12px;
+    color: var(--road-dust);
+    margin-top: 2px;
+  }
+  .feed-stars { color: var(--amber); font-size: 13px; margin-bottom: 8px; }
+  .feed-actions {
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid #2a2d35;
+    padding-top: 10px;
+  }
+  .feed-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--road-dust);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .feed-action-btn:hover, .feed-action-btn.reacted {
+    background: rgba(245,166,35,0.1);
+    color: var(--amber);
+  }
+  .photo-placeholder {
+    width: 100%;
+    height: 110px;
+    background: var(--steel);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: var(--road-dust);
+    position: relative;
+    overflow: hidden;
+  }
+  .photo-placeholder::after {
+    content: 'Sunset on I-10 · El Paso, TX';
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+  }
+
   /* Responsive */
   @media (max-width: 900px) {
     .annotations { display: none; }
@@ -929,6 +1101,7 @@
     <button onclick="showScreen('profile', this)">3. Stop Profile</button>
     <button onclick="showScreen('checkin', this)">4. Check-In</button>
     <button onclick="showScreen('driver', this)">5. Driver Profile</button>
+    <button onclick="showScreen('feed', this)">6. Feed</button>
   </div>
 </div>
 
@@ -1075,7 +1248,7 @@
             <div class="tab-icon active-tab">🗺️</div>
             <div class="tab-label active-tab">Find</div>
           </div>
-          <div class="tab">
+          <div class="tab" onclick="showScreen('feed', document.querySelectorAll('.screen-nav button')[5])">
             <div class="tab-icon">📋</div>
             <div class="tab-label">Feed</div>
           </div>
@@ -1373,13 +1546,149 @@
             <div class="tab-icon">🗺️</div>
             <div class="tab-label">Find</div>
           </div>
-          <div class="tab">
+          <div class="tab" onclick="showScreen('feed', document.querySelectorAll('.screen-nav button')[5])">
             <div class="tab-icon">📋</div>
             <div class="tab-label">Feed</div>
           </div>
           <div class="tab">
             <div class="tab-icon active-tab">👤</div>
             <div class="tab-label active-tab">Profile</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 6: FEED -->
+      <div id="screen-feed" class="screen">
+        <div class="nav-bar">
+          <div class="nav-logo">KEEP<span style="color:var(--amber)">●</span>MOVING</div>
+          <div class="nav-icon">🔔</div>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="feed-filter-bar">
+          <div class="feed-filter active" onclick="setFeedFilter(this)">Following</div>
+          <div class="feed-filter" onclick="setFeedFilter(this)">Nearby</div>
+          <div class="feed-filter" onclick="setFeedFilter(this)">Trending</div>
+        </div>
+
+        <!-- Feed cards -->
+        <div class="feed-list">
+
+          <!-- Card 1: Check-in -->
+          <div class="feed-card">
+            <div class="feed-card-header">
+              <div class="feed-avatar">🚛</div>
+              <div class="feed-meta">
+                <div class="feed-handle">@TexasHauler</div>
+                <div class="feed-time">8 minutes ago</div>
+              </div>
+              <div class="feed-type-badge badge-checkin">✓ Check-in</div>
+            </div>
+            <div class="feed-stars">★★★★☆</div>
+            <div class="feed-body">"Showers clean, parking tight but found a spot on the east side. Food court is solid."</div>
+            <div class="feed-location">📍 Pilot Travel Center #437 · Memphis, TN · I-40</div>
+            <div class="feed-actions">
+              <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">24</span></button>
+              <button class="feed-action-btn" onclick="react(this)">💬 Reply</button>
+              <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
+            </div>
+          </div>
+
+          <!-- Card 2: Real-time flag -->
+          <div class="feed-card">
+            <div class="feed-card-header">
+              <div class="feed-avatar flag-av">🦉</div>
+              <div class="feed-meta">
+                <div class="feed-handle">@NightOwlNick</div>
+                <div class="feed-time">45 minutes ago</div>
+              </div>
+              <div class="feed-type-badge badge-flag">⚠ Flag</div>
+            </div>
+            <div class="feed-flag-banner">⚠ Parking FULL — Love's Travel Stop #289 · I-40 Exit 178, Memphis TN</div>
+            <div class="feed-body">"Lot is packed. Tried both entrances. Keep rolling to Pilot or TA."</div>
+            <div class="feed-actions">
+              <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">61</span></button>
+              <button class="feed-action-btn" onclick="react(this)">💬 Reply</button>
+              <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
+            </div>
+          </div>
+
+          <!-- Card 3: Driver tip -->
+          <div class="feed-card">
+            <div class="feed-card-header">
+              <div class="feed-avatar tip-av">🌾</div>
+              <div class="feed-meta">
+                <div class="feed-handle">@MidwestMile</div>
+                <div class="feed-time">2 hours ago</div>
+              </div>
+              <div class="feed-type-badge badge-tip">💡 Tip</div>
+            </div>
+            <div class="feed-body">"Pro tip — TA in Nashville off I-24 Exit 56 has the cleanest showers I've seen all year. Ask for tokens at the front counter, not the fuel desk. Saves you 10 minutes."</div>
+            <div class="feed-location">📍 TA Travel Center · Nashville, TN · I-24</div>
+            <div class="feed-actions">
+              <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">108</span></button>
+              <button class="feed-action-btn" onclick="react(this)">💬 Reply</button>
+              <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
+            </div>
+          </div>
+
+          <!-- Card 4: Milestone -->
+          <div class="feed-card">
+            <div class="feed-card-header">
+              <div class="feed-avatar mile-av">🦅</div>
+              <div class="feed-meta">
+                <div class="feed-handle">@EagleEyeEddie</div>
+                <div class="feed-time">4 hours ago</div>
+              </div>
+              <div class="feed-type-badge badge-milestone">🏆 Milestone</div>
+            </div>
+            <div class="feed-milestone-banner">
+              <div class="milestone-num">500</div>
+              <div class="milestone-label">stops logged on Keep Moving 🎉</div>
+            </div>
+            <div class="feed-body">"5 years on the road and 500 stops later. If you see me at a truck stop, first coffee's on me."</div>
+            <div class="feed-actions">
+              <button class="feed-action-btn" onclick="react(this)">🎉 Congrats <span class="react-count">203</span></button>
+              <button class="feed-action-btn" onclick="react(this)">💬 Reply</button>
+              <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
+            </div>
+          </div>
+
+          <!-- Card 5: Photo post -->
+          <div class="feed-card">
+            <div class="feed-card-header">
+              <div class="feed-avatar">🌵</div>
+              <div class="feed-meta">
+                <div class="feed-handle">@DesertRoadDave</div>
+                <div class="feed-time">6 hours ago</div>
+              </div>
+              <div class="feed-type-badge badge-tip">📸 Photo</div>
+            </div>
+            <div class="photo-placeholder">🌅</div>
+            <div class="feed-body">"I-10 westbound never gets old."</div>
+            <div class="feed-location">📍 El Paso, TX · I-10 West</div>
+            <div class="feed-actions">
+              <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">87</span></button>
+              <button class="feed-action-btn" onclick="react(this)">💬 Reply</button>
+              <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
+            </div>
+          </div>
+
+        </div><!-- /feed-list -->
+        <div style="height:60px"></div>
+
+        <div class="tab-bar">
+          <div class="tab" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">
+            <div class="tab-icon">🗺️</div>
+            <div class="tab-label">Find</div>
+          </div>
+          <div class="tab">
+            <div class="tab-icon active-tab">📋</div>
+            <div class="tab-label active-tab">Feed</div>
+          </div>
+          <div class="tab" onclick="showScreen('driver', document.querySelectorAll('.screen-nav button')[4])">
+            <div class="tab-icon">👤</div>
+            <div class="tab-label">Profile</div>
           </div>
         </div>
       </div>
@@ -1440,6 +1749,17 @@ const ANNOTATIONS = {
       { title: "Stop count increments", text: "348 → 349. The diary grows. This is the identity moment." },
     ]
   },
+  feed: {
+    title: "Screen 6 — Community Feed",
+    desc: "The social pulse of the road. Real check-ins, live flags, driver tips, and milestones from the community.",
+    notes: [
+      { title: "Three feed modes", text: "Following = drivers you know. Nearby = activity within 50 miles of you. Trending = most-reacted posts right now. Nearby is the killer feature — ultra-local relevance." },
+      { title: "Five card types", text: "Check-in, Flag, Tip, Milestone, Photo. Each has a distinct badge color so drivers can scan the feed in seconds without reading every word." },
+      { title: "Flags bubble to the top", text: "Real-time flags (parking full, hazards) are the highest-urgency content. They get a red accent treatment so they visually pop even when scrolling fast." },
+      { title: "'Helpful' reaction", text: "Not a generic 'like' — a Helpful button. Drivers are here for utility, not clout. The language reinforces that every post has practical value." },
+      { title: "Milestones build identity", text: "500 stops is a career achievement. Surfacing it in the feed makes drivers feel seen and inspires newer drivers to keep logging. This is the retention flywheel." },
+    ]
+  },
   driver: {
     title: "Screen 5 — Driver Profile",
     desc: "The road diary. Built automatically from check-ins. This is what makes drivers come back.",
@@ -1486,6 +1806,18 @@ function rateStar(n) {
   stars.forEach((s, i) => {
     s.classList.toggle('lit', i < n);
   });
+}
+
+function setFeedFilter(el) {
+  document.querySelectorAll('.feed-filter').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function react(btn) {
+  if (btn.classList.contains('reacted')) return;
+  btn.classList.add('reacted');
+  const countEl = btn.querySelector('.react-count');
+  if (countEl) countEl.textContent = parseInt(countEl.textContent) + 1;
 }
 
 function showConfirmation() {
