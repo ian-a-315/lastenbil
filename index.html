@@ -1261,6 +1261,164 @@
     overflow: hidden;
   }
 
+  /* ── Flag Flow ───────────────────────────────────────────── */
+  .flag-screen { padding: 0 16px 24px; }
+  .flag-stop-context {
+    background: var(--steel);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .flag-stop-icon { font-size: 20px; }
+  .flag-stop-name { font-size: 13px; font-weight: 700; color: var(--warm-white); }
+  .flag-stop-sub  { font-size: 11px; color: var(--road-dust); }
+  .flag-step-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--warm-white);
+    margin-bottom: 6px;
+  }
+  .flag-step-sub {
+    font-size: 13px;
+    color: var(--road-dust);
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  .flag-type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .flag-type-tile {
+    background: var(--asphalt);
+    border: 2px solid #2a2d35;
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .flag-type-tile:hover { border-color: var(--amber); }
+  .flag-type-tile.selected {
+    border-color: var(--danger);
+    background: rgba(232,80,80,0.1);
+  }
+  .flag-type-icon { font-size: 26px; margin-bottom: 6px; }
+  .flag-type-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--warm-white);
+    line-height: 1.3;
+  }
+  .flag-note-label {
+    font-size: 11px;
+    color: var(--road-dust);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .flag-note-input {
+    width: 100%;
+    background: var(--steel);
+    border: 1px solid #2a2d35;
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--warm-white);
+    font-size: 14px;
+    resize: none;
+    height: 80px;
+    font-family: inherit;
+    margin-bottom: 8px;
+  }
+  .flag-note-input:focus {
+    outline: none;
+    border-color: var(--amber);
+  }
+  .flag-expire-note {
+    font-size: 11px;
+    color: var(--road-dust);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .flag-selected-preview {
+    background: rgba(232,80,80,0.1);
+    border: 1px solid rgba(232,80,80,0.3);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .flag-preview-icon { font-size: 22px; }
+  .flag-preview-type { font-size: 13px; font-weight: 700; color: var(--danger); }
+  .flag-preview-sub  { font-size: 11px; color: var(--road-dust); }
+  .flag-confirm-screen {
+    padding: 40px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .flag-confirm-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(232,80,80,0.15);
+    border: 2px solid var(--danger);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+  .flag-confirm-title {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--warm-white);
+    margin-bottom: 8px;
+  }
+  .flag-confirm-sub {
+    font-size: 14px;
+    color: var(--road-dust);
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+  .flag-confirm-stat {
+    background: var(--steel);
+    border-radius: 12px;
+    padding: 14px 24px;
+    margin-bottom: 24px;
+    width: 100%;
+  }
+  .flag-confirm-stat strong {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--danger);
+    display: block;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .flag-confirm-stat span {
+    font-size: 12px;
+    color: var(--road-dust);
+  }
+  .flag-expire-badge {
+    background: rgba(245,166,35,0.1);
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--amber);
+    margin-bottom: 28px;
+  }
+
   /* Responsive */
   @media (max-width: 900px) {
     .annotations { display: none; }
@@ -1285,6 +1443,7 @@
     <button onclick="showScreen('driver', this)">5. Driver Profile</button>
     <button onclick="showScreen('feed', this)">6. Feed</button>
     <button onclick="showScreen('diary', this)">7. Road Diary</button>
+    <button onclick="showScreen('flag', this)">8. Flag Flow</button>
   </div>
 </div>
 
@@ -1548,10 +1707,13 @@
           </div>
         </div>
 
-        <div style="height:80px"></div>
-        <div class="checkin-btn">
-          <button onclick="showScreen('checkin', document.querySelectorAll('.screen-nav button')[3])">
-            ＋ Check In Here
+        <div style="height:100px"></div>
+        <div class="checkin-btn" style="display:flex;gap:8px;padding:10px 16px;">
+          <button onclick="showScreen('checkin', document.querySelectorAll('.screen-nav button')[3])" style="flex:1">
+            ＋ Check In
+          </button>
+          <button onclick="showScreen('flag', document.querySelectorAll('.screen-nav button')[7])" style="flex:1;background:rgba(232,80,80,0.15);color:var(--danger);border:1px solid rgba(232,80,80,0.4);border-radius:14px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;">
+            🚩 Flag Issue
           </button>
         </div>
       </div>
@@ -2067,6 +2229,117 @@
         </div>
       </div>
 
+      <!-- SCREEN 8: FLAG FLOW -->
+      <div id="screen-flag" class="screen">
+        <div class="nav-bar">
+          <div style="cursor:pointer;color:var(--amber);font-size:18px" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">←</div>
+          <div class="nav-logo" style="font-size:14px;color:var(--road-dust)">Post a Flag</div>
+          <div style="width:36px"></div>
+        </div>
+
+        <!-- Step 1: Select flag type (default visible) -->
+        <div id="flag-step1">
+          <div style="padding:16px 16px 0">
+            <div class="progress-dots" style="margin-bottom:12px">
+              <div class="dot active"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+            <div class="checkin-step-label">Step 1 of 3</div>
+          </div>
+          <div class="flag-screen">
+            <div class="flag-stop-context">
+              <div class="flag-stop-icon">📍</div>
+              <div>
+                <div class="flag-stop-name">Pilot Travel Center #437</div>
+                <div class="flag-stop-sub">Memphis, TN · I-40 Exit 182</div>
+              </div>
+            </div>
+            <div class="flag-step-title">What's the issue?</div>
+            <div class="flag-step-sub">Pick the best description. Other drivers will see this in real time.</div>
+            <div class="flag-type-grid">
+              <div class="flag-type-tile" onclick="selectFlag(this,'🅿','Parking Full')">
+                <div class="flag-type-icon">🅿</div>
+                <div class="flag-type-label">Parking Full</div>
+              </div>
+              <div class="flag-type-tile" onclick="selectFlag(this,'🚿','Showers Closed')">
+                <div class="flag-type-icon">🚿</div>
+                <div class="flag-type-label">Showers Closed</div>
+              </div>
+              <div class="flag-type-tile" onclick="selectFlag(this,'⏳','Long Wait')">
+                <div class="flag-type-icon">⏳</div>
+                <div class="flag-type-label">Long Wait</div>
+              </div>
+              <div class="flag-type-tile" onclick="selectFlag(this,'⚠️','Road Hazard')">
+                <div class="flag-type-icon">⚠️</div>
+                <div class="flag-type-label">Road Hazard</div>
+              </div>
+              <div class="flag-type-tile" onclick="selectFlag(this,'🚧','Construction')">
+                <div class="flag-type-icon">🚧</div>
+                <div class="flag-type-label">Construction</div>
+              </div>
+              <div class="flag-type-tile" onclick="selectFlag(this,'⚖','Weigh Station')">
+                <div class="flag-type-icon">⚖</div>
+                <div class="flag-type-label">Weigh Station Open</div>
+              </div>
+            </div>
+            <button class="btn-primary" style="width:100%" onclick="goFlagStep2()">Next →</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Add note + confirm -->
+        <div id="flag-step2" style="display:none">
+          <div style="padding:16px 16px 0">
+            <div class="progress-dots" style="margin-bottom:12px">
+              <div class="dot done"></div>
+              <div class="dot active"></div>
+              <div class="dot"></div>
+            </div>
+            <div class="checkin-step-label">Step 2 of 3</div>
+          </div>
+          <div class="flag-screen">
+            <div class="flag-stop-context">
+              <div class="flag-stop-icon">📍</div>
+              <div>
+                <div class="flag-stop-name">Pilot Travel Center #437</div>
+                <div class="flag-stop-sub">Memphis, TN · I-40 Exit 182</div>
+              </div>
+            </div>
+            <div class="flag-step-title">Confirm & add detail</div>
+            <div id="flag-selected-preview" class="flag-selected-preview">
+              <div class="flag-preview-icon" id="flag-prev-icon">🅿</div>
+              <div>
+                <div class="flag-preview-type" id="flag-prev-type">Parking Full</div>
+                <div class="flag-preview-sub">Flagged by you · just now</div>
+              </div>
+            </div>
+            <div class="flag-note-label">Add a note <span style="color:#444;font-size:10px">— optional</span></div>
+            <textarea class="flag-note-input" placeholder="e.g. Both entrances backed up, tried east lot too..."></textarea>
+            <div class="flag-expire-note">
+              ⏱ This flag auto-expires in <strong style="color:var(--warm-white);margin:0 3px">3 hours</strong> unless confirmed by other drivers
+            </div>
+            <button class="btn-primary" style="width:100%;background:var(--danger);border-color:var(--danger)" onclick="goFlagStep3()">🚩 Post Flag</button>
+            <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="backFlagStep1()">← Change flag type</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Confirmation -->
+        <div id="flag-step3" style="display:none">
+          <div class="flag-confirm-screen">
+            <div class="flag-confirm-icon">🚩</div>
+            <div class="flag-confirm-title">Flag posted!</div>
+            <div class="flag-confirm-sub">Your flag is live at<br><strong style="color:var(--warm-white)">Pilot Travel Center #437</strong><br>Memphis, TN</div>
+            <div class="flag-confirm-stat">
+              <strong>412</strong>
+              <span>drivers within 50 miles will see this flag</span>
+            </div>
+            <div class="flag-expire-badge">⏱ Auto-expires in 3 hours</div>
+            <button class="btn-primary" style="width:100%" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">Back to map →</button>
+            <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">Back to stop</button>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /phone-screen -->
     <div class="phone-home-bar"><div class="home-bar-pill"></div></div>
   </div><!-- /phone-shell -->
@@ -2134,6 +2407,17 @@ const ANNOTATIONS = {
       { title: "Milestones build identity", text: "500 stops is a career achievement. Surfacing it in the feed makes drivers feel seen and inspires newer drivers to keep logging. This is the retention flywheel." },
     ]
   },
+  flag: {
+    title: "Screen 8 — Flag Flow",
+    desc: "The fastest way to help another driver. 3 steps, under 15 seconds. This is the community contribution that makes Keep Moving a real-time safety tool.",
+    notes: [
+      { title: "Two buttons on Stop Profile", text: "Check In and Flag Issue sit side by side. Check In is positive (how was it?). Flag is urgent (something's wrong right now). Same stop, two different contributions." },
+      { title: "6 flag types in a grid", text: "Parking Full, Showers Closed, Long Wait, Road Hazard, Construction, Weigh Station. These are the exact problems that cost a driver 30-90 minutes if they pull in blind. Icons make selection instant — no reading required." },
+      { title: "3-step progress with back nav", text: "Drivers always know where they are. Step 2 shows what they selected so they can verify before posting. One tap to go back if they picked the wrong type." },
+      { title: "Auto-expire mechanic", text: "Flags auto-expire in 3 hours. This is critical — stale flags destroy trust. The expiry is shown at every step so drivers know their flag won't haunt the stop forever." },
+      { title: "Confirmation = impact", text: "'412 drivers within 50 miles will see this flag' — same principle as the check-in confirmation. Making the driver feel their contribution matters is how you build the habit." },
+    ]
+  },
   diary: {
     title: "Screen 7 — Road Diary",
     desc: "The Letterboxd moment. A driver's entire road life, visualized as a grid. This is what makes Keep Moving an identity, not just a utility.",
@@ -2191,6 +2475,33 @@ function rateStar(n) {
   stars.forEach((s, i) => {
     s.classList.toggle('lit', i < n);
   });
+}
+
+let selectedFlagIcon = '🅿';
+let selectedFlagType = 'Parking Full';
+
+function selectFlag(tile, icon, type) {
+  document.querySelectorAll('.flag-type-tile').forEach(t => t.classList.remove('selected'));
+  tile.classList.add('selected');
+  selectedFlagIcon = icon;
+  selectedFlagType = type;
+}
+
+function goFlagStep2() {
+  document.getElementById('flag-step1').style.display = 'none';
+  document.getElementById('flag-step2').style.display = 'block';
+  document.getElementById('flag-prev-icon').textContent = selectedFlagIcon;
+  document.getElementById('flag-prev-type').textContent = selectedFlagType;
+}
+
+function backFlagStep1() {
+  document.getElementById('flag-step2').style.display = 'none';
+  document.getElementById('flag-step1').style.display = 'block';
+}
+
+function goFlagStep3() {
+  document.getElementById('flag-step2').style.display = 'none';
+  document.getElementById('flag-step3').style.display = 'block';
 }
 
 function setDiaryYear(el, year) {
