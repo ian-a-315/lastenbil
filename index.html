@@ -1741,10 +1741,28 @@
     margin-bottom: 24px;
   }
 
-  /* Responsive */
+  /* Responsive — tablet */
   @media (max-width: 900px) {
     .annotations { display: none; }
     .phone-wrap { padding: 20px; }
+  }
+
+  /* Responsive — mobile: hide dev chrome, go full screen */
+  @media (max-width: 600px) {
+    .desktop-bar { display: none; }
+    .annotations { display: none; }
+    .phone-wrap { padding: 0; margin: 0; }
+    .phone-shell {
+      width: 100vw;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .phone-notch { display: none; }
+    .phone-screen {
+      height: 100dvh;
+      max-height: none;
+    }
+    body { background: var(--midnight); }
   }
 </style>
 </head>
