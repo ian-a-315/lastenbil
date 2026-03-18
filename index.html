@@ -1865,67 +1865,7 @@
 
         <!-- Stop list -->
         <div class="section-label" id="stops-label">Scanning the lot...</div>
-        <div id="stops-list">
-        <div class="stop-card" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
-          <div class="stop-card-header">
-            <div>
-              <div class="stop-name">Pilot Travel Center #437</div>
-              <div class="stop-dist">📍 2.1 mi · Memphis, TN · I-40 Exit 182</div>
-            </div>
-            <div class="stop-rating">
-              <div class="rating-big">4.2</div>
-              <div class="rating-count">847 reviews</div>
-            </div>
-          </div>
-          <div class="amenity-row">
-            <div class="amenity-pill ok">✓ Parking</div>
-            <div class="amenity-pill ok">✓ Showers</div>
-            <div class="amenity-pill ok">✓ Food</div>
-            <div class="amenity-pill">CAT Scale</div>
-          </div>
-          <div class="recency">Reviewed <span>8 minutes ago</span></div>
-        </div>
-
-        <div class="stop-card" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
-          <div class="flag-banner">⚠ Parking FULL · flagged by @NightOwlNick 45 min ago</div>
-          <div class="stop-card-header">
-            <div>
-              <div class="stop-name">Love's Travel Stop #289</div>
-              <div class="stop-dist">📍 4.7 mi · Memphis, TN · I-40 Exit 178</div>
-            </div>
-            <div class="stop-rating">
-              <div class="rating-big">3.8</div>
-              <div class="rating-count">412 reviews</div>
-            </div>
-          </div>
-          <div class="amenity-row">
-            <div class="amenity-pill full">✗ Parking FULL</div>
-            <div class="amenity-pill ok">✓ Showers</div>
-            <div class="amenity-pill warn">⚠ Food closes 10pm</div>
-          </div>
-          <div class="recency">Reviewed <span>45 minutes ago</span></div>
-        </div>
-
-        <div class="stop-card" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
-          <div class="stop-card-header">
-            <div>
-              <div class="stop-name">TA Travel Center</div>
-              <div class="stop-dist">📍 8.3 mi · Memphis, TN · I-40 Exit 172</div>
-            </div>
-            <div class="stop-rating">
-              <div class="rating-big">4.6</div>
-              <div class="rating-count">1,204 reviews</div>
-            </div>
-          </div>
-          <div class="amenity-row">
-            <div class="amenity-pill ok">✓ Parking</div>
-            <div class="amenity-pill ok">✓ Showers</div>
-            <div class="amenity-pill ok">✓ Restaurant</div>
-            <div class="amenity-pill ok">✓ Laundry</div>
-          </div>
-          <div class="recency">Reviewed <span>2 hours ago</span> · <span style="color:var(--success)">"Best showers on I-40"</span></div>
-        </div>
-        </div><!-- end #stops-list -->
+        <div id="stops-list"></div>
 
         <div style="height:60px"></div>
         <div class="tab-bar">
@@ -3268,7 +3208,7 @@ async function computeBadgeStats(userId) {
   return {
     founding:    profile?.founding_driver !== false,
     total:       rows.length,
-    nightOwl:    rows.filter(c => new Date(c.created_at).getUTCHours() < 5).length,
+    nightOwl:    rows.filter(c => new Date(c.created_at).getHours() < 5).length,
     showerScout: rows.filter(c => c.rating_showers).length,
     states:      new Set(rows.map(c => getStateFromAddress(c.stop_address)).filter(Boolean)).size,
     withNotes:   rows.filter(c => c.note && c.note.trim()).length
