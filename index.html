@@ -2793,7 +2793,7 @@ function renderAnnotations(id) {
 const APP = {
   user:        null,   // cached session user ID
   follows:     { ids: new Set(), loaded: false },
-  currentStop: { name: 'Unknown Stop', place_id: null, address: '', googleRating: 0, googleCount: 0 },
+  currentStop: { name: 'Unknown Stop', place_id: null, address: '', googleRating: 0, googleCount: 0, lat: null, lng: null },
   checkin:     { rating: 0, cats: { parking: 0, showers: 0, food: 0, safety: 0, fuel: 0 }, newBadges: [] },
   onboard:     { rigIcon: '🚛', rigLabel: 'Semi', inviteCode: null },
   flag:        { icon: '🅿', type: 'Parking Full' },
@@ -2828,8 +2828,8 @@ function resetCheckinState() {
   if (noteEl) noteEl.value = '';
 }
 
-function selectStop(name, place_id, address) {
-  APP.currentStop = { name, place_id, address };
+function selectStop(name, place_id, address, lat, lng) {
+  APP.currentStop = { name, place_id, address, lat: lat || null, lng: lng || null, googleRating: 0, googleCount: 0 };
   resetCheckinState();
   const el = document.getElementById('checkin-stop-name');
   if (el) el.textContent = '📍 ' + name + (address ? ', ' + address : '');
@@ -2856,6 +2856,8 @@ async function submitCheckin() {
     stop_name: APP.currentStop.name,
     stop_place_id: APP.currentStop.place_id,
     stop_address: APP.currentStop.address,
+    stop_lat: APP.currentStop.lat || null,
+    stop_lng: APP.currentStop.lng || null,
     rating: APP.checkin.rating || null,
     rating_parking: APP.checkin.cats.parking || null,
     rating_showers: APP.checkin.cats.showers || null,
@@ -2892,6 +2894,13 @@ async function submitCheckin() {
       showBadgeUnlock(newlyEarned[0]);
     }
   });
+
+  // Push notifications: prompt on 2nd check-in, update location on subsequent check-ins
+  if (count === 2) {
+    subscribeToPush(session.user.id);
+  } else if (count > 2) {
+    updatePushLocation(session.user.id);
+  }
 }
 
 // Onboarding
@@ -2964,6 +2973,8 @@ async function goFlagStep3() {
     user_id: session.user.id,
     stop_place_id: APP.currentStop.place_id || null,
     stop_name: APP.currentStop.name,
+    stop_lat: APP.currentStop.lat || null,
+    stop_lng: APP.currentStop.lng || null,
     flag_type: APP.flag.type,
     flag_icon: APP.flag.icon,
     note: note,
@@ -2993,6 +3004,68 @@ function react(btn) {
 
 function showConfirmation() {
   document.getElementById('conf-screen').style.display = 'block';
+}
+
+// ── Push Notifications ───────────────────────────────────────
+const VAPID_PUBLIC_KEY = 'BOHCgjcXA4srwEVtI3WvQhL5d9NiNxfw0NxM1m5tFG7iphvuF-ELqMoIdO39-_Aq4NR6YLu0dO8Al0RGYX5aMBw';
+
+function urlBase64ToUint8Array(b64) {
+  const padding = '='.repeat((4 - b64.length % 4) % 4);
+  const base64 = (b64 + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return Uint8Array.from(raw, c => c.charCodeAt(0));
+}
+
+async function subscribeToPush(userId) {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const existing = await reg.pushManager.getSubscription();
+    if (existing) {
+      // Already subscribed — just refresh location
+      await _sb.from('push_subscriptions').upsert({
+        user_id: userId,
+        subscription: existing.toJSON(),
+        last_lat: APP.currentStop.lat || null,
+        last_lng: APP.currentStop.lng || null,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+      return;
+    }
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+    await _sb.from('push_subscriptions').upsert({
+      user_id: userId,
+      subscription: sub.toJSON(),
+      last_lat: APP.currentStop.lat || null,
+      last_lng: APP.currentStop.lng || null,
+      permission_granted_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' });
+  } catch (e) {
+    // Permission denied or browser error — fail silently
+    console.warn('Push subscription skipped:', e.message);
+  }
+}
+
+async function updatePushLocation(userId) {
+  if (!APP.currentStop.lat || !('serviceWorker' in navigator)) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const existing = await reg.pushManager.getSubscription();
+    if (!existing) return;
+    await _sb.from('push_subscriptions').upsert({
+      user_id: userId,
+      subscription: existing.toJSON(),
+      last_lat: APP.currentStop.lat,
+      last_lng: APP.currentStop.lng,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' });
+  } catch (e) {
+    console.warn('Push location update failed:', e.message);
+  }
 }
 
 // ── Following System ─────────────────────────────────────────
@@ -3106,8 +3179,8 @@ function dismissBadgeUnlock() {
 }
 
 // ── Stop Profile ─────────────────────────────────────────────
-function viewStop(name, place_id, address, googleRating, googleCount) {
-  APP.currentStop = { name, place_id, address, googleRating: googleRating || 0, googleCount: googleCount || 0 };
+function viewStop(name, place_id, address, googleRating, googleCount, lat, lng) {
+  APP.currentStop = { name, place_id, address, googleRating: googleRating || 0, googleCount: googleCount || 0, lat: lat || null, lng: lng || null };
   showScreen('profile', document.querySelectorAll('.screen-nav button')[2]);
 }
 
@@ -3659,9 +3732,11 @@ function initFinderMap(lat, lng) {
 
       const safeName = place.name.replace(/'/g,"\\'");
       const safeAddr = addr.replace(/'/g,"\\'");
+      const pLat = place.geometry.location.lat();
+      const pLng = place.geometry.location.lng();
 
       return `
-        <div class="stop-card" onclick="viewStop('${safeName}', '${place.place_id}', '${safeAddr}', ${place.rating || 0}, ${count})">
+        <div class="stop-card" onclick="viewStop('${safeName}', '${place.place_id}', '${safeAddr}', ${place.rating || 0}, ${count}, ${pLat}, ${pLng})">
           <div class="stop-card-header">
             <div>
               <div class="stop-name">${place.name}</div>
@@ -3673,8 +3748,8 @@ function initFinderMap(lat, lng) {
             </div>
           </div>
           <div style="margin-top:10px;display:flex;gap:8px">
-            <button class="btn-primary" style="flex:1;padding:10px" onclick="event.stopPropagation();viewStop('${safeName}', '${place.place_id}', '${safeAddr}', ${place.rating || 0}, ${count})">View Stop →</button>
-            <button style="padding:10px 14px;background:var(--steel);border:1px solid #333;border-radius:10px;color:var(--road-dust);font-size:13px;font-weight:700;cursor:pointer" onclick="event.stopPropagation();selectStop('${safeName}', '${place.place_id}', '${safeAddr}')">＋ Check In</button>
+            <button class="btn-primary" style="flex:1;padding:10px" onclick="event.stopPropagation();viewStop('${safeName}', '${place.place_id}', '${safeAddr}', ${place.rating || 0}, ${count}, ${pLat}, ${pLng})">View Stop →</button>
+            <button style="padding:10px 14px;background:var(--steel);border:1px solid #333;border-radius:10px;color:var(--road-dust);font-size:13px;font-weight:700;cursor:pointer" onclick="event.stopPropagation();selectStop('${safeName}', '${place.place_id}', '${safeAddr}', ${pLat}, ${pLng})">＋ Check In</button>
           </div>
         </div>`;
     }).join('');
