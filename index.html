@@ -696,6 +696,8 @@
     color: var(--warm-white);
   }
   .mini-stars { font-size: 16px; color: var(--amber); letter-spacing: 2px; }
+  .mini-stars span { opacity: 0.25; cursor: pointer; transition: opacity 0.1s; }
+  .mini-stars span.lit { opacity: 1; }
   .skip-label {
     font-size: 12px;
     color: var(--road-dust);
@@ -1954,37 +1956,37 @@
           <div class="flag-banner" id="sp-flag-banner" style="display:inline-flex">✓ No active flags right now</div>
         </div>
 
-        <div class="category-row">
+        <div class="category-row" id="sp-cat-section">
           <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Ratings by Category</div>
           <div class="cat-item">
             <div class="cat-icon">🅿</div>
             <div class="cat-label">Parking</div>
-            <div class="cat-bar-wrap"><div class="cat-bar" style="width:82%"></div></div>
-            <div class="cat-score">4.1</div>
+            <div class="cat-bar-wrap"><div class="cat-bar" id="sp-bar-parking" style="width:0%"></div></div>
+            <div class="cat-score" id="sp-score-parking">—</div>
           </div>
           <div class="cat-item">
             <div class="cat-icon">🚿</div>
             <div class="cat-label">Showers</div>
-            <div class="cat-bar-wrap"><div class="cat-bar" style="width:76%"></div></div>
-            <div class="cat-score">3.8</div>
+            <div class="cat-bar-wrap"><div class="cat-bar" id="sp-bar-showers" style="width:0%"></div></div>
+            <div class="cat-score" id="sp-score-showers">—</div>
           </div>
           <div class="cat-item">
             <div class="cat-icon">🍔</div>
             <div class="cat-label">Food</div>
-            <div class="cat-bar-wrap"><div class="cat-bar" style="width:88%"></div></div>
-            <div class="cat-score">4.4</div>
+            <div class="cat-bar-wrap"><div class="cat-bar" id="sp-bar-food" style="width:0%"></div></div>
+            <div class="cat-score" id="sp-score-food">—</div>
           </div>
           <div class="cat-item">
             <div class="cat-icon">🔒</div>
             <div class="cat-label">Safety</div>
-            <div class="cat-bar-wrap"><div class="cat-bar" style="width:80%"></div></div>
-            <div class="cat-score">4.0</div>
+            <div class="cat-bar-wrap"><div class="cat-bar" id="sp-bar-safety" style="width:0%"></div></div>
+            <div class="cat-score" id="sp-score-safety">—</div>
           </div>
           <div class="cat-item">
             <div class="cat-icon">⛽</div>
             <div class="cat-label">Fuel Price</div>
-            <div class="cat-bar-wrap"><div class="cat-bar" style="width:64%"></div></div>
-            <div class="cat-score">3.2</div>
+            <div class="cat-bar-wrap"><div class="cat-bar" id="sp-bar-fuel" style="width:0%"></div></div>
+            <div class="cat-score" id="sp-score-fuel">—</div>
           </div>
         </div>
 
@@ -2055,23 +2057,33 @@
           <div class="cat-rating-section">
             <div class="cat-rating-row">
               <div class="cat-rating-label"><span>🅿</span> Parking</div>
-              <div class="mini-stars">★★★★☆</div>
+              <div class="mini-stars" id="cat-parking">
+                <span onclick="rateCategory('parking',1)">★</span><span onclick="rateCategory('parking',2)">★</span><span onclick="rateCategory('parking',3)">★</span><span onclick="rateCategory('parking',4)">★</span><span onclick="rateCategory('parking',5)">★</span>
+              </div>
             </div>
             <div class="cat-rating-row">
               <div class="cat-rating-label"><span>🚿</span> Showers</div>
-              <div class="mini-stars">★★★★☆</div>
+              <div class="mini-stars" id="cat-showers">
+                <span onclick="rateCategory('showers',1)">★</span><span onclick="rateCategory('showers',2)">★</span><span onclick="rateCategory('showers',3)">★</span><span onclick="rateCategory('showers',4)">★</span><span onclick="rateCategory('showers',5)">★</span>
+              </div>
             </div>
             <div class="cat-rating-row">
               <div class="cat-rating-label"><span>🍔</span> Food</div>
-              <div class="mini-stars">★★★★★</div>
+              <div class="mini-stars" id="cat-food">
+                <span onclick="rateCategory('food',1)">★</span><span onclick="rateCategory('food',2)">★</span><span onclick="rateCategory('food',3)">★</span><span onclick="rateCategory('food',4)">★</span><span onclick="rateCategory('food',5)">★</span>
+              </div>
             </div>
             <div class="cat-rating-row">
               <div class="cat-rating-label"><span>🔒</span> Safety</div>
-              <div class="mini-stars">★★★★☆</div>
+              <div class="mini-stars" id="cat-safety">
+                <span onclick="rateCategory('safety',1)">★</span><span onclick="rateCategory('safety',2)">★</span><span onclick="rateCategory('safety',3)">★</span><span onclick="rateCategory('safety',4)">★</span><span onclick="rateCategory('safety',5)">★</span>
+              </div>
             </div>
             <div class="cat-rating-row">
               <div class="cat-rating-label"><span>⛽</span> Fuel Price</div>
-              <div class="mini-stars">★★★☆☆</div>
+              <div class="mini-stars" id="cat-fuel">
+                <span onclick="rateCategory('fuel',1)">★</span><span onclick="rateCategory('fuel',2)">★</span><span onclick="rateCategory('fuel',3)">★</span><span onclick="rateCategory('fuel',4)">★</span><span onclick="rateCategory('fuel',5)">★</span>
+              </div>
             </div>
           </div>
 
@@ -2791,14 +2803,22 @@ function showScreen(id, btn) {
   if (id === 'profile') loadStopProfile();
   if (id === 'diary') loadDiaryScreen();
   if (id === 'flag') {
-    const el1 = document.getElementById('flag-stop-name');
-    const el2 = document.getElementById('flag-stop-sub');
-    const el3 = document.getElementById('flag-stop-name2');
-    const el4 = document.getElementById('flag-stop-sub2');
-    if (el1) el1.textContent = currentStop.name || '—';
-    if (el2) el2.textContent = currentStop.address || '—';
-    if (el3) el3.textContent = currentStop.name || '—';
-    if (el4) el4.textContent = currentStop.address || '—';
+    // Reset to step 1
+    document.getElementById('flag-step1').style.display = 'block';
+    document.getElementById('flag-step2').style.display = 'none';
+    document.getElementById('flag-step3').style.display = 'none';
+    document.querySelectorAll('.flag-type-tile').forEach(t => t.classList.remove('selected'));
+    const noteEl = document.querySelector('.flag-note-input');
+    if (noteEl) noteEl.value = '';
+    // Populate stop context
+    ['flag-stop-name','flag-stop-name2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = currentStop.name || '—';
+    });
+    ['flag-stop-sub','flag-stop-sub2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = currentStop.address || '—';
+    });
   }
 }
 
@@ -2822,6 +2842,7 @@ function renderAnnotations(id) {
 
 let selectedRating = 0;
 let currentStop = { name: 'Unknown Stop', place_id: null, address: '' };
+const catRatings = { parking: 0, showers: 0, food: 0, safety: 0, fuel: 0 };
 
 function rateStar(n) {
   selectedRating = n;
@@ -2829,8 +2850,26 @@ function rateStar(n) {
   stars.forEach((s, i) => s.classList.toggle('lit', i < n));
 }
 
+function rateCategory(cat, n) {
+  catRatings[cat] = n;
+  const container = document.getElementById('cat-' + cat);
+  if (!container) return;
+  container.querySelectorAll('span').forEach((s, i) => s.classList.toggle('lit', i < n));
+}
+
+function resetCheckinState() {
+  selectedRating = 0;
+  Object.keys(catRatings).forEach(k => catRatings[k] = 0);
+  document.querySelectorAll('#star-row .star').forEach(s => s.classList.remove('lit'));
+  ['parking','showers','food','safety','fuel'].forEach(cat => {
+    const el = document.getElementById('cat-' + cat);
+    if (el) el.querySelectorAll('span').forEach(s => s.classList.remove('lit'));
+  });
+}
+
 function selectStop(name, place_id, address) {
   currentStop = { name, place_id, address };
+  resetCheckinState();
   const el = document.getElementById('checkin-stop-name');
   if (el) el.textContent = '📍 ' + name + (address ? ', ' + address : '');
   showScreen('checkin', document.querySelectorAll('.screen-nav button')[3]);
@@ -2854,7 +2893,12 @@ async function submitCheckin() {
     stop_name: currentStop.name,
     stop_place_id: currentStop.place_id,
     stop_address: currentStop.address,
-    rating: selectedRating || null
+    rating: selectedRating || null,
+    rating_parking: catRatings.parking || null,
+    rating_showers: catRatings.showers || null,
+    rating_food: catRatings.food || null,
+    rating_safety: catRatings.safety || null,
+    rating_fuel: catRatings.fuel || null
   });
 
   btn.textContent = 'Next →';
@@ -2931,9 +2975,24 @@ function backFlagStep1() {
   document.getElementById('flag-step1').style.display = 'block';
 }
 
-function goFlagStep3() {
+async function goFlagStep3() {
   document.getElementById('flag-step2').style.display = 'none';
   document.getElementById('flag-step3').style.display = 'block';
+
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) return;
+
+  const note = document.querySelector('.flag-note-input')?.value.trim() || null;
+
+  await _sb.from('flags').insert({
+    user_id: session.user.id,
+    stop_place_id: currentStop.place_id || null,
+    stop_name: currentStop.name,
+    flag_type: selectedFlagType,
+    flag_icon: selectedFlagIcon,
+    note: note,
+    expires_at: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString()
+  });
 }
 
 function setDiaryYear(el, year) {
@@ -2965,6 +3024,7 @@ function viewStop(name, place_id, address, googleRating, googleCount) {
 }
 
 function goToCheckin() {
+  resetCheckinState();
   const el = document.getElementById('checkin-stop-name');
   if (el) el.textContent = '📍 ' + currentStop.name + (currentStop.address ? ', ' + currentStop.address : '');
   showScreen('checkin', document.querySelectorAll('.screen-nav button')[3]);
@@ -2995,10 +3055,31 @@ async function loadStopProfile() {
 
   if (!place_id) return;
 
+  // Query active flags for this stop
+  const { data: activeFlags } = await _sb
+    .from('flags')
+    .select('flag_type, flag_icon, created_at')
+    .eq('stop_place_id', place_id)
+    .gt('expires_at', new Date().toISOString())
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  const flagBanner = document.getElementById('sp-flag-banner');
+  if (flagBanner) {
+    if (activeFlags && activeFlags.length) {
+      const f = activeFlags[0];
+      flagBanner.style.cssText = 'display:inline-flex;background:rgba(232,80,80,0.15);border:1px solid rgba(232,80,80,0.4);color:var(--danger)';
+      flagBanner.textContent = `${f.flag_icon} ${f.flag_type} · flagged ${timeAgo(f.created_at)}`;
+    } else {
+      flagBanner.style.cssText = 'display:inline-flex';
+      flagBanner.textContent = '✓ No active flags right now';
+    }
+  }
+
   // Query Keep Moving check-ins for this stop (join profiles for handle)
   const { data: checkins } = await _sb
     .from('checkins')
-    .select('rating, created_at, profiles(handle, rig_icon)')
+    .select('rating, rating_parking, rating_showers, rating_food, rating_safety, rating_fuel, created_at, profiles(handle, rig_icon)')
     .eq('stop_place_id', place_id)
     .order('created_at', { ascending: false })
     .limit(20);
@@ -3016,6 +3097,21 @@ async function loadStopProfile() {
         `<span>${checkins.length} check-in${checkins.length > 1 ? 's' : ''}</span> · <span>Last visited ${timeAgo(checkins[0].created_at)}</span>`;
     }
 
+    // Category bar averages
+    ['parking','showers','food','safety','fuel'].forEach(cat => {
+      const vals = checkins.map(c => c['rating_' + cat]).filter(v => v);
+      const bar = document.getElementById('sp-bar-' + cat);
+      const score = document.getElementById('sp-score-' + cat);
+      if (vals.length) {
+        const avg = vals.reduce((s, v) => s + v, 0) / vals.length;
+        if (bar) bar.style.width = (avg / 5 * 100) + '%';
+        if (score) score.textContent = avg.toFixed(1);
+      } else {
+        if (bar) bar.style.width = '0%';
+        if (score) score.textContent = '—';
+      }
+    });
+
     document.getElementById('sp-reviews').innerHTML = checkins.slice(0, 5).map(c => {
       const handle = c.profiles?.handle || 'driver';
       const rigIcon = c.profiles?.rig_icon || '🚛';
@@ -3032,6 +3128,13 @@ async function loadStopProfile() {
         </div>`;
     }).join('');
   } else {
+    // Reset category bars to empty
+    ['parking','showers','food','safety','fuel'].forEach(cat => {
+      const bar = document.getElementById('sp-bar-' + cat);
+      const score = document.getElementById('sp-score-' + cat);
+      if (bar) bar.style.width = '0%';
+      if (score) score.textContent = '—';
+    });
     document.getElementById('sp-reviews').innerHTML = `
       <div style="text-align:center;padding:32px 16px;color:var(--road-dust)">
         <div style="font-size:36px;margin-bottom:12px">🛑</div>
