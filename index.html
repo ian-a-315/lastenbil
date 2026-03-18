@@ -1910,7 +1910,7 @@
         <div class="nav-bar">
           <div style="cursor:pointer;color:var(--amber);font-size:18px" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">← </div>
           <div class="nav-logo" style="font-size:14px;color:var(--road-dust)">Stop Profile</div>
-          <div class="nav-icon">♡</div>
+          <div></div>
         </div>
 
         <div class="profile-hero">
@@ -1962,19 +1962,6 @@
 
         <div id="sp-quiet" style="padding:0 0 12px"></div>
 
-        <div class="amenities-section">
-          <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Amenities</div>
-          <div class="amenities-grid">
-            <div class="amenity-item yes">✓ 200+ truck spaces</div>
-            <div class="amenity-item yes">✓ Showers (paid)</div>
-            <div class="amenity-item yes">✓ Subway + McDonald's</div>
-            <div class="amenity-item yes">✓ CAT Scale</div>
-            <div class="amenity-item yes">✓ DEF available</div>
-            <div class="amenity-item yes">✓ Laundry</div>
-            <div class="amenity-item">✗ Dog park</div>
-            <div class="amenity-item yes">✓ WiFi</div>
-          </div>
-        </div>
 
         <div id="sp-photos" style="margin-bottom:16px"></div>
 
@@ -2250,7 +2237,7 @@
         <div class="nav-bar">
           <div style="cursor:pointer;color:var(--amber);font-size:18px" onclick="showScreen('driver', document.querySelectorAll('.screen-nav button')[4])">←</div>
           <div class="nav-logo" style="font-size:14px;color:var(--road-dust)">Road Diary</div>
-          <div class="nav-icon">⬇</div>
+          <div></div>
         </div>
 
         <!-- Career stats -->
@@ -3043,7 +3030,22 @@ function pickHandle(name) {
   document.getElementById('handle-input').value = name;
 }
 
-function updateHandlePreview() {}
+function updateHandlePreview() {
+  const val = document.getElementById('handle-input')?.value || '';
+  const hint = document.querySelector('.handle-hint');
+  if (!hint) return;
+  const clean = val.replace(/[^a-zA-Z0-9_]/g, '');
+  if (val !== clean && val.length > 0) {
+    hint.textContent = 'Letters, numbers, and underscores only.';
+    hint.style.color = 'var(--danger)';
+  } else if (clean.length > 0) {
+    hint.textContent = `Your profile will show as @${clean}`;
+    hint.style.color = 'var(--amber)';
+  } else {
+    hint.textContent = 'Letters, numbers, and underscores only. This is how other drivers will find and follow you.';
+    hint.style.color = '';
+  }
+}
 
 function selectRig(tile, icon, label) {
   document.querySelectorAll('.rig-tile').forEach(t => t.classList.remove('selected'));
