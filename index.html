@@ -2442,33 +2442,47 @@
             <div class="onboard-pip"></div>
           </div>
           <div class="onboard-step-num">Step 1 of 4</div>
-          <div class="onboard-headline">Your road.<br><span>Your diary.</span></div>
-          <div class="onboard-sub">Keep Moving is the first app built around driver identity — not just directions.</div>
-          <div class="onboard-value-list">
-            <div class="onboard-value-item">
-              <div class="onboard-value-icon">🗺️</div>
-              <div class="onboard-value-text">
-                <strong>Find the best stops, right now</strong>
-                <span>Real-time ratings and flags from drivers already on the road.</span>
+
+          <!-- Default: value prop -->
+          <div id="onboard-value-prop">
+            <div class="onboard-headline">Your road.<br><span>Your diary.</span></div>
+            <div class="onboard-sub">Keep Moving is the first app built around driver identity — not just directions.</div>
+            <div class="onboard-value-list">
+              <div class="onboard-value-item">
+                <div class="onboard-value-icon">🗺️</div>
+                <div class="onboard-value-text">
+                  <strong>Find the best stops, right now</strong>
+                  <span>Real-time ratings and flags from drivers already on the road.</span>
+                </div>
+              </div>
+              <div class="onboard-value-item">
+                <div class="onboard-value-icon">📓</div>
+                <div class="onboard-value-text">
+                  <strong>Log every stop you've ever visited</strong>
+                  <span>Rate it, review it, build a road diary that's yours forever.</span>
+                </div>
+              </div>
+              <div class="onboard-value-item">
+                <div class="onboard-value-icon">🤝</div>
+                <div class="onboard-value-text">
+                  <strong>Follow drivers you trust</strong>
+                  <span>Get stop recommendations from veterans who've run your routes.</span>
+                </div>
               </div>
             </div>
-            <div class="onboard-value-item">
-              <div class="onboard-value-icon">📓</div>
-              <div class="onboard-value-text">
-                <strong>Log every stop you've ever visited</strong>
-                <span>Rate it, review it, build a road diary that's yours forever.</span>
-              </div>
-            </div>
-            <div class="onboard-value-item">
-              <div class="onboard-value-icon">🤝</div>
-              <div class="onboard-value-text">
-                <strong>Follow drivers you trust</strong>
-                <span>Get stop recommendations from veterans who've run your routes.</span>
-              </div>
-            </div>
+            <button class="btn-primary" style="width:100%" onclick="goOnboard(2)">Let's build your profile →</button>
+            <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--road-dust)">No credit card. No subscription. Always free.</div>
           </div>
-          <button class="btn-primary" style="width:100%" onclick="goOnboard(2)">Let's build your profile →</button>
-          <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--road-dust)">No credit card. No subscription. Always free.</div>
+
+          <!-- Invite: Founding Driver moment -->
+          <div id="onboard-invite-moment" style="display:none;text-align:center;padding:8px 0">
+            <div style="font-size:72px;margin-bottom:20px;filter:drop-shadow(0 0 32px rgba(139,92,246,0.5))">🐋</div>
+            <div style="font-size:11px;color:var(--amber);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Cover Whale · Founding Driver</div>
+            <div style="font-size:26px;font-weight:800;color:var(--warm-white);line-height:1.2;margin-bottom:16px">You've been<br>selected.</div>
+            <div style="font-size:14px;color:var(--road-dust);line-height:1.7;margin-bottom:32px">You're one of the first 1,600 Cover Whale drivers invited to Keep Moving.<br><br>Your Founding Driver badge is waiting.</div>
+            <button class="btn-primary" style="width:100%" onclick="goOnboard(2)">Claim Your Status →</button>
+            <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--road-dust)">Free. Always. No credit card.</div>
+          </div>
         </div>
 
         <!-- STEP 2: Pick your handle -->
@@ -2777,7 +2791,7 @@ const APP = {
   user:        null,
   currentStop: { name: 'Unknown Stop', place_id: null, address: '', googleRating: 0, googleCount: 0 },
   checkin:     { rating: 0, cats: { parking: 0, showers: 0, food: 0, safety: 0, fuel: 0 }, newBadges: [] },
-  onboard:     { rigIcon: '🚛', rigLabel: 'Semi' },
+  onboard:     { rigIcon: '🚛', rigLabel: 'Semi', inviteCode: null },
   flag:        { icon: '🅿', type: 'Parking Full' },
   feed:        { filter: 'all', pollInterval: null },
   diary:       { checkins: [] },
@@ -2883,12 +2897,21 @@ function goOnboard(step) {
     const el = document.getElementById('onboard-s' + i);
     if (el) el.style.display = i === step ? 'flex' : 'none';
   }
+  if (step === 1) {
+    const isInvite = !!APP.onboard.inviteCode;
+    document.getElementById('onboard-value-prop').style.display    = isInvite ? 'none'  : 'block';
+    document.getElementById('onboard-invite-moment').style.display = isInvite ? 'block' : 'none';
+  }
   if (step === 4) {
     const raw = document.getElementById('handle-input').value.trim();
     const handle = raw || 'YourHandle';
     document.getElementById('welcome-handle').textContent = '@' + handle;
     document.getElementById('welcome-rig').textContent = APP.onboard.rigLabel + ' · Day 1 on Keep Moving';
     document.getElementById('welcome-av').textContent = APP.onboard.rigIcon;
+    if (APP.onboard.inviteCode) {
+      document.querySelector('#onboard-s4 .onboard-headline').innerHTML = 'Welcome,<br><span>Founding Driver.</span>';
+      document.querySelector('#onboard-s4 .onboard-sub').textContent = "You're one of the first 1,600. Your badge is official — it's on your profile now.";
+    }
   }
 }
 
@@ -3676,12 +3699,20 @@ async function completeSignUp() {
     return;
   }
 
+  // Validate invite code and determine founding_driver status
+  let foundingDriver = true; // default true during beta
+  if (APP.onboard.inviteCode) {
+    const { data: redeemResult } = await _sb.rpc('redeem_invite_code', { p_code: APP.onboard.inviteCode });
+    if (redeemResult?.valid) foundingDriver = redeemResult.founding_driver;
+  }
+
   // Save profile
   const { error: profileError } = await _sb.from('profiles').insert({
     id: authData.user.id,
     handle: handle,
     rig_icon: APP.onboard.rigIcon,
-    rig_label: APP.onboard.rigLabel
+    rig_label: APP.onboard.rigLabel,
+    founding_driver: foundingDriver
   });
 
   btn.textContent = "That's my rig →";
@@ -3701,10 +3732,19 @@ async function completeSignUp() {
 // ── Initialize ──────────────────────────────────────────────
 renderAnnotations('splash');
 
-// Check if already signed in
+// Detect invite code in URL
+const _inviteParam = new URLSearchParams(window.location.search).get('invite');
+if (_inviteParam) {
+  APP.onboard.inviteCode = _inviteParam.toUpperCase();
+}
+
+// Check if already signed in; if invite link + not signed in, skip splash
 _sb.auth.getSession().then(({ data }) => {
   if (data.session) {
     showScreen('finder', document.querySelectorAll('.screen-nav button')[1]);
+  } else if (APP.onboard.inviteCode) {
+    showScreen('onboard', document.querySelectorAll('.screen-nav button')[8]);
+    goOnboard(1); // triggers invite moment display
   }
 });
 
