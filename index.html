@@ -3145,7 +3145,7 @@ async function getGeoPosition() {
 
 // Share a stop via Web Share API or clipboard fallback
 async function shareItem(stopName, placeId) {
-  const url = placeId ? `https://lastenbil.vercel.app/?stop=${placeId}` : 'https://lastenbil.vercel.app';
+  const url = placeId ? `https://keep-moving-app.vercel.app/?stop=${placeId}` : 'https://keep-moving-app.vercel.app';
   const text = `Check out ${stopName} on Keep Moving — the trucker community app.`;
   if (navigator.share) {
     try { await navigator.share({ title: stopName, text, url }); } catch {}
