@@ -393,7 +393,19 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    z-index: 10;
   }
+  .map-search input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--warm-white);
+    font-size: 14px;
+    font-family: inherit;
+    flex: 1;
+    min-width: 0;
+  }
+  .map-search input::placeholder { color: var(--road-dust); }
   .filter-row {
     display: flex;
     gap: 8px;
@@ -698,6 +710,15 @@
   .mini-stars { font-size: 16px; color: var(--amber); letter-spacing: 2px; }
   .mini-stars span { opacity: 0.25; cursor: pointer; transition: opacity 0.1s; }
   .mini-stars span.lit { opacity: 1; }
+  .spot-btn { background: var(--steel); border: 1px solid #3a3d45; color: var(--road-dust); border-radius: 20px; padding: 5px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+  .spot-btn.selected { background: var(--amber); border-color: var(--amber); color: #fff; }
+  .quiet-btn { background: var(--steel); border: 1px solid #3a3d45; color: var(--road-dust); border-radius: 20px; padding: 8px 22px; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .quiet-btn.selected { background: var(--amber); border-color: var(--amber); color: #fff; }
+  .photo-thumb { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid #3a3d45; display: block; }
+  .sp-photo-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; scroll-snap-type: x mandatory; }
+  .sp-photo-item { flex: 0 0 auto; scroll-snap-align: start; }
+  .sp-photo-img { width: 140px; height: 105px; object-fit: cover; border-radius: 10px; border: 1px solid #3a3d45; display: block; }
+  .sp-photo-caption { font-size: 11px; color: var(--road-dust); margin-top: 4px; }
   .skip-label {
     font-size: 12px;
     color: var(--road-dust);
@@ -1849,7 +1870,7 @@
           <div id="finder-map" style="width:100%;height:100%"></div>
           <div class="map-search">
             <span style="opacity:0.5">🔍</span>
-            <span>Search any stop or highway...</span>
+            <input id="stop-search-input" type="text" placeholder="Search any stop or highway..." autocomplete="off">
           </div>
         </div>
 
@@ -1939,6 +1960,8 @@
           </div>
         </div>
 
+        <div id="sp-quiet" style="padding:0 0 12px"></div>
+
         <div class="amenities-section">
           <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Amenities</div>
           <div class="amenities-grid">
@@ -1953,8 +1976,15 @@
           </div>
         </div>
 
+        <div id="sp-photos" style="margin-bottom:16px"></div>
+
         <div class="reviews-section">
-          <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Keep Moving Reviews</div>
+          <div id="sp-tips" style="margin-bottom:16px"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase">Keep Moving Reviews</div>
+            <div id="sp-here-now" style="font-size:11px"></div>
+          </div>
+          <div id="sp-last-activity" style="margin-bottom:10px"></div>
           <div id="sp-reviews">
             <div style="padding:20px;text-align:center;color:var(--road-dust);font-size:13px">Pulling driver reports...</div>
           </div>
@@ -2010,6 +2040,15 @@
                 <span onclick="rateCategory('parking',1)">★</span><span onclick="rateCategory('parking',2)">★</span><span onclick="rateCategory('parking',3)">★</span><span onclick="rateCategory('parking',4)">★</span><span onclick="rateCategory('parking',5)">★</span>
               </div>
             </div>
+            <div style="padding:10px 0 8px;border-bottom:1px solid #2a2d35">
+              <div style="font-size:11px;color:var(--road-dust);margin-bottom:8px">How full was the lot?</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <button class="spot-btn" onclick="selectParkingSpots('wide_open',this)">🟢 Wide open</button>
+                <button class="spot-btn" onclick="selectParkingSpots('plenty',this)">🟡 Plenty</button>
+                <button class="spot-btn" onclick="selectParkingSpots('tight',this)">🟠 Tight</button>
+                <button class="spot-btn" onclick="selectParkingSpots('full',this)">🔴 Full</button>
+              </div>
+            </div>
             <div class="cat-rating-row">
               <div class="cat-rating-label"><span>🚿</span> Showers</div>
               <div class="mini-stars" id="cat-showers">
@@ -2040,7 +2079,25 @@
             <textarea id="checkin-note" placeholder="Anything other drivers should know?" style="width:100%;background:var(--steel);border:1px solid #333;border-radius:12px;color:var(--warm-white);font-size:14px;font-family:inherit;padding:14px;resize:none;height:88px;outline:none;line-height:1.5;" maxlength="280"></textarea>
           </div>
 
-          <div style="margin-top:12px">
+          <div style="margin-top:20px">
+            <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">🔇 Quiet at night?</div>
+            <div style="display:flex;gap:8px">
+              <button class="quiet-btn" id="quiet-yes" onclick="setQuiet(true)">👍 Yes</button>
+              <button class="quiet-btn" id="quiet-no" onclick="setQuiet(false)">📢 No</button>
+            </div>
+          </div>
+
+          <div style="margin-top:20px">
+            <textarea id="checkin-tip" placeholder="What should the next driver know? (parking tricks, entrances, timing)" style="width:100%;background:var(--steel);border:1px solid #333;border-radius:12px;color:var(--warm-white);font-size:14px;font-family:inherit;padding:14px;resize:none;height:72px;outline:none;line-height:1.5;" maxlength="280"></textarea>
+          </div>
+
+          <div style="margin-top:20px">
+            <div id="photo-previews" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"></div>
+            <button class="btn-secondary" id="add-photo-btn" onclick="addPhoto()" style="font-size:13px;padding:10px 16px;width:auto">📸 Add photo <span style="color:var(--road-dust);font-size:11px">(optional)</span></button>
+            <input type="file" accept="image/*" capture="environment" id="photo-file-input" style="display:none" onchange="handlePhotoSelect(event)">
+          </div>
+
+          <div style="margin-top:16px">
             <button class="btn-primary" id="checkin-submit-btn" onclick="submitCheckin()" style="width:100%">Next →</button>
           </div>
         </div>
@@ -2732,7 +2789,7 @@ const APP = {
   follows:     { ids: new Set(), loaded: false },
   geo:         { lat: null, lng: null, cachedAt: 0 },
   currentStop: { name: 'Unknown Stop', place_id: null, address: '', googleRating: 0, googleCount: 0, lat: null, lng: null },
-  checkin:     { rating: 0, cats: { parking: 0, showers: 0, food: 0, safety: 0, fuel: 0 }, newBadges: [], pendingPostcard: null },
+  checkin:     { rating: 0, cats: { parking: 0, showers: 0, food: 0, safety: 0, fuel: 0 }, parkingSpots: null, quietAtNight: null, pendingPhotos: [], newBadges: [], pendingPostcard: null },
   profile:     { handle: '', rigIcon: '🚛' },
   onboard:     { rigIcon: '🚛', rigLabel: 'Semi', inviteCode: null },
   flag:        { icon: '🅿', type: 'Parking Full' },
@@ -2755,16 +2812,81 @@ function rateCategory(cat, n) {
   container.querySelectorAll('span').forEach((s, i) => s.classList.toggle('lit', i < n));
 }
 
+function selectParkingSpots(val, btn) {
+  APP.checkin.parkingSpots = val;
+  document.querySelectorAll('.spot-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function setQuiet(val) {
+  APP.checkin.quietAtNight = val;
+  document.getElementById('quiet-yes')?.classList.toggle('selected', val === true);
+  document.getElementById('quiet-no')?.classList.toggle('selected', val === false);
+}
+
+function addPhoto() {
+  if (APP.checkin.pendingPhotos.length >= 3) return;
+  document.getElementById('photo-file-input')?.click();
+}
+
+function handlePhotoSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  if (APP.checkin.pendingPhotos.length >= 3) return;
+  APP.checkin.pendingPhotos.push(file);
+  renderPhotoPreviews();
+}
+
+function removePhoto(i) {
+  APP.checkin.pendingPhotos.splice(i, 1);
+  renderPhotoPreviews();
+}
+
+function renderPhotoPreviews() {
+  const container = document.getElementById('photo-previews');
+  const btn = document.getElementById('add-photo-btn');
+  if (!container) return;
+  const count = APP.checkin.pendingPhotos.length;
+  container.innerHTML = APP.checkin.pendingPhotos.map((f, i) => {
+    const url = URL.createObjectURL(f);
+    return `<div style="position:relative;display:inline-block">
+      <img src="${url}" class="photo-thumb">
+      <button onclick="removePhoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#1a1d24;border:1px solid #555;color:var(--warm-white);font-size:11px;cursor:pointer;padding:0;line-height:1">×</button>
+    </div>`;
+  }).join('');
+  if (btn) {
+    if (count >= 3) {
+      btn.style.display = 'none';
+    } else {
+      btn.style.display = '';
+      const inner = btn.querySelector('span') || btn;
+      btn.innerHTML = count === 0
+        ? '📸 Add photo <span style="color:var(--road-dust);font-size:11px">(optional)</span>'
+        : `📸 Add another <span style="color:var(--road-dust);font-size:11px">(${3 - count} left)</span>`;
+    }
+  }
+}
+
 function resetCheckinState() {
   APP.checkin.rating = 0;
   Object.keys(APP.checkin.cats).forEach(k => APP.checkin.cats[k] = 0);
+  APP.checkin.parkingSpots = null;
+  APP.checkin.quietAtNight = null;
+  APP.checkin.pendingPhotos = [];
   document.querySelectorAll('#star-row .star').forEach(s => s.classList.remove('lit'));
   ['parking','showers','food','safety','fuel'].forEach(cat => {
     const el = document.getElementById('cat-' + cat);
     if (el) el.querySelectorAll('span').forEach(s => s.classList.remove('lit'));
   });
+  document.querySelectorAll('.spot-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('quiet-yes')?.classList.remove('selected');
+  document.getElementById('quiet-no')?.classList.remove('selected');
   const noteEl = document.getElementById('checkin-note');
   if (noteEl) noteEl.value = '';
+  const tipEl = document.getElementById('checkin-tip');
+  if (tipEl) tipEl.value = '';
+  renderPhotoPreviews();
 }
 
 function selectStop(name, place_id, address, lat, lng) {
@@ -2789,8 +2911,9 @@ async function submitCheckin() {
   }
 
   const noteVal = (document.getElementById('checkin-note')?.value || '').trim() || null;
+  const tipVal  = (document.getElementById('checkin-tip')?.value  || '').trim() || null;
 
-  const { error } = await _sb.from('checkins').insert({
+  const { data: inserted, error } = await _sb.from('checkins').insert({
     user_id: session.user.id,
     stop_name: APP.currentStop.name,
     stop_place_id: APP.currentStop.place_id,
@@ -2804,8 +2927,11 @@ async function submitCheckin() {
     rating_food: APP.checkin.cats.food || null,
     rating_safety: APP.checkin.cats.safety || null,
     rating_fuel: APP.checkin.cats.fuel || null,
+    parking_spots: APP.checkin.parkingSpots || null,
+    quiet_at_night: APP.checkin.quietAtNight,
+    tip: tipVal,
     note: noteVal
-  });
+  }).select('id').single();
 
   btn.textContent = 'Next →';
   btn.disabled = false;
@@ -2816,6 +2942,28 @@ async function submitCheckin() {
     btn.style.background = 'var(--danger)';
     setTimeout(() => { btn.textContent = 'Next →'; btn.style.background = ''; }, 3000);
     return;
+  }
+
+  // Upload photos in background (non-blocking)
+  if (inserted?.id && APP.checkin.pendingPhotos.length > 0) {
+    const checkinId = inserted.id;
+    const photos = [...APP.checkin.pendingPhotos];
+    (async () => {
+      for (const file of photos) {
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const path = `${session.user.id}/${checkinId}/${Date.now()}.${ext}`;
+        const { data: up } = await _sb.storage.from('stop-photos').upload(path, file, { upsert: false });
+        if (up) {
+          const { data: { publicUrl } } = _sb.storage.from('stop-photos').getPublicUrl(path);
+          await _sb.from('checkin_photos').insert({
+            checkin_id: checkinId,
+            user_id: session.user.id,
+            stop_place_id: APP.currentStop.place_id,
+            photo_url: publicUrl
+          });
+        }
+      }
+    })();
   }
 
   // Get real check-in count
@@ -3338,13 +3486,19 @@ async function loadStopProfile() {
     }
   }
 
-  // Query Keep Moving check-ins for this stop (join profiles for handle)
-  const { data: checkins } = await _sb
-    .from('checkins')
-    .select('id, rating, rating_parking, rating_showers, rating_food, rating_safety, rating_fuel, note, created_at, user_id, profiles(handle, rig_icon)')
-    .eq('stop_place_id', place_id)
-    .order('created_at', { ascending: false })
-    .limit(20);
+  // Query check-ins and photos in parallel
+  const [{ data: checkins }, { data: photos }] = await Promise.all([
+    _sb.from('checkins')
+      .select('id, rating, rating_parking, rating_showers, rating_food, rating_safety, rating_fuel, parking_spots, quiet_at_night, tip, note, created_at, user_id, profiles(handle, rig_icon, created_at)')
+      .eq('stop_place_id', place_id)
+      .order('created_at', { ascending: false })
+      .limit(20),
+    _sb.from('checkin_photos')
+      .select('photo_url, created_at, profiles(handle)')
+      .eq('stop_place_id', place_id)
+      .order('created_at', { ascending: false })
+      .limit(9)
+  ]);
 
   if (checkins && checkins.length) {
     const rated = checkins.filter(c => c.rating);
@@ -3374,6 +3528,72 @@ async function loadStopProfile() {
       }
     });
 
+    // Quiet at night stat
+    const quietEl = document.getElementById('sp-quiet');
+    if (quietEl) {
+      const quietVotes = checkins.filter(c => c.quiet_at_night !== null && c.quiet_at_night !== undefined);
+      if (quietVotes.length > 0) {
+        const quietYes = quietVotes.filter(c => c.quiet_at_night).length;
+        const pct = Math.round(quietYes / quietVotes.length * 100);
+        const label = quietVotes.length === 1
+          ? (quietYes ? '1 driver says it\'s quiet at night' : '1 driver says it\'s noisy at night')
+          : `${pct}% of drivers say it's quiet at night · ${quietVotes.length} votes`;
+        quietEl.innerHTML = `<div style="font-size:13px;color:var(--road-dust)">🔇 ${label}</div>`;
+      } else {
+        quietEl.innerHTML = '';
+      }
+    }
+
+    // Photo strip (newest first)
+    const photosEl = document.getElementById('sp-photos');
+    if (photosEl && photos && photos.length) {
+      photosEl.innerHTML = `
+        <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Driver Photos</div>
+        <div class="sp-photo-strip">
+          ${photos.map(p => `
+            <div class="sp-photo-item">
+              <img src="${p.photo_url}" class="sp-photo-img" loading="lazy" onerror="this.parentElement.style.display='none'">
+              <div class="sp-photo-caption">📸 @${p.profiles?.handle || 'driver'} · ${timeAgo(p.created_at)}</div>
+            </div>`).join('')}
+        </div>`;
+    } else if (photosEl) {
+      photosEl.innerHTML = '';
+    }
+
+    // Tips from drivers
+    const tipsEl = document.getElementById('sp-tips');
+    if (tipsEl) {
+      const tips = checkins.filter(c => c.tip?.trim());
+      if (tips.length) {
+        tipsEl.innerHTML = `
+          <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Tips from Drivers</div>
+          ${tips.slice(0, 3).map(c => `
+            <div style="background:var(--steel);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">
+              <div style="font-size:13px;color:var(--warm-white);line-height:1.5">${c.tip}</div>
+              <div style="font-size:11px;color:var(--road-dust);margin-top:4px">${c.profiles?.rig_icon || '🚛'} @${c.profiles?.handle || 'driver'} · ${timeAgo(c.created_at)}</div>
+            </div>`).join('')}`;
+      } else {
+        tipsEl.innerHTML = '';
+      }
+    }
+
+    // "Drivers Here Now" counter (checkins in last 2h)
+    const hereNow = checkins.filter(c => isFresh(c.created_at)).length;
+    const hereEl = document.getElementById('sp-here-now');
+    if (hereEl) hereEl.innerHTML = hereNow > 0
+      ? `<span style="background:#064e3b;color:#34d399;padding:3px 10px;border-radius:12px;font-weight:700">🟢 ${hereNow} here now</span>`
+      : '';
+
+    // "No recent activity" prompt
+    const lastActivityEl = document.getElementById('sp-last-activity');
+    if (lastActivityEl) {
+      const newest = checkins[0]?.created_at;
+      const stale = newest && (Date.now() - new Date(newest) > 86400000);
+      lastActivityEl.innerHTML = stale
+        ? `<div style="font-size:12px;color:var(--road-dust);background:var(--steel);border-radius:8px;padding:8px 12px">No check-ins in the last 24 hours — be the first driver today.</div>`
+        : '';
+    }
+
     document.getElementById('sp-reviews').innerHTML = checkins.slice(0, 5).map(c => {
       const handle = c.profiles?.handle || 'driver';
       const rigIcon = c.profiles?.rig_icon || '🚛';
@@ -3381,15 +3601,22 @@ async function loadStopProfile() {
       const isOwn = c.user_id === APP.user;
       const isFollowing = APP.follows.ids.has(c.user_id);
       const followBtn = isOwn ? '' : `<button class="follow-btn ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${c.user_id}','${handle}',this)">${isFollowing ? 'Following' : '+ Follow'}</button>`;
+      const fresh = isFresh(c.created_at);
+      const timeDisplay = fresh
+        ? `<span style="font-weight:700;color:#34d399">🟢 ${timeAgo(c.created_at)}</span>`
+        : timeAgo(c.created_at);
+      const since = memberSince(c.profiles?.created_at);
+      const spotsLabel = c.parking_spots ? parkingSpotsLabel(c.parking_spots) : '';
       return `
         <div class="review-card">
           <div class="review-header">
             <div>
               <div class="reviewer-handle">${rigIcon} @${handle}${followBtn}</div>
-              <div class="review-time">${timeAgo(c.created_at)} · Checked in</div>
+              <div class="review-time">${timeDisplay} · Checked in${since ? ` · <span style="color:var(--road-dust)">${since}</span>` : ''}</div>
             </div>
             <div class="review-stars" style="font-size:14px;letter-spacing:1px">${stars}</div>
           </div>
+          ${spotsLabel ? `<div style="margin-top:6px;font-size:12px;color:var(--road-dust)">${spotsLabel}</div>` : ''}
           ${c.note ? `<div style="margin-top:8px;font-size:13px;color:var(--warm-white);line-height:1.5;font-style:italic">"${c.note}"</div>` : ''}
           ${!isOwn ? `<button onclick="reportItem('checkin','${c.id}')" style="margin-top:8px;font-size:11px;color:var(--road-dust);background:none;border:none;cursor:pointer;padding:0">⚑ Report</button>` : ''}
         </div>`;
@@ -3402,6 +3629,16 @@ async function loadStopProfile() {
       if (bar) bar.style.width = '0%';
       if (score) score.textContent = '—';
     });
+    const hereElEmpty = document.getElementById('sp-here-now');
+    if (hereElEmpty) hereElEmpty.innerHTML = '';
+    const lastActEmpty = document.getElementById('sp-last-activity');
+    if (lastActEmpty) lastActEmpty.innerHTML = '';
+    const quietElEmpty = document.getElementById('sp-quiet');
+    if (quietElEmpty) quietElEmpty.innerHTML = '';
+    const photosElEmpty = document.getElementById('sp-photos');
+    if (photosElEmpty) photosElEmpty.innerHTML = '';
+    const tipsElEmpty = document.getElementById('sp-tips');
+    if (tipsElEmpty) tipsElEmpty.innerHTML = '';
     document.getElementById('sp-reviews').innerHTML = `
       <div style="text-align:center;padding:32px 16px;color:var(--road-dust)">
         <div style="font-size:36px;margin-bottom:12px">🛑</div>
@@ -3577,11 +3814,11 @@ async function renderFeed() {
 
   const [{ data: checkins }, { data: flags }] = await Promise.all([
     _sb.from('checkins')
-      .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, rating, note, created_at, user_id, profiles(handle, rig_icon)')
+      .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, rating, note, created_at, user_id, profiles(handle, rig_icon, created_at)')
       .order('created_at', { ascending: false })
       .limit(30),
     _sb.from('flags')
-      .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, flag_type, flag_icon, note, created_at, user_id, profiles(handle, rig_icon)')
+      .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, flag_type, flag_icon, note, created_at, user_id, profiles(handle, rig_icon, created_at)')
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false })
       .limit(20)
@@ -3641,7 +3878,9 @@ async function renderFeed() {
   feedEl.innerHTML = items.map(item => {
     const handle      = item.profiles?.handle   || 'driver';
     const rigIcon     = item.profiles?.rig_icon || '🚛';
-    const when        = timeAgo(item.created_at);
+    const fresh       = isFresh(item.created_at);
+    const when        = fresh ? `<span style="font-weight:700;color:#34d399">🟢 ${timeAgo(item.created_at)}</span>` : timeAgo(item.created_at);
+    const sinceLabel  = memberSince(item.profiles?.created_at);
     const isOwn       = item.user_id === APP.user;
     const isFollowing = APP.follows.ids.has(item.user_id);
     const followBtn   = isOwn ? '' : `<button class="follow-btn ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${item.user_id}','${handle}',this)">${isFollowing ? 'Following' : '+ Follow'}</button>`;
@@ -3659,7 +3898,7 @@ async function renderFeed() {
             <div class="feed-avatar">${rigIcon}</div>
             <div class="feed-meta">
               <div class="feed-handle">@${handle}${followBtn}</div>
-              <div class="feed-time">${when}</div>
+              <div class="feed-time">${when}${sinceLabel ? ` · <span style="color:var(--road-dust);font-size:11px">${sinceLabel}</span>` : ''}</div>
             </div>
             <div class="feed-type-badge badge-checkin">✓ Check-in</div>
           </div>
@@ -3682,7 +3921,7 @@ async function renderFeed() {
             <div class="feed-avatar flag-av">${rigIcon}</div>
             <div class="feed-meta">
               <div class="feed-handle">@${handle}${followBtn}</div>
-              <div class="feed-time">${when}</div>
+              <div class="feed-time">${when}${sinceLabel ? ` · <span style="color:var(--road-dust);font-size:11px">${sinceLabel}</span>` : ''}</div>
             </div>
             <div class="feed-type-badge badge-flag">⚠ Flag</div>
           </div>
@@ -3771,6 +4010,19 @@ function timeAgo(iso) {
   return Math.floor(diff / 86400) + 'd ago';
 }
 
+function memberSince(iso) {
+  if (!iso) return '';
+  return "Driver since '" + String(new Date(iso).getFullYear()).slice(2);
+}
+
+function isFresh(iso) {
+  return Date.now() - new Date(iso) < 7200000; // < 2 hours
+}
+
+function parkingSpotsLabel(v) {
+  return { wide_open: '🟢 Wide open', plenty: '🟡 Plenty of room', tight: '🟠 Tight squeeze', full: '🔴 Full' }[v] || '';
+}
+
 async function signOut() {
   await _sb.auth.signOut();
   APP.user = null;
@@ -3791,7 +4043,7 @@ function requestLocationThenOnboard() {
 }
 
 // ── Stop Finder ─────────────────────────────────────────────
-const GOOGLE_KEY = 'AIzaSyD505ZuZ59KfGR3ydqhatUzMI1K76HuTeU';
+const GOOGLE_KEY = 'AIzaSyD505ZuZ59KfGR3ydqhatUzMI1K76HuTeU'; // key restricted to *.vercel.app/* in Google Cloud Console
 
 function loadFinderScreen() {
   if (APP.finder.loaded) return;
@@ -3853,8 +4105,37 @@ function initFinderMap(lat, lng) {
     icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#8B5CF6', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 }
   });
 
-  // Search for nearby truck stops
-  const service = new google.maps.places.PlacesService(APP.finder.map);
+  // Wire up search input with Places Autocomplete
+  const searchInput = document.getElementById('stop-search-input');
+  if (searchInput) {
+    const autocomplete = new google.maps.places.Autocomplete(searchInput, {
+      types: ['establishment'],
+      fields: ['place_id', 'name', 'geometry', 'vicinity', 'rating', 'user_ratings_total']
+    });
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (!place.geometry) return;
+      const newLat = place.geometry.location.lat();
+      const newLng = place.geometry.location.lng();
+      APP.finder.map.panTo(place.geometry.location);
+      APP.finder.map.setZoom(13);
+      searchInput.blur();
+      // Run nearby search around the selected place
+      document.getElementById('stops-label').textContent = 'Scanning the lot...';
+      document.getElementById('stops-list').innerHTML = '';
+      searchNearby(newLat, newLng);
+    });
+  }
+
+  // Initial nearby search
+  searchNearby(lat, lng);
+}
+
+function searchNearby(lat, lng) {
+  const map = APP.finder.map;
+  if (!map) return;
+  const service = new google.maps.places.PlacesService(map);
+  const center = { lat, lng };
   service.nearbySearch({
     location: center,
     rankBy: google.maps.places.RankBy.DISTANCE,
@@ -3987,15 +4268,28 @@ async function completeSignUp() {
   btn.textContent = 'Creating your account…';
   btn.disabled = true;
 
-  // Create auth user
-  const { data: authData, error: authError } = await _sb.auth.signUp({ email, password });
-  if (authError) {
-    btn.textContent = "That's my rig →";
-    btn.disabled = false;
-    goOnboard(2);
-    document.getElementById('signup-error').textContent = authError.message;
-    document.getElementById('signup-error').style.display = 'block';
-    return;
+  // If session already exists (profile-only mode), skip signUp
+  let authData;
+  const { data: { session: existingSession } } = await _sb.auth.getSession();
+  if (existingSession) {
+    authData = { user: existingSession.user };
+  } else {
+    const { data: signUpData, error: authError } = await _sb.auth.signUp({ email, password });
+    if (authError) {
+      btn.textContent = "That's my rig →";
+      btn.disabled = false;
+      goOnboard(2);
+      const isExisting = /already|registered|taken/i.test(authError.message);
+      const errEl = document.getElementById('signup-error');
+      if (isExisting) {
+        errEl.innerHTML = 'An account with that email already exists. <button onclick="openSignIn()" style="color:var(--amber);background:none;border:none;cursor:pointer;padding:0;font-size:inherit;text-decoration:underline">Sign in instead →</button>';
+      } else {
+        errEl.textContent = authError.message;
+      }
+      errEl.style.display = 'block';
+      return;
+    }
+    authData = signUpData;
   }
 
   // Validate invite code and determine founding_driver status
@@ -4256,7 +4550,21 @@ _sb.auth.getSession().then(async ({ data }) => {
   const handledStop = await loadStopFromParam(data.session);
   if (!handledStop) {
     if (data.session) {
-      showScreen('finder', document.querySelectorAll('.screen-nav button')[1]);
+      // Check profile exists — if not, complete onboarding before entering app
+      const { data: profile } = await _sb.from('profiles')
+        .select('handle')
+        .eq('id', data.session.user.id)
+        .single();
+      if (!profile || !profile.handle) {
+        // Auth exists but profile incomplete — send to handle step
+        // Pre-fill email so they don't have to re-enter it
+        const emailEl = document.getElementById('signup-email');
+        if (emailEl) emailEl.value = data.session.user.email || '';
+        showScreen('onboard', document.querySelectorAll('.screen-nav button')[8]);
+        goOnboard(2);
+      } else {
+        showScreen('finder', document.querySelectorAll('.screen-nav button')[1]);
+      }
     } else if (APP.onboard.inviteCode) {
       showScreen('onboard', document.querySelectorAll('.screen-nav button')[8]);
       goOnboard(1); // triggers invite moment display
