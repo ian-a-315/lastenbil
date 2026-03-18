@@ -868,6 +868,24 @@
     border: 1px solid rgba(245,166,35,0.4);
     color: var(--amber);
   }
+  /* Badge shelf list */
+  .badge-shelf-list { padding: 4px 16px 8px; border-bottom: 1px solid #2a2d35; }
+  .badge-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #1e2028; }
+  .badge-row:last-child { border-bottom: none; }
+  .badge-icon-box { width: 40px; height: 40px; background: var(--steel); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .badge-icon-box.earned { background: rgba(139,92,246,0.2); }
+  .badge-row.locked .badge-icon-box { opacity: 0.4; }
+  .badge-info { flex: 1; min-width: 0; }
+  .badge-name { font-size: 13px; font-weight: 700; color: var(--warm-white); margin-bottom: 1px; }
+  .badge-row.locked .badge-name { color: var(--road-dust); }
+  .badge-desc { font-size: 11px; color: var(--road-dust); line-height: 1.3; }
+  .badge-prog { text-align: right; flex-shrink: 0; min-width: 54px; }
+  .badge-prog-num { font-size: 12px; font-weight: 700; color: var(--road-dust); white-space: nowrap; }
+  .badge-prog-num.done { color: var(--success); }
+  .badge-prog-bar { height: 3px; background: #2a2d35; border-radius: 2px; margin-top: 5px; overflow: hidden; }
+  .badge-prog-fill { height: 100%; background: var(--amber); border-radius: 2px; transition: width 0.5s ease; }
+  /* Badge unlock overlay */
+  .badge-unlock-overlay { display: none; background: rgba(13,15,20,0.97); position: absolute; inset: 0; z-index: 200; flex-direction: column; align-items: center; justify-content: center; padding: 40px 32px; text-align: center; }
   .recent-stops {
     padding: 14px 16px;
   }
@@ -2111,6 +2129,14 @@
             <button class="btn-primary" onclick="showScreen('driver', document.querySelectorAll('.screen-nav button')[4])" style="margin-top:10px">View your profile →</button>
             <button class="btn-secondary" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])" style="margin-top:8px">Back to map</button>
           </div>
+        <!-- Badge unlock overlay -->
+        <div id="badge-unlock" class="badge-unlock-overlay">
+          <div id="buo-icon" style="font-size:72px;margin-bottom:20px;filter:drop-shadow(0 0 32px rgba(139,92,246,0.6))">🦉</div>
+          <div style="font-size:11px;color:var(--amber);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">Badge Earned</div>
+          <div id="buo-name" style="font-size:26px;font-weight:800;color:var(--warm-white);margin-bottom:10px">Night Owl</div>
+          <div id="buo-desc" style="font-size:14px;color:var(--road-dust);line-height:1.6;margin-bottom:36px">10 late-night check-ins. You're living the road life.</div>
+          <button class="btn-primary" style="padding:14px 48px;font-size:15px" onclick="dismissBadgeUnlock()">Nice →</button>
+        </div>
         </div>
       </div>
 
@@ -2153,8 +2179,8 @@
 
           <!-- Badges -->
           <div style="padding:14px 16px 6px;font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;">Badges</div>
-          <div class="badges-row">
-            <div class="badge-chip founding">🐋 Founding Driver</div>
+          <div id="badge-shelf" class="badge-shelf-list">
+            <!-- populated by renderBadgeShelf() -->
           </div>
 
           <!-- Recent stops -->
@@ -2750,7 +2776,7 @@ function renderAnnotations(id) {
 const APP = {
   user:        null,
   currentStop: { name: 'Unknown Stop', place_id: null, address: '', googleRating: 0, googleCount: 0 },
-  checkin:     { rating: 0, cats: { parking: 0, showers: 0, food: 0, safety: 0, fuel: 0 } },
+  checkin:     { rating: 0, cats: { parking: 0, showers: 0, food: 0, safety: 0, fuel: 0 }, newBadges: [] },
   onboard:     { rigIcon: '🚛', rigLabel: 'Semi' },
   flag:        { icon: '🅿', type: 'Parking Full' },
   feed:        { filter: 'all', pollInterval: null },
@@ -2840,6 +2866,14 @@ async function submitCheckin() {
   if (stopEl) stopEl.textContent = APP.currentStop.name;
 
   showConfirmation();
+
+  // Evaluate badges after every check-in
+  evaluateBadges(session.user.id).then(({ newlyEarned }) => {
+    if (newlyEarned.length) {
+      APP.checkin.newBadges = newlyEarned;
+      showBadgeUnlock(newlyEarned[0]);
+    }
+  });
 }
 
 // Onboarding
@@ -2932,6 +2966,87 @@ function react(btn) {
 
 function showConfirmation() {
   document.getElementById('conf-screen').style.display = 'block';
+}
+
+// ── Badge System ─────────────────────────────────────────────
+const BADGES = [
+  { id: 'founding_driver',    icon: '🐋', name: 'Founding Driver',  desc: 'One of the first drivers on Keep Moving',  goal: 1,   unit: '',                     prog: s => s.founding ? 1 : 0 },
+  { id: 'night_owl',          icon: '🦉', name: 'Night Owl',        desc: '10 check-ins between midnight and 5am',    goal: 10,  unit: 'late-night check-ins', prog: s => s.nightOwl },
+  { id: 'shower_scout',       icon: '🚿', name: 'Shower Scout',     desc: 'Rated showers at 10+ stops',               goal: 10,  unit: 'shower ratings',       prog: s => s.showerScout },
+  { id: 'forty_eight_stater', icon: '🗺', name: '48-Stater',        desc: 'Check-ins in 48 states',                   goal: 48,  unit: 'states visited',       prog: s => s.states },
+  { id: 'road_warrior',       icon: '🔥', name: 'Road Warrior',     desc: '100+ total check-ins',                     goal: 100, unit: 'check-ins',            prog: s => s.total },
+  { id: 'trusted_reviewer',   icon: '⭐', name: 'Trusted Reviewer', desc: '50+ check-ins with written notes',          goal: 50,  unit: 'reviews with notes',   prog: s => s.withNotes }
+];
+
+async function computeBadgeStats(userId) {
+  const [{ data: checkins }, { data: profile }] = await Promise.all([
+    _sb.from('checkins').select('created_at, rating_showers, note, stop_address').eq('user_id', userId),
+    _sb.from('profiles').select('founding_driver').eq('id', userId).single()
+  ]);
+  const rows = checkins || [];
+  return {
+    founding:    profile?.founding_driver !== false,
+    total:       rows.length,
+    nightOwl:    rows.filter(c => new Date(c.created_at).getUTCHours() < 5).length,
+    showerScout: rows.filter(c => c.rating_showers).length,
+    states:      new Set(rows.map(c => getStateFromAddress(c.stop_address)).filter(Boolean)).size,
+    withNotes:   rows.filter(c => c.note && c.note.trim()).length
+  };
+}
+
+async function evaluateBadges(userId) {
+  const [stats, { data: earnedRows }] = await Promise.all([
+    computeBadgeStats(userId),
+    _sb.from('user_badges').select('badge_id').eq('user_id', userId)
+  ]);
+  const earned = new Set((earnedRows || []).map(r => r.badge_id));
+  const newlyEarned = [];
+  for (const badge of BADGES) {
+    if (earned.has(badge.id)) continue;
+    if (badge.prog(stats) >= badge.goal) {
+      const { error } = await _sb.from('user_badges').insert({ user_id: userId, badge_id: badge.id });
+      if (!error) { earned.add(badge.id); newlyEarned.push(badge); }
+    }
+  }
+  return { stats, earned, newlyEarned };
+}
+
+function renderBadgeShelf(stats, earned) {
+  const el = document.getElementById('badge-shelf');
+  if (!el) return;
+  el.innerHTML = BADGES.map(badge => {
+    const progress = Math.min(badge.prog(stats), badge.goal);
+    const isEarned = earned.has(badge.id);
+    const pct = Math.round((progress / badge.goal) * 100);
+    const progLabel = isEarned
+      ? '✓ Earned'
+      : badge.goal === 1 ? '' : `${progress} / ${badge.goal}`;
+    return `
+      <div class="badge-row ${isEarned ? '' : 'locked'}">
+        <div class="badge-icon-box ${isEarned ? 'earned' : ''}">${badge.icon}</div>
+        <div class="badge-info">
+          <div class="badge-name">${badge.name}</div>
+          <div class="badge-desc">${badge.desc}</div>
+        </div>
+        <div class="badge-prog">
+          <div class="badge-prog-num ${isEarned ? 'done' : ''}">${progLabel}</div>
+          ${badge.goal > 1 ? `<div class="badge-prog-bar"><div class="badge-prog-fill" style="width:${pct}%"></div></div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function showBadgeUnlock(badge) {
+  document.getElementById('buo-icon').textContent = badge.icon;
+  document.getElementById('buo-name').textContent = badge.name;
+  document.getElementById('buo-desc').textContent = badge.desc;
+  document.getElementById('badge-unlock').style.display = 'flex';
+}
+
+function dismissBadgeUnlock() {
+  document.getElementById('badge-unlock').style.display = 'none';
+  APP.checkin.newBadges = APP.checkin.newBadges.slice(1);
+  if (APP.checkin.newBadges.length) showBadgeUnlock(APP.checkin.newBadges[0]);
 }
 
 // ── Stop Profile ─────────────────────────────────────────────
@@ -3326,6 +3441,9 @@ async function loadDriverProfile() {
         </div>`;
     }).join('');
   }
+
+  // Render badge shelf
+  evaluateBadges(userId).then(({ stats, earned }) => renderBadgeShelf(stats, earned));
 }
 
 function timeAgo(iso) {
