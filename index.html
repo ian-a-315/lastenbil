@@ -2166,7 +2166,7 @@
                 <div class="stat-label">Stops visited</div>
               </div>
               <div class="stat-tile">
-                <div class="stat-val">0</div>
+                <div class="stat-val" id="profile-states">0</div>
                 <div class="stat-label">States covered</div>
               </div>
               <div class="stat-tile">
@@ -2793,11 +2793,12 @@ function renderAnnotations(id) {
 const APP = {
   user:        null,   // cached session user ID
   follows:     { ids: new Set(), loaded: false },
+  geo:         { lat: null, lng: null, cachedAt: 0 },
   currentStop: { name: 'Unknown Stop', place_id: null, address: '', googleRating: 0, googleCount: 0, lat: null, lng: null },
   checkin:     { rating: 0, cats: { parking: 0, showers: 0, food: 0, safety: 0, fuel: 0 }, newBadges: [] },
   onboard:     { rigIcon: '🚛', rigLabel: 'Semi', inviteCode: null },
   flag:        { icon: '🅿', type: 'Parking Full' },
-  feed:        { filter: 'all', pollInterval: null },
+  feed:        { filter: 'following', pollInterval: null },
   diary:       { checkins: [] },
   finder:      { loaded: false, map: null },
   screen:      'splash'
@@ -2858,6 +2859,7 @@ async function submitCheckin() {
     stop_address: APP.currentStop.address,
     stop_lat: APP.currentStop.lat || null,
     stop_lng: APP.currentStop.lng || null,
+    stop_state: parseState(APP.currentStop.address) || null,
     rating: APP.checkin.rating || null,
     rating_parking: APP.checkin.cats.parking || null,
     rating_showers: APP.checkin.cats.showers || null,
@@ -3014,11 +3016,25 @@ function setFeedFilter(el) {
   renderFeed();
 }
 
-function react(btn) {
-  if (btn.classList.contains('reacted')) return;
-  btn.classList.add('reacted');
+async function react(btn, targetType, targetId) {
+  if (!APP.user) { openSignIn(); return; }
+  if (!targetId) return;
+  const isReacted = btn.classList.contains('reacted');
   const countEl = btn.querySelector('.react-count');
-  if (countEl) countEl.textContent = parseInt(countEl.textContent) + 1;
+  const current = parseInt(countEl?.textContent || '0');
+  // Optimistic UI update
+  btn.classList.toggle('reacted', !isReacted);
+  if (countEl) countEl.textContent = isReacted ? Math.max(0, current - 1) : current + 1;
+  if (isReacted) {
+    await _sb.from('reactions').delete()
+      .eq('user_id', APP.user).eq('target_type', targetType).eq('target_id', targetId);
+  } else {
+    const { error } = await _sb.from('reactions').insert({ user_id: APP.user, target_type: targetType, target_id: targetId });
+    if (error) { // revert on duplicate or other error
+      btn.classList.toggle('reacted', isReacted);
+      if (countEl) countEl.textContent = current;
+    }
+  }
 }
 
 function showConfirmation() {
@@ -3085,6 +3101,72 @@ async function updatePushLocation(userId) {
   } catch (e) {
     console.warn('Push location update failed:', e.message);
   }
+}
+
+// ── Utilities ────────────────────────────────────────────────
+
+// Haversine distance in miles (client-side, mirrors Edge Function)
+function distanceMiles(lat1, lng1, lat2, lng2) {
+  const R = 3958.8;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// Parse US state abbreviation from a Google Places address string
+function parseState(address) {
+  if (!address) return null;
+  const m = address.match(/,\s*([A-Z]{2})(?:\s+\d{5})?(?:[,\s]|$)/);
+  return m ? m[1] : null;
+}
+function getStateFromAddress(address) { return parseState(address); }
+
+// Get driver's current GPS position — cached for 5 minutes
+async function getGeoPosition() {
+  const now = Date.now();
+  if (APP.geo.lat && (now - APP.geo.cachedAt) < 5 * 60 * 1000) {
+    return { lat: APP.geo.lat, lng: APP.geo.lng };
+  }
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) { reject(new Error('no geo')); return; }
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        APP.geo.lat = pos.coords.latitude;
+        APP.geo.lng = pos.coords.longitude;
+        APP.geo.cachedAt = Date.now();
+        resolve({ lat: APP.geo.lat, lng: APP.geo.lng });
+      },
+      err => reject(err),
+      { timeout: 8000 }
+    );
+  });
+}
+
+// Share a stop via Web Share API or clipboard fallback
+async function shareItem(stopName, placeId) {
+  const url = placeId ? `https://lastenbil.vercel.app/?stop=${placeId}` : 'https://lastenbil.vercel.app';
+  const text = `Check out ${stopName} on Keep Moving — the trucker community app.`;
+  if (navigator.share) {
+    try { await navigator.share({ title: stopName, text, url }); } catch {}
+  } else {
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('Link copied!');
+    } catch { showToast('Copy: ' + url); }
+  }
+}
+
+// Brief toast notification
+let _toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('km-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.opacity = '1';
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { el.style.display = 'none'; }, 300); }, 2000);
 }
 
 // ── Following System ─────────────────────────────────────────
@@ -3460,30 +3542,49 @@ async function loadFeedScreen() {
 }
 
 async function renderFeed() {
-  const isFollowingTab = APP.feed.filter === 'following';
+  const filter = APP.feed.filter;
+  const feedEl = document.getElementById('feed-list');
 
-  // Empty state: Following tab with no follows yet
-  if (isFollowingTab && APP.follows.ids.size === 0) {
-    document.getElementById('feed-list').innerHTML = `
+  // Following: bail early if no follows
+  if (filter === 'following' && APP.follows.ids.size === 0) {
+    feedEl.innerHTML = `
       <div style="text-align:center;padding:48px 20px;color:var(--road-dust)">
         <div style="font-size:40px;margin-bottom:14px">👥</div>
         <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">No one followed yet</div>
         <div style="font-size:13px;line-height:1.5;margin-bottom:20px">Follow drivers from the feed<br>to see their check-ins here.</div>
-        <button class="btn-secondary" style="padding:10px 20px;font-size:13px" onclick="setFeedFilter(document.querySelector('.feed-filter'))">See all check-ins →</button>
+        <button class="btn-secondary" style="padding:10px 20px;font-size:13px" onclick="setFeedFilter(document.querySelectorAll('.feed-filter')[1])">See Nearby →</button>
       </div>`;
     return;
   }
 
+  // Nearby: get geo first
+  let geo = null;
+  if (filter === 'nearby') {
+    feedEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Getting your location…</div>';
+    try { geo = await getGeoPosition(); }
+    catch {
+      feedEl.innerHTML = `
+        <div style="text-align:center;padding:48px 20px;color:var(--road-dust)">
+          <div style="font-size:40px;margin-bottom:14px">📍</div>
+          <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">Location needed</div>
+          <div style="font-size:13px;line-height:1.5">Allow location access to see activity near you.</div>
+        </div>`;
+      return;
+    }
+  }
+
+  feedEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Loading…</div>';
+
   const [{ data: checkins }, { data: flags }] = await Promise.all([
     _sb.from('checkins')
-      .select('stop_name, stop_address, rating, note, created_at, user_id, profiles(handle, rig_icon)')
+      .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, rating, note, created_at, user_id, profiles(handle, rig_icon)')
       .order('created_at', { ascending: false })
-      .limit(20),
+      .limit(30),
     _sb.from('flags')
-      .select('stop_name, stop_address, flag_type, flag_icon, note, created_at, user_id, profiles(handle, rig_icon)')
+      .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, flag_type, flag_icon, note, created_at, user_id, profiles(handle, rig_icon)')
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false })
-      .limit(10)
+      .limit(20)
   ]);
 
   let items = [
@@ -3491,25 +3592,63 @@ async function renderFeed() {
     ...(flags   || []).map(f => ({ ...f, _type: 'flag'    }))
   ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-  if (isFollowingTab) items = items.filter(i => APP.follows.ids.has(i.user_id));
+  // Apply tab filters
+  if (filter === 'following') {
+    items = items.filter(i => APP.follows.ids.has(i.user_id));
+  } else if (filter === 'nearby') {
+    items = items.filter(i => i.stop_lat && i.stop_lng && distanceMiles(geo.lat, geo.lng, i.stop_lat, i.stop_lng) <= 25);
+  }
 
+  // Load reactions
+  const allIds = items.map(i => i.id).filter(Boolean);
+  let reactionCounts = {}, userReacted = new Set(), trendCounts = {};
+
+  if (allIds.length) {
+    const { data: rxData } = await _sb.from('reactions').select('target_id, user_id').in('target_id', allIds);
+    for (const r of (rxData || [])) {
+      reactionCounts[r.target_id] = (reactionCounts[r.target_id] || 0) + 1;
+      if (r.user_id === APP.user) userReacted.add(r.target_id);
+    }
+  }
+
+  // Trending: filter to items with ≥3 reactions in last 24h
+  if (filter === 'trending') {
+    const since24h = new Date(Date.now() - 86400000).toISOString();
+    const { data: recentRx } = await _sb.from('reactions').select('target_id').gt('created_at', since24h);
+    for (const r of (recentRx || [])) {
+      trendCounts[r.target_id] = (trendCounts[r.target_id] || 0) + 1;
+    }
+    items = items.filter(i => (trendCounts[i.id] || 0) >= 3);
+    items.sort((a, b) => (trendCounts[b.id] || 0) - (trendCounts[a.id] || 0));
+  }
+
+  // Empty states per tab
   if (!items.length) {
-    document.getElementById('feed-list').innerHTML = `
+    const msg = {
+      following: { icon: '👥', title: 'No activity yet',         sub: "Drivers you follow haven't checked in yet." },
+      nearby:    { icon: '📍', title: 'Nothing nearby',          sub: 'No check-ins or flags within 25 miles.' },
+      trending:  { icon: '🔥', title: 'No trending posts today', sub: 'Check back later or switch to Nearby.' },
+    }[filter] || { icon: '📋', title: 'Feed is empty', sub: 'Be the first to check in at a stop.' };
+    feedEl.innerHTML = `
       <div style="text-align:center;padding:48px 20px;color:var(--road-dust)">
-        <div style="font-size:40px;margin-bottom:14px">${isFollowingTab ? '👥' : '📋'}</div>
-        <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">${isFollowingTab ? 'No activity yet' : 'Feed is empty'}</div>
-        <div style="font-size:13px;line-height:1.5">${isFollowingTab ? 'Drivers you follow haven\'t checked in yet.' : 'Be the first to check in at a stop.'}</div>
+        <div style="font-size:40px;margin-bottom:14px">${msg.icon}</div>
+        <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">${msg.title}</div>
+        <div style="font-size:13px;line-height:1.5">${msg.sub}</div>
       </div>`;
     return;
   }
 
-  document.getElementById('feed-list').innerHTML = items.map(item => {
-    const handle    = item.profiles?.handle   || 'driver';
-    const rigIcon   = item.profiles?.rig_icon || '🚛';
-    const when      = timeAgo(item.created_at);
-    const isOwn     = item.user_id === APP.user;
+  feedEl.innerHTML = items.map(item => {
+    const handle      = item.profiles?.handle   || 'driver';
+    const rigIcon     = item.profiles?.rig_icon || '🚛';
+    const when        = timeAgo(item.created_at);
+    const isOwn       = item.user_id === APP.user;
     const isFollowing = APP.follows.ids.has(item.user_id);
-    const followBtn = isOwn ? '' : `<button class="follow-btn ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${item.user_id}','${handle}',this)">${isFollowing ? 'Following' : '+ Follow'}</button>`;
+    const followBtn   = isOwn ? '' : `<button class="follow-btn ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${item.user_id}','${handle}',this)">${isFollowing ? 'Following' : '+ Follow'}</button>`;
+    const helpCount   = reactionCounts[item.id] || 0;
+    const hasReacted  = userReacted.has(item.id);
+    const safeName    = (item.stop_name || '').replace(/'/g, "\\'");
+    const safePid     = (item.stop_place_id || '').replace(/'/g, "\\'");
 
     if (item._type === 'checkin') {
       const stars = item.rating ? ratingToStars(item.rating) : '';
@@ -3528,8 +3667,8 @@ async function renderFeed() {
           <div class="feed-location">📍 ${loc}</div>
           ${item.note ? `<div class="feed-body" style="margin-top:8px;font-size:13px;color:var(--warm-white);line-height:1.5;font-style:italic">"${item.note}"</div>` : ''}
           <div class="feed-actions">
-            <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">0</span></button>
-            <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
+            <button class="feed-action-btn ${hasReacted ? 'reacted' : ''}" onclick="react(this,'checkin','${item.id}')">👍 Helpful <span class="react-count">${helpCount}</span></button>
+            <button class="feed-action-btn" onclick="shareItem('${safeName}','${safePid}')">🔁 Share</button>
           </div>
         </div>`;
     }
@@ -3549,8 +3688,8 @@ async function renderFeed() {
           <div class="feed-flag-banner">${item.flag_icon} ${item.flag_type} — ${loc}</div>
           ${item.note ? `<div class="feed-body" style="margin-top:8px">"${item.note}"</div>` : ''}
           <div class="feed-actions">
-            <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">0</span></button>
-            <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
+            <button class="feed-action-btn ${hasReacted ? 'reacted' : ''}" onclick="react(this,'flag','${item.id}')">👍 Helpful <span class="react-count">${helpCount}</span></button>
+            <button class="feed-action-btn" onclick="shareItem('${safeName}','${safePid}')">🔁 Share</button>
           </div>
         </div>`;
     }
@@ -3590,9 +3729,8 @@ async function loadDriverProfile() {
   document.getElementById('profile-stops').textContent = count;
   document.getElementById('profile-reviews').textContent = allCheckins ? allCheckins.filter(c => c.rating).length : 0;
 
-  // Update states tile if it exists
-  const statesTile = document.querySelector('#screen-driver .stat-tile:nth-child(2) .stat-val');
-  if (statesTile) statesTile.textContent = stateCount;
+  const statesEl = document.getElementById('profile-states');
+  if (statesEl) statesEl.textContent = stateCount;
 
   // Load recent check-ins
   const { data: recent } = await _sb.from('checkins')
@@ -3909,5 +4047,6 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
 </script>
+<div id="km-toast" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:var(--warm-white);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;white-space:nowrap;pointer-events:none"></div>
 </body>
 </html>
