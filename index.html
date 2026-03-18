@@ -884,6 +884,9 @@
   .badge-prog-num.done { color: var(--success); }
   .badge-prog-bar { height: 3px; background: #2a2d35; border-radius: 2px; margin-top: 5px; overflow: hidden; }
   .badge-prog-fill { height: 100%; background: var(--amber); border-radius: 2px; transition: width 0.5s ease; }
+  /* Follow button */
+  .follow-btn { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--amber); background: transparent; color: var(--amber); cursor: pointer; margin-left: 6px; vertical-align: middle; white-space: nowrap; }
+  .follow-btn.following { border-color: #333; color: var(--road-dust); }
   /* Badge unlock overlay */
   .badge-unlock-overlay { display: none; background: rgba(13,15,20,0.97); position: absolute; inset: 0; z-index: 200; flex-direction: column; align-items: center; justify-content: center; padding: 40px 32px; text-align: center; }
   .recent-stops {
@@ -2788,7 +2791,8 @@ function renderAnnotations(id) {
 
 // ── App State ────────────────────────────────────────────────
 const APP = {
-  user:        null,
+  user:        null,   // cached session user ID
+  follows:     { ids: new Set(), loaded: false },
   currentStop: { name: 'Unknown Stop', place_id: null, address: '', googleRating: 0, googleCount: 0 },
   checkin:     { rating: 0, cats: { parking: 0, showers: 0, food: 0, safety: 0, fuel: 0 }, newBadges: [] },
   onboard:     { rigIcon: '🚛', rigLabel: 'Semi', inviteCode: null },
@@ -2991,6 +2995,35 @@ function showConfirmation() {
   document.getElementById('conf-screen').style.display = 'block';
 }
 
+// ── Following System ─────────────────────────────────────────
+async function getFollowIds() {
+  if (APP.follows.loaded) return APP.follows.ids;
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) return new Set();
+  const { data: rows } = await _sb.from('follows').select('following_id').eq('follower_id', session.user.id);
+  APP.follows.ids = new Set((rows || []).map(r => r.following_id));
+  APP.follows.loaded = true;
+  return APP.follows.ids;
+}
+
+async function toggleFollow(userId, handle, btn) {
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) return;
+  const isFollowing = APP.follows.ids.has(userId);
+  if (isFollowing) {
+    await _sb.from('follows').delete().eq('follower_id', session.user.id).eq('following_id', userId);
+    APP.follows.ids.delete(userId);
+    btn.textContent = '+ Follow';
+    btn.classList.remove('following');
+  } else {
+    await _sb.from('follows').insert({ follower_id: session.user.id, following_id: userId });
+    APP.follows.ids.add(userId);
+    btn.textContent = 'Following';
+    btn.classList.add('following');
+  }
+  if (APP.feed.filter === 'following') renderFeed();
+}
+
 // ── Badge System ─────────────────────────────────────────────
 const BADGES = [
   { id: 'founding_driver',    icon: '🐋', name: 'Founding Driver',  desc: 'One of the first drivers on Keep Moving',  goal: 1,   unit: '',                     prog: s => s.founding ? 1 : 0 },
@@ -3092,6 +3125,8 @@ function ratingToStars(r) {
 }
 
 async function loadStopProfile() {
+  const { data: { session } } = await _sb.auth.getSession();
+  if (session) { APP.user = session.user.id; await getFollowIds(); }
   const { name, place_id, address, googleRating, googleCount } = APP.currentStop;
 
   document.getElementById('sp-name').textContent = name || '—';
@@ -3134,7 +3169,7 @@ async function loadStopProfile() {
   // Query Keep Moving check-ins for this stop (join profiles for handle)
   const { data: checkins } = await _sb
     .from('checkins')
-    .select('rating, rating_parking, rating_showers, rating_food, rating_safety, rating_fuel, note, created_at, profiles(handle, rig_icon)')
+    .select('rating, rating_parking, rating_showers, rating_food, rating_safety, rating_fuel, note, created_at, user_id, profiles(handle, rig_icon)')
     .eq('stop_place_id', place_id)
     .order('created_at', { ascending: false })
     .limit(20);
@@ -3171,11 +3206,14 @@ async function loadStopProfile() {
       const handle = c.profiles?.handle || 'driver';
       const rigIcon = c.profiles?.rig_icon || '🚛';
       const stars = c.rating ? ratingToStars(c.rating) : '';
+      const isOwn = c.user_id === APP.user;
+      const isFollowing = APP.follows.ids.has(c.user_id);
+      const followBtn = isOwn ? '' : `<button class="follow-btn ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${c.user_id}','${handle}',this)">${isFollowing ? 'Following' : '+ Follow'}</button>`;
       return `
         <div class="review-card">
           <div class="review-header">
             <div>
-              <div class="reviewer-handle">${rigIcon} @${handle}</div>
+              <div class="reviewer-handle">${rigIcon} @${handle}${followBtn}</div>
               <div class="review-time">${timeAgo(c.created_at)} · Checked in</div>
             </div>
             <div class="review-stars" style="font-size:14px;letter-spacing:1px">${stars}</div>
@@ -3322,12 +3360,28 @@ function renderDiary(year) {
 async function loadFeedScreen() {
   document.getElementById('feed-list').innerHTML =
     '<div style="padding:28px;text-align:center;color:var(--road-dust);font-size:13px">Loading feed…</div>';
+  const { data: { session } } = await _sb.auth.getSession();
+  if (session) { APP.user = session.user.id; await getFollowIds(); }
   await renderFeed();
   if (APP.feed.pollInterval) clearInterval(APP.feed.pollInterval);
   APP.feed.pollInterval = setInterval(renderFeed, 30000);
 }
 
 async function renderFeed() {
+  const isFollowingTab = APP.feed.filter === 'following';
+
+  // Empty state: Following tab with no follows yet
+  if (isFollowingTab && APP.follows.ids.size === 0) {
+    document.getElementById('feed-list').innerHTML = `
+      <div style="text-align:center;padding:48px 20px;color:var(--road-dust)">
+        <div style="font-size:40px;margin-bottom:14px">👥</div>
+        <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">No one followed yet</div>
+        <div style="font-size:13px;line-height:1.5;margin-bottom:20px">Follow drivers from the feed<br>to see their check-ins here.</div>
+        <button class="btn-secondary" style="padding:10px 20px;font-size:13px" onclick="setFeedFilter(document.querySelector('.feed-filter'))">See all check-ins →</button>
+      </div>`;
+    return;
+  }
+
   const [{ data: checkins }, { data: flags }] = await Promise.all([
     _sb.from('checkins')
       .select('stop_name, stop_address, rating, note, created_at, user_id, profiles(handle, rig_icon)')
@@ -3340,25 +3394,30 @@ async function renderFeed() {
       .limit(10)
   ]);
 
-  const items = [
+  let items = [
     ...(checkins || []).map(c => ({ ...c, _type: 'checkin' })),
     ...(flags   || []).map(f => ({ ...f, _type: 'flag'    }))
   ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
+  if (isFollowingTab) items = items.filter(i => APP.follows.ids.has(i.user_id));
+
   if (!items.length) {
     document.getElementById('feed-list').innerHTML = `
       <div style="text-align:center;padding:48px 20px;color:var(--road-dust)">
-        <div style="font-size:40px;margin-bottom:14px">📋</div>
-        <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">Feed is empty</div>
-        <div style="font-size:13px;line-height:1.5">Be the first to check in at a stop.<br>Your review will appear here.</div>
+        <div style="font-size:40px;margin-bottom:14px">${isFollowingTab ? '👥' : '📋'}</div>
+        <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">${isFollowingTab ? 'No activity yet' : 'Feed is empty'}</div>
+        <div style="font-size:13px;line-height:1.5">${isFollowingTab ? 'Drivers you follow haven\'t checked in yet.' : 'Be the first to check in at a stop.'}</div>
       </div>`;
     return;
   }
 
   document.getElementById('feed-list').innerHTML = items.map(item => {
-    const handle  = item.profiles?.handle   || 'driver';
-    const rigIcon = item.profiles?.rig_icon || '🚛';
-    const when    = timeAgo(item.created_at);
+    const handle    = item.profiles?.handle   || 'driver';
+    const rigIcon   = item.profiles?.rig_icon || '🚛';
+    const when      = timeAgo(item.created_at);
+    const isOwn     = item.user_id === APP.user;
+    const isFollowing = APP.follows.ids.has(item.user_id);
+    const followBtn = isOwn ? '' : `<button class="follow-btn ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${item.user_id}','${handle}',this)">${isFollowing ? 'Following' : '+ Follow'}</button>`;
 
     if (item._type === 'checkin') {
       const stars = item.rating ? ratingToStars(item.rating) : '';
@@ -3368,7 +3427,7 @@ async function renderFeed() {
           <div class="feed-card-header">
             <div class="feed-avatar">${rigIcon}</div>
             <div class="feed-meta">
-              <div class="feed-handle">@${handle}</div>
+              <div class="feed-handle">@${handle}${followBtn}</div>
               <div class="feed-time">${when}</div>
             </div>
             <div class="feed-type-badge badge-checkin">✓ Check-in</div>
@@ -3390,7 +3449,7 @@ async function renderFeed() {
           <div class="feed-card-header">
             <div class="feed-avatar flag-av">${rigIcon}</div>
             <div class="feed-meta">
-              <div class="feed-handle">@${handle}</div>
+              <div class="feed-handle">@${handle}${followBtn}</div>
               <div class="feed-time">${when}</div>
             </div>
             <div class="feed-type-badge badge-flag">⚠ Flag</div>
@@ -3479,6 +3538,9 @@ function timeAgo(iso) {
 
 async function signOut() {
   await _sb.auth.signOut();
+  APP.user = null;
+  APP.follows.ids = new Set();
+  APP.follows.loaded = false;
   showScreen('splash', document.querySelectorAll('.screen-nav button')[0]);
 }
 
