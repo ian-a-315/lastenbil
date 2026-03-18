@@ -2792,7 +2792,8 @@ const APP = {
   follows:     { ids: new Set(), loaded: false },
   geo:         { lat: null, lng: null, cachedAt: 0 },
   currentStop: { name: 'Unknown Stop', place_id: null, address: '', googleRating: 0, googleCount: 0, lat: null, lng: null },
-  checkin:     { rating: 0, cats: { parking: 0, showers: 0, food: 0, safety: 0, fuel: 0 }, newBadges: [] },
+  checkin:     { rating: 0, cats: { parking: 0, showers: 0, food: 0, safety: 0, fuel: 0 }, newBadges: [], pendingPostcard: null },
+  profile:     { handle: '', rigIcon: '🚛' },
   onboard:     { rigIcon: '🚛', rigLabel: 'Semi', inviteCode: null },
   flag:        { icon: '🅿', type: 'Parking Full' },
   feed:        { filter: 'following', pollInterval: null },
@@ -2890,9 +2891,28 @@ async function submitCheckin() {
 
   showConfirmation();
 
-  // Evaluate badges after every check-in
-  evaluateBadges(session.user.id).then(({ newlyEarned }) => {
-    if (newlyEarned.length) {
+  // Evaluate badges + check postcard milestones in one shot
+  evaluateBadges(session.user.id).then(async ({ newlyEarned }) => {
+    const { data: allForPC } = await _sb.from('checkins')
+      .select('stop_address, created_at')
+      .eq('user_id', session.user.id);
+    const pcVisited = new Set(allForPC ? allForPC.map(c => getStateFromAddress(c.stop_address)).filter(Boolean) : []);
+    const pcStateCount = pcVisited.size;
+    const pcStreak = calculateStreak(allForPC);
+    const pcMilestone = POSTCARD_MILESTONES.find(m => m.check(count, pcStateCount, pcStreak)) || null;
+
+    if (pcMilestone) {
+      const pcHandle = APP.profile.handle || 'driver';
+      const pcRigIcon = APP.profile.rigIcon || '🚛';
+      const pcData = { milestone: pcMilestone, handle: pcHandle, rigIcon: pcRigIcon, count, stateCount: pcStateCount, streak: pcStreak, visitedStates: pcVisited };
+      if (newlyEarned.length) {
+        APP.checkin.newBadges = newlyEarned;
+        APP.checkin.pendingPostcard = pcData;
+        showBadgeUnlock(newlyEarned[0]);
+      } else {
+        setTimeout(() => showPostcard(pcData.milestone, pcData.handle, pcData.rigIcon, pcData.count, pcData.stateCount, pcData.streak, pcData.visitedStates), 1500);
+      }
+    } else if (newlyEarned.length) {
       APP.checkin.newBadges = newlyEarned;
       showBadgeUnlock(newlyEarned[0]);
     }
@@ -3230,6 +3250,15 @@ const BADGES = [
   { id: 'trusted_reviewer',   icon: '⭐', name: 'Trusted Reviewer', desc: '50+ check-ins with written notes',          goal: 50,  unit: 'reviews with notes',   prog: s => s.withNotes }
 ];
 
+const POSTCARD_MILESTONES = [
+  { id: 'first_stop',   check: (c,s,k) => c === 1,  headline: 'FIRST STOP.\nTHE ROAD BEGINS.',  sub: 'Mile one of the rest of your life.' },
+  { id: '10_stops',     check: (c,s,k) => c === 10, headline: '10 STOPS.\nSTILL ROLLING.',      sub: "You're not just passing through." },
+  { id: '25_stops',     check: (c,s,k) => c === 25, headline: 'QUARTER\nCENTURY.',              sub: '25 stops. The road knows your name.' },
+  { id: '5_states',     check: (c,s,k) => s === 5,  headline: '5 STATES\nCOVERED.',             sub: 'The map is getting smaller.' },
+  { id: '10_states',    check: (c,s,k) => s === 10, headline: '10 STATES.\nGOING PLACES.',      sub: 'Half the country just got personal.' },
+  { id: '7_day_streak', check: (c,s,k) => k === 7,  headline: '7 DAYS\nSTRAIGHT.',              sub: "The road doesn't stop. Neither do you." }
+];
+
 async function computeBadgeStats(userId) {
   const [{ data: checkins }, { data: profile }] = await Promise.all([
     _sb.from('checkins').select('created_at, rating_showers, note, stop_address').eq('user_id', userId),
@@ -3299,7 +3328,13 @@ function showBadgeUnlock(badge) {
 function dismissBadgeUnlock() {
   document.getElementById('badge-unlock').style.display = 'none';
   APP.checkin.newBadges = APP.checkin.newBadges.slice(1);
-  if (APP.checkin.newBadges.length) showBadgeUnlock(APP.checkin.newBadges[0]);
+  if (APP.checkin.newBadges.length) {
+    showBadgeUnlock(APP.checkin.newBadges[0]);
+  } else if (APP.checkin.pendingPostcard) {
+    const pc = APP.checkin.pendingPostcard;
+    APP.checkin.pendingPostcard = null;
+    showPostcard(pc.milestone, pc.handle, pc.rigIcon, pc.count, pc.stateCount, pc.streak, pc.visitedStates);
+  }
 }
 
 // ── Stop Profile ─────────────────────────────────────────────
@@ -3741,6 +3776,7 @@ async function loadDriverProfile() {
     document.getElementById('profile-avatar').textContent = profile.rig_icon || '🚛';
     document.getElementById('profile-handle').textContent = '@' + profile.handle;
     document.getElementById('profile-rig').textContent = profile.rig_label || 'Driver';
+    APP.profile = { handle: profile.handle, rigIcon: profile.rig_icon || '🚛' };
   }
 
   // Load check-in count + states
@@ -4041,6 +4077,8 @@ async function completeSignUp() {
   btn.textContent = "That's my rig →";
   btn.disabled = false;
 
+  APP.profile = { handle, rigIcon: APP.onboard.rigIcon };
+
   if (profileError && profileError.code !== '23505') {
     // 23505 = duplicate, ignore (user refreshed)
     goOnboard(2);
@@ -4050,6 +4088,133 @@ async function completeSignUp() {
   }
 
   goOnboard(4);
+}
+
+// ── Postcard ──────────────────────────────────────────────────
+function _pcRoundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function drawPostcard(canvas, { handle, rigIcon, count, stateCount, streak, visitedStates, milestone }) {
+  const W = 1080, H = 1080, PAD = 72;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#0D0F14';
+  ctx.fillRect(0, 0, W, H);
+
+  // Purple gradient (top)
+  const tg = ctx.createLinearGradient(0, 0, 0, H * 0.56);
+  tg.addColorStop(0, 'rgba(74,36,114,0.6)'); tg.addColorStop(1, 'rgba(13,15,20,0)');
+  ctx.fillStyle = tg; ctx.fillRect(0, 0, W, H * 0.56);
+
+  // Left accent
+  const lg = ctx.createLinearGradient(0, 0, 180, 0);
+  lg.addColorStop(0, 'rgba(139,92,246,0.18)'); lg.addColorStop(1, 'rgba(13,15,20,0)');
+  ctx.fillStyle = lg; ctx.fillRect(0, 0, 180, H);
+
+  // Logo
+  ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+  ctx.font = `bold 30px system-ui,-apple-system,'Helvetica Neue',sans-serif`;
+  ctx.fillStyle = '#8B5CF6'; ctx.fillText('KEEP', PAD, 82);
+  const kw = ctx.measureText('KEEP').width;
+  ctx.fillStyle = '#F5F0E8'; ctx.fillText('●MOVING', PAD + kw, 82);
+
+  // Rig icon
+  ctx.font = '56px sans-serif'; ctx.textAlign = 'right';
+  ctx.fillText(rigIcon, W - PAD, 88);
+
+  // Separator
+  ctx.fillStyle = '#2A1A4A'; ctx.fillRect(PAD, 106, W - PAD * 2, 2);
+
+  // Headline (2 lines split on \n)
+  ctx.textAlign = 'left';
+  ctx.font = `bold 80px system-ui,-apple-system,'Helvetica Neue',sans-serif`;
+  ctx.fillStyle = '#F5F0E8';
+  let hy = 212;
+  milestone.headline.split('\n').forEach(line => { ctx.fillText(line, PAD, hy); hy += 94; });
+
+  // Sub-line
+  ctx.font = `32px system-ui,-apple-system,'Helvetica Neue',sans-serif`;
+  ctx.fillStyle = '#9A9080'; ctx.fillText(milestone.sub, PAD, hy + 14);
+
+  // @handle
+  ctx.font = `bold 60px system-ui,-apple-system,'Helvetica Neue',sans-serif`;
+  ctx.fillStyle = '#8B5CF6'; ctx.fillText('@' + handle, PAD, hy + 100);
+
+  // Stats row
+  const sy = hy + 166;
+  ctx.font = `bold 28px system-ui,-apple-system,'Helvetica Neue',sans-serif`;
+  let sx = PAD;
+  const dot = () => { ctx.fillStyle = '#4A2472'; ctx.fillText('  ·  ', sx, sy); sx += ctx.measureText('  ·  ').width; };
+  const stat = (val, label) => { ctx.fillStyle = '#F5F0E8'; const t = `${val} ${label}`; ctx.fillText(t, sx, sy); sx += ctx.measureText(t).width; };
+  stat(count, count === 1 ? 'stop' : 'stops'); dot();
+  stat(stateCount, stateCount === 1 ? 'state' : 'states');
+  if (streak > 0) { dot(); ctx.fillStyle = '#F5F0E8'; ctx.fillText(`${streak} day streak`, sx, sy); }
+
+  // State grid
+  const TILE = 58, GAP = 6, COLS = 12;
+  const gx = PAD, gy = sy + 46;
+  ALL_STATES.forEach((state, i) => {
+    const tx = gx + (i % COLS) * (TILE + GAP);
+    const ty = gy + Math.floor(i / COLS) * (TILE + GAP);
+    const visited = visitedStates.has(state);
+    ctx.fillStyle = visited ? '#7C3AED' : '#1A1D24';
+    _pcRoundRect(ctx, tx, ty, TILE, TILE, 6); ctx.fill();
+    ctx.fillStyle = visited ? '#F5F0E8' : '#2A2D35';
+    ctx.font = `bold 17px system-ui,-apple-system,sans-serif`;
+    ctx.textAlign = 'center'; ctx.fillText(state, tx + TILE / 2, ty + TILE * 0.67);
+  });
+
+  // Bottom URL
+  ctx.textAlign = 'left'; ctx.fillStyle = '#2A2D35';
+  ctx.font = `22px system-ui,-apple-system,sans-serif`;
+  ctx.fillText('keep-moving-app.vercel.app', PAD, H - 52);
+}
+
+let _postcardBlob = null;
+
+function showPostcard(milestone, handle, rigIcon, count, stateCount, streak, visitedStates) {
+  const canvas = document.getElementById('postcard-canvas');
+  if (!canvas) return;
+  drawPostcard(canvas, { handle, rigIcon, count, stateCount, streak, visitedStates, milestone });
+  // Pre-generate blob so share is instant
+  canvas.toBlob(blob => { _postcardBlob = blob; }, 'image/png');
+  document.getElementById('postcard-overlay').style.display = 'flex';
+}
+
+async function sharePostcard() {
+  const canvas = document.getElementById('postcard-canvas');
+  if (!canvas) return;
+  if (_postcardBlob && navigator.share) {
+    const file = new File([_postcardBlob], 'keep-moving.png', { type: 'image/png' });
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ title: 'Keep Moving — My Road Stats', files: [file] });
+        return;
+      }
+    } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  // Fallback: download
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = 'keep-moving.png'; a.click();
+}
+
+function dismissPostcard() {
+  document.getElementById('postcard-overlay').style.display = 'none';
+  _postcardBlob = null;
 }
 
 // ── Edit Profile ─────────────────────────────────────────────
@@ -4165,6 +4330,16 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 <div id="km-toast" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:var(--warm-white);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;white-space:nowrap;pointer-events:none"></div>
+
+<!-- Postcard overlay -->
+<div id="postcard-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:600;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:14px">
+  <div style="font-size:11px;color:var(--amber);letter-spacing:2px;text-transform:uppercase">Milestone Reached</div>
+  <canvas id="postcard-canvas" style="width:100%;max-width:340px;border-radius:14px;display:block"></canvas>
+  <div style="display:flex;gap:10px;width:100%;max-width:340px">
+    <button class="btn-primary" onclick="sharePostcard()" style="flex:1">Share your story →</button>
+    <button class="btn-secondary" onclick="dismissPostcard()" style="flex:0 0 auto;padding:14px 18px">Skip</button>
+  </div>
+</div>
 
 <!-- Edit Profile overlay -->
 <div id="edit-profile-overlay" style="display:none;position:fixed;inset:0;background:rgba(13,15,20,0.97);z-index:500;flex-direction:column;padding:32px 24px;overflow-y:auto">
