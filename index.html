@@ -1876,12 +1876,12 @@
 
         <!-- Filters -->
         <div class="filter-row">
-          <div class="filter-chip on">✓ Showers</div>
-          <div class="filter-chip">🅿 Parking</div>
-          <div class="filter-chip">🍔 Food</div>
-          <div class="filter-chip">⛽ Fuel</div>
-          <div class="filter-chip">⚖ CAT Scale</div>
-          <div class="filter-chip">🐕 Dog Park</div>
+          <div class="filter-chip" data-keyword="showers" onclick="toggleFinderFilter(this)">🚿 Showers</div>
+          <div class="filter-chip" data-keyword="parking" onclick="toggleFinderFilter(this)">🅿 Parking</div>
+          <div class="filter-chip" data-keyword="food restaurant" onclick="toggleFinderFilter(this)">🍔 Food</div>
+          <div class="filter-chip" data-keyword="fuel diesel" onclick="toggleFinderFilter(this)">⛽ Fuel</div>
+          <div class="filter-chip" data-keyword="CAT scale weigh station" onclick="toggleFinderFilter(this)">⚖ CAT Scale</div>
+          <div class="filter-chip" data-keyword="dog park pet friendly" onclick="toggleFinderFilter(this)">🐕 Dog Park</div>
         </div>
 
         <!-- Stop list -->
@@ -2795,7 +2795,7 @@ const APP = {
   flag:        { icon: '🅿', type: 'Parking Full' },
   feed:        { filter: 'following', pollInterval: null },
   diary:       { checkins: [] },
-  finder:      { loaded: false, map: null },
+  finder:      { loaded: false, map: null, lat: null, lng: null },
   screen:      'splash'
 };
 
@@ -4131,15 +4131,27 @@ function initFinderMap(lat, lng) {
   searchNearby(lat, lng);
 }
 
-function searchNearby(lat, lng) {
+function toggleFinderFilter(chip) {
+  const wasOn = chip.classList.contains('on');
+  document.querySelectorAll('.filter-row .filter-chip').forEach(c => c.classList.remove('on'));
+  if (!wasOn) chip.classList.add('on');
+  const keyword = wasOn ? null : chip.dataset.keyword;
+  if (APP.finder.lat) searchNearby(APP.finder.lat, APP.finder.lng, keyword);
+}
+
+function searchNearby(lat, lng, filterKeyword) {
+  APP.finder.lat = lat;
+  APP.finder.lng = lng;
   const map = APP.finder.map;
   if (!map) return;
   const service = new google.maps.places.PlacesService(map);
   const center = { lat, lng };
+  const baseKeyword = 'truck stop travel center pilot loves flying j TA petro';
+  const keyword = filterKeyword ? `${baseKeyword} ${filterKeyword}` : baseKeyword;
   service.nearbySearch({
     location: center,
     rankBy: google.maps.places.RankBy.DISTANCE,
-    keyword: 'truck stop travel center pilot loves flying j TA petro'
+    keyword
   }, (results, status) => {
     if (status !== google.maps.places.PlacesServiceStatus.OK || !results.length) {
       document.getElementById('stops-label').textContent = 'No stops found nearby';
