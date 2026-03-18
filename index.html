@@ -1796,18 +1796,6 @@
   <div style="display:flex;align-items:center;gap:10px;">
     <div style="width:10px;height:10px;background:var(--amber);border-radius:50%;box-shadow:0 0 8px var(--amber)"></div>
     <h1>KEEP MOVING</h1>
-    <span>Dev Preview · v0.1</span>
-  </div>
-  <div class="screen-nav">
-    <button class="active" onclick="showScreen('splash', this)">1. Splash</button>
-    <button onclick="showScreen('finder', this)">2. Stop Finder</button>
-    <button onclick="showScreen('profile', this)">3. Stop Profile</button>
-    <button onclick="showScreen('checkin', this)">4. Check-In</button>
-    <button onclick="showScreen('driver', this)">5. Driver Profile</button>
-    <button onclick="showScreen('feed', this)">6. Feed</button>
-    <button onclick="showScreen('diary', this)">7. Road Diary</button>
-    <button onclick="showScreen('flag', this)">8. Flag Flow</button>
-    <button onclick="showScreen('onboard', this)">9. Onboarding</button>
   </div>
 </div>
 
@@ -1876,7 +1864,7 @@
         </div>
 
         <!-- Stop list -->
-        <div class="section-label" id="stops-label">Finding stops near you...</div>
+        <div class="section-label" id="stops-label">Scanning the lot...</div>
         <div id="stops-list">
         <div class="stop-card" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">
           <div class="stop-card-header">
@@ -2028,7 +2016,7 @@
         <div class="reviews-section">
           <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Keep Moving Reviews</div>
           <div id="sp-reviews">
-            <div style="padding:20px;text-align:center;color:var(--road-dust);font-size:13px">Loading community reviews…</div>
+            <div style="padding:20px;text-align:center;color:var(--road-dust);font-size:13px">Pulling driver reports...</div>
           </div>
         </div>
 
@@ -2127,7 +2115,7 @@
               <strong id="conf-checkin-count">1</strong>
               total stops in your diary
             </div>
-            <div class="conf-stat"><span>412 drivers</span> will see your review tonight.</div>
+            <div class="conf-stat">Your check-in is live. Drivers nearby will see this.</div>
             <br>
             <button class="btn-primary" onclick="showScreen('driver', document.querySelectorAll('.screen-nav button')[4])" style="margin-top:10px">View your profile →</button>
             <button class="btn-secondary" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])" style="margin-top:8px">Back to map</button>
@@ -2163,7 +2151,7 @@
             </div>
             <div class="stats-grid">
               <div class="stat-tile">
-                <div class="stat-val" id="profile-stops">—</div>
+                <div class="stat-val" id="profile-stops">0</div>
                 <div class="stat-label">Stops visited</div>
               </div>
               <div class="stat-tile">
@@ -2171,11 +2159,11 @@
                 <div class="stat-label">States covered</div>
               </div>
               <div class="stat-tile">
-                <div class="stat-val" id="profile-reviews">—</div>
+                <div class="stat-val" id="profile-reviews">0</div>
                 <div class="stat-label">Reviews written</div>
               </div>
               <div class="stat-tile">
-                <div class="stat-val" id="profile-streak">—</div>
+                <div class="stat-val" id="profile-streak">0</div>
                 <div class="stat-label">Day streak</div>
               </div>
             </div>
@@ -2224,14 +2212,23 @@
 
         <!-- Filter tabs -->
         <div class="feed-filter-bar">
-          <div class="feed-filter active" onclick="setFeedFilter(this)">Following</div>
-          <div class="feed-filter" onclick="setFeedFilter(this)">Nearby</div>
-          <div class="feed-filter" onclick="setFeedFilter(this)">Trending</div>
+          <div class="feed-filter active" data-filter="following" onclick="setFeedFilter(this)">
+            <div>Following</div>
+            <div style="font-size:10px;color:var(--road-dust);font-weight:400;margin-top:2px">Drivers you trust</div>
+          </div>
+          <div class="feed-filter" data-filter="nearby" onclick="setFeedFilter(this)">
+            <div>Nearby</div>
+            <div style="font-size:10px;color:var(--road-dust);font-weight:400;margin-top:2px">Within 25 miles</div>
+          </div>
+          <div class="feed-filter" data-filter="trending" onclick="setFeedFilter(this)">
+            <div>Trending</div>
+            <div style="font-size:10px;color:var(--road-dust);font-weight:400;margin-top:2px">Most helpful today</div>
+          </div>
         </div>
 
         <!-- Feed cards -->
         <div class="feed-list" id="feed-list">
-          <div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Loading feed…</div>
+          <div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Checking the CB...</div>
         </div><!-- /feed-list -->
         <div style="height:60px"></div>
 
@@ -2299,7 +2296,7 @@
 
         <!-- Stop grid -->
         <div class="diary-grid-wrap">
-          <div class="diary-count-label" id="diary-count-label">Loading your diary…</div>
+          <div class="diary-count-label" id="diary-count-label">Unrolling the logbook...</div>
           <div class="diary-grid" id="diary-grid">
             <!-- populated by loadDiaryScreen() -->
           </div>
@@ -3012,7 +3009,7 @@ function setDiaryYear(el, year) {
 function setFeedFilter(el) {
   document.querySelectorAll('.feed-filter').forEach(f => f.classList.remove('active'));
   el.classList.add('active');
-  APP.feed.filter = el.textContent.trim().toLowerCase();
+  APP.feed.filter = el.dataset.filter || el.textContent.trim().toLowerCase().split('\n')[0].trim();
   renderFeed();
 }
 
@@ -3296,6 +3293,7 @@ function showBadgeUnlock(badge) {
   document.getElementById('buo-name').textContent = badge.name;
   document.getElementById('buo-desc').textContent = badge.desc;
   document.getElementById('badge-unlock').style.display = 'flex';
+  if (navigator.vibrate) navigator.vibrate(200);
 }
 
 function dismissBadgeUnlock() {
@@ -3340,7 +3338,7 @@ async function loadStopProfile() {
     : `<span style="color:var(--road-dust)">No Google reviews</span>`;
 
   document.getElementById('sp-reviews').innerHTML =
-    '<div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Loading community reviews…</div>';
+    '<div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Pulling driver reports...</div>';
 
   if (!place_id) return;
 
@@ -3503,7 +3501,7 @@ function renderDiary(year) {
   );
   const avgRating = allRated.length
     ? (allRated.reduce((s, c) => s + c.rating, 0) / allRated.length).toFixed(1) + '★'
-    : '—';
+    : 'No ratings yet';
 
   document.getElementById('diary-stops').textContent = APP.diary.checkins.length;
   document.getElementById('diary-states').textContent = visitedStates.size;
@@ -3518,7 +3516,7 @@ function renderDiary(year) {
   // Count label
   const total = checkins.length;
   document.getElementById('diary-count-label').textContent = total === 0
-    ? 'No stops yet — go check one in!'
+    ? 'Every mile starts somewhere. Find your first stop.'
     : `${total} stop${total === 1 ? '' : 's'} logged${year !== 'all' ? ' in ' + year : ''}`;
 
   // Diary grid
@@ -3560,7 +3558,7 @@ function renderDiary(year) {
 // ── Feed ─────────────────────────────────────────────────────
 async function loadFeedScreen() {
   document.getElementById('feed-list').innerHTML =
-    '<div style="padding:28px;text-align:center;color:var(--road-dust);font-size:13px">Loading feed…</div>';
+    '<div style="padding:28px;text-align:center;color:var(--road-dust);font-size:13px">Checking the CB...</div>';
   const { data: { session } } = await _sb.auth.getSession();
   if (session) { APP.user = session.user.id; await getFollowIds(); }
   await renderFeed();
@@ -3579,7 +3577,7 @@ async function renderFeed() {
         <div style="font-size:40px;margin-bottom:14px">👥</div>
         <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">No one followed yet</div>
         <div style="font-size:13px;line-height:1.5;margin-bottom:20px">Follow drivers from the feed<br>to see their check-ins here.</div>
-        <button class="btn-secondary" style="padding:10px 20px;font-size:13px" onclick="setFeedFilter(document.querySelectorAll('.feed-filter')[1])">See Nearby →</button>
+        <button class="btn-secondary" style="padding:10px 20px;font-size:13px" onclick="setFeedFilter(document.querySelector('.feed-filter[data-filter=nearby]'))">See Nearby →</button>
       </div>`;
     return;
   }
@@ -3761,7 +3759,7 @@ async function loadDriverProfile() {
   const statesEl = document.getElementById('profile-states');
   if (statesEl) statesEl.textContent = stateCount;
   const streakEl = document.getElementById('profile-streak');
-  if (streakEl) streakEl.textContent = streak > 0 ? `🔥 ${streak}` : '—';
+  if (streakEl) streakEl.textContent = streak > 0 ? `🔥 ${streak}` : '0';
 
   // Load recent check-ins
   const { data: recent } = await _sb.from('checkins')
@@ -4113,17 +4111,28 @@ async function loadStopFromParam(session) {
   if (!placeId) return false;
   if (session) {
     APP.currentStop = { name: '', place_id: placeId, address: '', googleRating: null, googleCount: null, lat: 0, lng: 0 };
-    showScreen('profile', document.querySelectorAll('.screen-nav button')[2]);
+    showScreen('profile', null);
     return true;
   }
-  // Not signed in — show teaser with stop info from DB
-  const { data: stopData } = await _sb.from('checkins')
-    .select('stop_name, stop_address')
-    .eq('stop_place_id', placeId)
-    .limit(1)
-    .single();
-  document.getElementById('teaser-stop-name').textContent = stopData?.stop_name || 'A truck stop';
-  document.getElementById('teaser-stop-address').textContent = stopData?.stop_address || '';
+  // Not signed in — show teaser with stop info + stats from DB
+  const [{ data: stopData }, { count: checkinCount }] = await Promise.all([
+    _sb.from('checkins').select('stop_name, stop_address, rating').eq('stop_place_id', placeId).limit(20),
+    _sb.from('checkins').select('*', { count: 'exact', head: true }).eq('stop_place_id', placeId)
+  ]);
+  const name = stopData?.[0]?.stop_name || 'A truck stop';
+  const address = stopData?.[0]?.stop_address || '';
+  const rated = (stopData || []).filter(c => c.rating);
+  const avgRating = rated.length ? (rated.reduce((s, c) => s + c.rating, 0) / rated.length).toFixed(1) : null;
+  document.getElementById('teaser-stop-name').textContent = name;
+  document.getElementById('teaser-stop-address').textContent = address;
+  const statsEl = document.getElementById('teaser-stop-stats');
+  if (statsEl) {
+    const parts = [];
+    if (avgRating) parts.push(`★ ${avgRating} rating`);
+    if (checkinCount) parts.push(`${checkinCount} check-in${checkinCount === 1 ? '' : 's'}`);
+    statsEl.textContent = parts.length ? parts.join(' · ') : '';
+    statsEl.style.display = parts.length ? 'block' : 'none';
+  }
   document.getElementById('stop-teaser-overlay').style.display = 'flex';
   return true;
 }
@@ -4177,8 +4186,9 @@ if ('serviceWorker' in navigator) {
   <div style="font-size:48px;margin-bottom:16px">🚛</div>
   <div style="font-size:11px;color:var(--amber);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">KEEP MOVING</div>
   <div id="teaser-stop-name" style="font-size:20px;font-weight:800;color:var(--warm-white);margin-bottom:6px">Truck Stop</div>
-  <div id="teaser-stop-address" style="font-size:13px;color:var(--road-dust);margin-bottom:24px"></div>
-  <div style="font-size:15px;color:var(--warm-white);line-height:1.6;margin-bottom:24px">A driver shared this stop with you.<br>Join Keep Moving to see reviews,<br>ratings, and road flags.</div>
+  <div id="teaser-stop-address" style="font-size:13px;color:var(--road-dust);margin-bottom:8px"></div>
+  <div id="teaser-stop-stats" style="font-size:14px;color:var(--amber);font-weight:700;margin-bottom:24px;display:none"></div>
+  <div style="font-size:15px;color:var(--warm-white);line-height:1.6;margin-bottom:24px">A driver shared this stop with you.<br>Join Keep Moving to see full reviews,<br>ratings, and real-time road flags.</div>
   <button class="btn-primary" onclick="teaserJoin()" style="margin-bottom:10px;width:100%">Join Keep Moving →</button>
   <button class="btn-secondary" onclick="document.getElementById('stop-teaser-overlay').style.display='none'" style="width:100%">Maybe later</button>
 </div>
