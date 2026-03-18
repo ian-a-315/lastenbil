@@ -2087,7 +2087,11 @@
             </div>
           </div>
 
-          <div style="margin-top:28px">
+          <div style="margin-top:24px">
+            <textarea id="checkin-note" placeholder="Anything other drivers should know?" style="width:100%;background:var(--steel);border:1px solid #333;border-radius:12px;color:var(--warm-white);font-size:14px;font-family:inherit;padding:14px;resize:none;height:88px;outline:none;line-height:1.5;" maxlength="280"></textarea>
+          </div>
+
+          <div style="margin-top:12px">
             <button class="btn-primary" id="checkin-submit-btn" onclick="submitCheckin()" style="width:100%">Next →</button>
           </div>
         </div>
@@ -2776,6 +2780,8 @@ function resetCheckinState() {
     const el = document.getElementById('cat-' + cat);
     if (el) el.querySelectorAll('span').forEach(s => s.classList.remove('lit'));
   });
+  const noteEl = document.getElementById('checkin-note');
+  if (noteEl) noteEl.value = '';
 }
 
 function selectStop(name, place_id, address) {
@@ -2799,6 +2805,8 @@ async function submitCheckin() {
     return;
   }
 
+  const noteVal = (document.getElementById('checkin-note')?.value || '').trim() || null;
+
   const { error } = await _sb.from('checkins').insert({
     user_id: session.user.id,
     stop_name: APP.currentStop.name,
@@ -2809,7 +2817,8 @@ async function submitCheckin() {
     rating_showers: APP.checkin.cats.showers || null,
     rating_food: APP.checkin.cats.food || null,
     rating_safety: APP.checkin.cats.safety || null,
-    rating_fuel: APP.checkin.cats.fuel || null
+    rating_fuel: APP.checkin.cats.fuel || null,
+    note: noteVal
   });
 
   btn.textContent = 'Next →';
@@ -2987,7 +2996,7 @@ async function loadStopProfile() {
   // Query Keep Moving check-ins for this stop (join profiles for handle)
   const { data: checkins } = await _sb
     .from('checkins')
-    .select('rating, rating_parking, rating_showers, rating_food, rating_safety, rating_fuel, created_at, profiles(handle, rig_icon)')
+    .select('rating, rating_parking, rating_showers, rating_food, rating_safety, rating_fuel, note, created_at, profiles(handle, rig_icon)')
     .eq('stop_place_id', place_id)
     .order('created_at', { ascending: false })
     .limit(20);
@@ -3033,6 +3042,7 @@ async function loadStopProfile() {
             </div>
             <div class="review-stars" style="font-size:14px;letter-spacing:1px">${stars}</div>
           </div>
+          ${c.note ? `<div style="margin-top:8px;font-size:13px;color:var(--warm-white);line-height:1.5;font-style:italic">"${c.note}"</div>` : ''}
         </div>`;
     }).join('');
   } else {
@@ -3182,7 +3192,7 @@ async function loadFeedScreen() {
 async function renderFeed() {
   const [{ data: checkins }, { data: flags }] = await Promise.all([
     _sb.from('checkins')
-      .select('stop_name, stop_address, rating, created_at, user_id, profiles(handle, rig_icon)')
+      .select('stop_name, stop_address, rating, note, created_at, user_id, profiles(handle, rig_icon)')
       .order('created_at', { ascending: false })
       .limit(20),
     _sb.from('flags')
@@ -3227,6 +3237,7 @@ async function renderFeed() {
           </div>
           ${stars ? `<div class="feed-stars" style="margin-bottom:6px;font-size:15px">${stars}</div>` : ''}
           <div class="feed-location">📍 ${loc}</div>
+          ${item.note ? `<div class="feed-body" style="margin-top:8px;font-size:13px;color:var(--warm-white);line-height:1.5;font-style:italic">"${item.note}"</div>` : ''}
           <div class="feed-actions">
             <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">0</span></button>
             <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
