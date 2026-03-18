@@ -2421,9 +2421,9 @@
           <div class="flag-confirm-screen">
             <div class="flag-confirm-icon">🚩</div>
             <div class="flag-confirm-title">Flag posted!</div>
-            <div class="flag-confirm-sub">Your flag is live at<br><strong style="color:var(--warm-white)">Pilot Travel Center #437</strong><br>Memphis, TN</div>
+            <div class="flag-confirm-sub">Your flag is live at<br><strong style="color:var(--warm-white)" id="flag-confirm-stop-name">—</strong></div>
             <div class="flag-confirm-stat">
-              <strong>412</strong>
+              <strong id="flag-confirm-driver-count">—</strong>
               <span>drivers within 50 miles will see this flag</span>
             </div>
             <div class="flag-expire-badge">⏱ Auto-expires in 3 hours</div>
@@ -2872,6 +2872,10 @@ async function submitCheckin() {
 
   if (error) {
     console.error(error);
+    btn.textContent = 'Something went wrong — try again';
+    btn.style.background = 'var(--danger)';
+    setTimeout(() => { btn.textContent = 'Next →'; btn.style.background = ''; }, 3000);
+    return;
   }
 
   // Get real check-in count
@@ -2964,6 +2968,10 @@ async function goFlagStep3() {
   document.getElementById('flag-step2').style.display = 'none';
   document.getElementById('flag-step3').style.display = 'block';
 
+  // Populate stop name immediately
+  const nameEl = document.getElementById('flag-confirm-stop-name');
+  if (nameEl) nameEl.textContent = APP.currentStop.name || '—';
+
   const { data: { session } } = await _sb.auth.getSession();
   if (!session) return;
 
@@ -2980,6 +2988,17 @@ async function goFlagStep3() {
     note: note,
     expires_at: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString()
   });
+
+  // Show nearby driver count (subs with known location — rough proxy for "will see this")
+  const countEl = document.getElementById('flag-confirm-driver-count');
+  if (countEl && APP.currentStop.lat) {
+    const { count } = await _sb.from('push_subscriptions')
+      .select('*', { count: 'exact', head: true })
+      .not('last_lat', 'is', null);
+    countEl.textContent = count || 0;
+  } else if (countEl) {
+    countEl.textContent = '—';
+  }
 }
 
 function setDiaryYear(el, year) {
