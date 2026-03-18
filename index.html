@@ -2158,6 +2158,7 @@
                 <div class="handle" id="profile-handle">@—</div>
                 <div class="real-name" id="profile-rig">—</div>
                 <div class="location">🐋 Founding Driver</div>
+                <button onclick="openEditProfile()" style="font-size:11px;color:var(--amber);background:none;border:none;cursor:pointer;font-weight:700;padding:2px 0;margin-top:4px">✏️ Edit profile</button>
               </div>
             </div>
             <div class="stats-grid">
@@ -2174,8 +2175,8 @@
                 <div class="stat-label">Reviews written</div>
               </div>
               <div class="stat-tile">
-                <div class="stat-val">🔥 1</div>
-                <div class="stat-label">Week streak</div>
+                <div class="stat-val" id="profile-streak">—</div>
+                <div class="stat-label">Day streak</div>
               </div>
             </div>
           </div>
@@ -2219,7 +2220,6 @@
       <div id="screen-feed" class="screen">
         <div class="nav-bar">
           <div class="nav-logo">KEEP<span style="color:var(--amber)">●</span>MOVING</div>
-          <div class="nav-icon">🔔</div>
         </div>
 
         <!-- Filter tabs -->
@@ -3105,6 +3105,22 @@ async function updatePushLocation(userId) {
 
 // ── Utilities ────────────────────────────────────────────────
 
+// Consecutive day streak — counts backwards from today (or yesterday if no check-in today yet)
+function calculateStreak(checkins) {
+  if (!checkins || !checkins.length) return 0;
+  const dates = [...new Set(checkins.map(c => new Date(c.created_at).toLocaleDateString('en-CA')))].sort().reverse();
+  const today = new Date().toLocaleDateString('en-CA');
+  const yesterday = new Date(Date.now() - 86400000).toLocaleDateString('en-CA');
+  if (dates[0] !== today && dates[0] !== yesterday) return 0;
+  let streak = 1;
+  for (let i = 1; i < dates.length; i++) {
+    const prev = new Date(dates[i-1] + 'T12:00:00');
+    const curr = new Date(dates[i] + 'T12:00:00');
+    if (Math.round((prev - curr) / 86400000) === 1) { streak++; } else { break; }
+  }
+  return streak;
+}
+
 // Haversine distance in miles (client-side, mirrors Edge Function)
 function distanceMiles(lat1, lng1, lat2, lng2) {
   const R = 3958.8;
@@ -3155,6 +3171,15 @@ async function shareItem(stopName, placeId) {
       showToast('Link copied!');
     } catch { showToast('Copy: ' + url); }
   }
+}
+
+async function reportItem(type, id) {
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) { showToast('Sign in to report content'); return; }
+  const { error } = await _sb.from('reports')
+    .insert({ reporter_id: session.user.id, target_type: type, target_id: id });
+  if (!error) showToast('Reported. Our team will review it.');
+  else showToast('Could not send report. Try again.');
 }
 
 // Brief toast notification
@@ -3343,7 +3368,7 @@ async function loadStopProfile() {
   // Query Keep Moving check-ins for this stop (join profiles for handle)
   const { data: checkins } = await _sb
     .from('checkins')
-    .select('rating, rating_parking, rating_showers, rating_food, rating_safety, rating_fuel, note, created_at, user_id, profiles(handle, rig_icon)')
+    .select('id, rating, rating_parking, rating_showers, rating_food, rating_safety, rating_fuel, note, created_at, user_id, profiles(handle, rig_icon)')
     .eq('stop_place_id', place_id)
     .order('created_at', { ascending: false })
     .limit(20);
@@ -3393,6 +3418,7 @@ async function loadStopProfile() {
             <div class="review-stars" style="font-size:14px;letter-spacing:1px">${stars}</div>
           </div>
           ${c.note ? `<div style="margin-top:8px;font-size:13px;color:var(--warm-white);line-height:1.5;font-style:italic">"${c.note}"</div>` : ''}
+          ${!isOwn ? `<button onclick="reportItem('checkin','${c.id}')" style="margin-top:8px;font-size:11px;color:var(--road-dust);background:none;border:none;cursor:pointer;padding:0">⚑ Report</button>` : ''}
         </div>`;
     }).join('');
   } else {
@@ -3457,7 +3483,7 @@ async function loadDiaryScreen() {
   }
 
   const { data: checkins } = await _sb.from('checkins')
-    .select('stop_name, stop_address, rating, created_at')
+    .select('stop_name, stop_address, stop_place_id, rating, created_at')
     .eq('user_id', session.user.id)
     .order('created_at', { ascending: false });
 
@@ -3513,8 +3539,9 @@ function renderDiary(year) {
     const state = stateMatch ? stateMatch[1] : '';
     const city = (c.stop_address || '').split(',')[0].trim();
     const stars = c.rating ? ratingToStars(c.rating) : '';
+    const diaryPid = c.stop_place_id ? ("'" + c.stop_place_id + "'") : 'null';
     return `
-      <div class="diary-tile" onclick="viewStop('${c.stop_name.replace(/'/g,"\\'")}', null, '${(c.stop_address||'').replace(/'/g,"\\'")}', 0, 0)">
+      <div class="diary-tile" onclick="viewStop('${c.stop_name.replace(/'/g,"\\'")}', ${diaryPid}, '${(c.stop_address||'').replace(/'/g,"\\'")}', 0, 0)">
         <div class="diary-tile-top ${brandClass}">
           <div class="diary-tile-brand">${brandLetter}</div>
           ${stars ? `<div class="diary-tile-stars-top">${stars}</div>` : ''}
@@ -3669,6 +3696,7 @@ async function renderFeed() {
           <div class="feed-actions">
             <button class="feed-action-btn ${hasReacted ? 'reacted' : ''}" onclick="react(this,'checkin','${item.id}')">👍 Helpful <span class="react-count">${helpCount}</span></button>
             <button class="feed-action-btn" onclick="shareItem('${safeName}','${safePid}')">🔁 Share</button>
+            ${!isOwn ? `<button class="feed-action-btn" onclick="reportItem('checkin','${item.id}')">⚑ Report</button>` : ''}
           </div>
         </div>`;
     }
@@ -3690,6 +3718,7 @@ async function renderFeed() {
           <div class="feed-actions">
             <button class="feed-action-btn ${hasReacted ? 'reacted' : ''}" onclick="react(this,'flag','${item.id}')">👍 Helpful <span class="react-count">${helpCount}</span></button>
             <button class="feed-action-btn" onclick="shareItem('${safeName}','${safePid}')">🔁 Share</button>
+            ${!isOwn ? `<button class="feed-action-btn" onclick="reportItem('flag','${item.id}')">⚑ Report</button>` : ''}
           </div>
         </div>`;
     }
@@ -3718,19 +3747,21 @@ async function loadDriverProfile() {
 
   // Load check-in count + states
   const { data: allCheckins } = await _sb.from('checkins')
-    .select('stop_address, rating')
+    .select('stop_address, rating, created_at')
     .eq('user_id', userId);
 
   const count = allCheckins ? allCheckins.length : 0;
   const stateCount = allCheckins
     ? new Set(allCheckins.map(c => getStateFromAddress(c.stop_address)).filter(Boolean)).size
     : 0;
+  const streak = calculateStreak(allCheckins);
 
   document.getElementById('profile-stops').textContent = count;
   document.getElementById('profile-reviews').textContent = allCheckins ? allCheckins.filter(c => c.rating).length : 0;
-
   const statesEl = document.getElementById('profile-states');
   if (statesEl) statesEl.textContent = stateCount;
+  const streakEl = document.getElementById('profile-streak');
+  if (streakEl) streakEl.textContent = streak > 0 ? `🔥 ${streak}` : '—';
 
   // Load recent check-ins
   const { data: recent } = await _sb.from('checkins')
@@ -4023,6 +4054,80 @@ async function completeSignUp() {
   goOnboard(4);
 }
 
+// ── Edit Profile ─────────────────────────────────────────────
+const RIG_ICONS = ['🚛','🚚','🚜','🚌','🚐','🛻','🏎','🚑','🚒','🦺'];
+
+function openEditProfile() {
+  const overlay = document.getElementById('edit-profile-overlay');
+  overlay.style.display = 'flex';
+  const currentIcon = document.getElementById('profile-avatar').textContent;
+  document.getElementById('rig-icon-picker').innerHTML = RIG_ICONS.map(icon =>
+    `<button data-icon="${icon}" onclick="selectRigIcon(this)" style="font-size:28px;padding:8px;background:${icon === currentIcon ? 'var(--steel)' : 'transparent'};border:2px solid ${icon === currentIcon ? 'var(--amber)' : 'transparent'};border-radius:10px;cursor:pointer">${icon}</button>`
+  ).join('');
+  document.getElementById('edit-rig-label').value = document.getElementById('profile-rig').textContent;
+}
+
+function selectRigIcon(btn) {
+  document.querySelectorAll('#rig-icon-picker button').forEach(b => {
+    b.style.borderColor = 'transparent';
+    b.style.background = 'transparent';
+    delete b.dataset.selected;
+  });
+  btn.style.borderColor = 'var(--amber)';
+  btn.style.background = 'var(--steel)';
+  btn.dataset.selected = 'true';
+}
+
+async function saveEditProfile() {
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) return;
+  const selectedBtn = document.querySelector('#rig-icon-picker button[data-selected="true"]');
+  const rigIcon = selectedBtn ? selectedBtn.dataset.icon : document.getElementById('profile-avatar').textContent;
+  const rigLabel = document.getElementById('edit-rig-label').value.trim();
+  const { error } = await _sb.from('profiles')
+    .update({ rig_icon: rigIcon, rig_label: rigLabel })
+    .eq('id', session.user.id);
+  if (!error) {
+    document.getElementById('profile-avatar').textContent = rigIcon;
+    document.getElementById('profile-rig').textContent = rigLabel || 'Driver';
+    closeEditProfile();
+    showToast('Profile updated!');
+  } else {
+    showToast('Could not save. Try again.');
+  }
+}
+
+function closeEditProfile() {
+  document.getElementById('edit-profile-overlay').style.display = 'none';
+}
+
+// ── Stop Teaser (shared links) ───────────────────────────────
+function teaserJoin() {
+  document.getElementById('stop-teaser-overlay').style.display = 'none';
+  openSignIn();
+}
+
+async function loadStopFromParam(session) {
+  const params = new URLSearchParams(window.location.search);
+  const placeId = params.get('stop');
+  if (!placeId) return false;
+  if (session) {
+    APP.currentStop = { name: '', place_id: placeId, address: '', googleRating: null, googleCount: null, lat: 0, lng: 0 };
+    showScreen('profile', document.querySelectorAll('.screen-nav button')[2]);
+    return true;
+  }
+  // Not signed in — show teaser with stop info from DB
+  const { data: stopData } = await _sb.from('checkins')
+    .select('stop_name, stop_address')
+    .eq('stop_place_id', placeId)
+    .limit(1)
+    .single();
+  document.getElementById('teaser-stop-name').textContent = stopData?.stop_name || 'A truck stop';
+  document.getElementById('teaser-stop-address').textContent = stopData?.stop_address || '';
+  document.getElementById('stop-teaser-overlay').style.display = 'flex';
+  return true;
+}
+
 // ── Initialize ──────────────────────────────────────────────
 renderAnnotations('splash');
 
@@ -4032,13 +4137,16 @@ if (_inviteParam) {
   APP.onboard.inviteCode = _inviteParam.toUpperCase();
 }
 
-// Check if already signed in; if invite link + not signed in, skip splash
-_sb.auth.getSession().then(({ data }) => {
-  if (data.session) {
-    showScreen('finder', document.querySelectorAll('.screen-nav button')[1]);
-  } else if (APP.onboard.inviteCode) {
-    showScreen('onboard', document.querySelectorAll('.screen-nav button')[8]);
-    goOnboard(1); // triggers invite moment display
+// Check if already signed in; handle ?stop= shared links and invite codes
+_sb.auth.getSession().then(async ({ data }) => {
+  const handledStop = await loadStopFromParam(data.session);
+  if (!handledStop) {
+    if (data.session) {
+      showScreen('finder', document.querySelectorAll('.screen-nav button')[1]);
+    } else if (APP.onboard.inviteCode) {
+      showScreen('onboard', document.querySelectorAll('.screen-nav button')[8]);
+      goOnboard(1); // triggers invite moment display
+    }
   }
 });
 
@@ -4048,5 +4156,31 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 <div id="km-toast" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:var(--warm-white);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;white-space:nowrap;pointer-events:none"></div>
+
+<!-- Edit Profile overlay -->
+<div id="edit-profile-overlay" style="display:none;position:fixed;inset:0;background:rgba(13,15,20,0.97);z-index:500;flex-direction:column;padding:32px 24px;overflow-y:auto">
+  <div style="font-size:20px;font-weight:800;color:var(--warm-white);margin-bottom:24px">Edit Profile</div>
+  <div style="margin-bottom:16px">
+    <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Rig Icon</div>
+    <div id="rig-icon-picker" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+  </div>
+  <div style="margin-bottom:24px">
+    <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Rig / Title</div>
+    <input id="edit-rig-label" type="text" maxlength="30" placeholder="e.g. Flatbed Operator" style="width:100%;background:var(--steel);border:1px solid #333;border-radius:10px;padding:12px;font-size:15px;color:var(--warm-white);box-sizing:border-box">
+  </div>
+  <button class="btn-primary" onclick="saveEditProfile()" style="margin-bottom:10px">Save changes</button>
+  <button class="btn-secondary" onclick="closeEditProfile()">Cancel</button>
+</div>
+
+<!-- Stop teaser overlay (for shared ?stop= links) -->
+<div id="stop-teaser-overlay" style="display:none;position:fixed;inset:0;background:rgba(13,15,20,0.97);z-index:500;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center">
+  <div style="font-size:48px;margin-bottom:16px">🚛</div>
+  <div style="font-size:11px;color:var(--amber);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">KEEP MOVING</div>
+  <div id="teaser-stop-name" style="font-size:20px;font-weight:800;color:var(--warm-white);margin-bottom:6px">Truck Stop</div>
+  <div id="teaser-stop-address" style="font-size:13px;color:var(--road-dust);margin-bottom:24px"></div>
+  <div style="font-size:15px;color:var(--warm-white);line-height:1.6;margin-bottom:24px">A driver shared this stop with you.<br>Join Keep Moving to see reviews,<br>ratings, and road flags.</div>
+  <button class="btn-primary" onclick="teaserJoin()" style="margin-bottom:10px;width:100%">Join Keep Moving →</button>
+  <button class="btn-secondary" onclick="document.getElementById('stop-teaser-overlay').style.display='none'" style="width:100%">Maybe later</button>
+</div>
 </body>
 </html>
