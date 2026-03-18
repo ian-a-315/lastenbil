@@ -2197,108 +2197,8 @@
         </div>
 
         <!-- Feed cards -->
-        <div class="feed-list">
-
-          <!-- Card 1: Check-in -->
-          <div class="feed-card">
-            <div class="feed-card-header">
-              <div class="feed-avatar">🚛</div>
-              <div class="feed-meta">
-                <div class="feed-handle">@TexasHauler</div>
-                <div class="feed-time">8 minutes ago</div>
-              </div>
-              <div class="feed-type-badge badge-checkin">✓ Check-in</div>
-            </div>
-            <div class="feed-stars">★★★★☆</div>
-            <div class="feed-body">"Showers clean, parking tight but found a spot on the east side. Food court is solid."</div>
-            <div class="feed-location">📍 Pilot Travel Center #437 · Memphis, TN · I-40</div>
-            <div class="feed-actions">
-              <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">24</span></button>
-              <button class="feed-action-btn" onclick="react(this)">💬 Reply</button>
-              <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
-            </div>
-          </div>
-
-          <!-- Card 2: Real-time flag -->
-          <div class="feed-card">
-            <div class="feed-card-header">
-              <div class="feed-avatar flag-av">🦉</div>
-              <div class="feed-meta">
-                <div class="feed-handle">@NightOwlNick</div>
-                <div class="feed-time">45 minutes ago</div>
-              </div>
-              <div class="feed-type-badge badge-flag">⚠ Flag</div>
-            </div>
-            <div class="feed-flag-banner">⚠ Parking FULL — Love's Travel Stop #289 · I-40 Exit 178, Memphis TN</div>
-            <div class="feed-body">"Lot is packed. Tried both entrances. Keep rolling to Pilot or TA."</div>
-            <div class="feed-actions">
-              <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">61</span></button>
-              <button class="feed-action-btn" onclick="react(this)">💬 Reply</button>
-              <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
-            </div>
-          </div>
-
-          <!-- Card 3: Driver tip -->
-          <div class="feed-card">
-            <div class="feed-card-header">
-              <div class="feed-avatar tip-av">🌾</div>
-              <div class="feed-meta">
-                <div class="feed-handle">@MidwestMile</div>
-                <div class="feed-time">2 hours ago</div>
-              </div>
-              <div class="feed-type-badge badge-tip">💡 Tip</div>
-            </div>
-            <div class="feed-body">"Pro tip — TA in Nashville off I-24 Exit 56 has the cleanest showers I've seen all year. Ask for tokens at the front counter, not the fuel desk. Saves you 10 minutes."</div>
-            <div class="feed-location">📍 TA Travel Center · Nashville, TN · I-24</div>
-            <div class="feed-actions">
-              <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">108</span></button>
-              <button class="feed-action-btn" onclick="react(this)">💬 Reply</button>
-              <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
-            </div>
-          </div>
-
-          <!-- Card 4: Milestone -->
-          <div class="feed-card">
-            <div class="feed-card-header">
-              <div class="feed-avatar mile-av">🦅</div>
-              <div class="feed-meta">
-                <div class="feed-handle">@EagleEyeEddie</div>
-                <div class="feed-time">4 hours ago</div>
-              </div>
-              <div class="feed-type-badge badge-milestone">🏆 Milestone</div>
-            </div>
-            <div class="feed-milestone-banner">
-              <div class="milestone-num">500</div>
-              <div class="milestone-label">stops logged on Keep Moving 🎉</div>
-            </div>
-            <div class="feed-body">"5 years on the road and 500 stops later. If you see me at a truck stop, first coffee's on me."</div>
-            <div class="feed-actions">
-              <button class="feed-action-btn" onclick="react(this)">🎉 Congrats <span class="react-count">203</span></button>
-              <button class="feed-action-btn" onclick="react(this)">💬 Reply</button>
-              <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
-            </div>
-          </div>
-
-          <!-- Card 5: Photo post -->
-          <div class="feed-card">
-            <div class="feed-card-header">
-              <div class="feed-avatar">🌵</div>
-              <div class="feed-meta">
-                <div class="feed-handle">@DesertRoadDave</div>
-                <div class="feed-time">6 hours ago</div>
-              </div>
-              <div class="feed-type-badge badge-tip">📸 Photo</div>
-            </div>
-            <div class="photo-placeholder">🌅</div>
-            <div class="feed-body">"I-10 westbound never gets old."</div>
-            <div class="feed-location">📍 El Paso, TX · I-10 West</div>
-            <div class="feed-actions">
-              <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">87</span></button>
-              <button class="feed-action-btn" onclick="react(this)">💬 Reply</button>
-              <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
-            </div>
-          </div>
-
+        <div class="feed-list" id="feed-list">
+          <div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Loading feed…</div>
         </div><!-- /feed-list -->
         <div style="height:60px"></div>
 
@@ -2802,6 +2702,8 @@ function showScreen(id, btn) {
   if (id === 'driver') loadDriverProfile();
   if (id === 'profile') loadStopProfile();
   if (id === 'diary') loadDiaryScreen();
+  if (id === 'feed') loadFeedScreen();
+  if (id !== 'feed' && _feedPollInterval) { clearInterval(_feedPollInterval); _feedPollInterval = null; }
   if (id === 'flag') {
     // Reset to step 1
     document.getElementById('flag-step1').style.display = 'block';
@@ -3001,9 +2903,12 @@ function setDiaryYear(el, year) {
   renderDiary(year);
 }
 
+let _activeFeedFilter = 'all';
 function setFeedFilter(el) {
   document.querySelectorAll('.feed-filter').forEach(f => f.classList.remove('active'));
   el.classList.add('active');
+  _activeFeedFilter = el.textContent.trim().toLowerCase();
+  renderFeed();
 }
 
 function react(btn) {
@@ -3261,6 +3166,96 @@ function renderDiary(year) {
           </div>
         </div>
       </div>`;
+  }).join('');
+}
+
+// ── Feed ─────────────────────────────────────────────────────
+let _feedPollInterval = null;
+
+async function loadFeedScreen() {
+  document.getElementById('feed-list').innerHTML =
+    '<div style="padding:28px;text-align:center;color:var(--road-dust);font-size:13px">Loading feed…</div>';
+  await renderFeed();
+  if (_feedPollInterval) clearInterval(_feedPollInterval);
+  _feedPollInterval = setInterval(renderFeed, 30000);
+}
+
+async function renderFeed() {
+  const [{ data: checkins }, { data: flags }] = await Promise.all([
+    _sb.from('checkins')
+      .select('stop_name, stop_address, rating, created_at, user_id, profiles(handle, rig_icon)')
+      .order('created_at', { ascending: false })
+      .limit(20),
+    _sb.from('flags')
+      .select('stop_name, stop_address, flag_type, flag_icon, note, created_at, user_id, profiles(handle, rig_icon)')
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(10)
+  ]);
+
+  const items = [
+    ...(checkins || []).map(c => ({ ...c, _type: 'checkin' })),
+    ...(flags   || []).map(f => ({ ...f, _type: 'flag'    }))
+  ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  if (!items.length) {
+    document.getElementById('feed-list').innerHTML = `
+      <div style="text-align:center;padding:48px 20px;color:var(--road-dust)">
+        <div style="font-size:40px;margin-bottom:14px">📋</div>
+        <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">Feed is empty</div>
+        <div style="font-size:13px;line-height:1.5">Be the first to check in at a stop.<br>Your review will appear here.</div>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('feed-list').innerHTML = items.map(item => {
+    const handle  = item.profiles?.handle   || 'driver';
+    const rigIcon = item.profiles?.rig_icon || '🚛';
+    const when    = timeAgo(item.created_at);
+
+    if (item._type === 'checkin') {
+      const stars = item.rating ? ratingToStars(item.rating) : '';
+      const loc   = item.stop_address ? `${item.stop_name} · ${item.stop_address}` : item.stop_name;
+      return `
+        <div class="feed-card">
+          <div class="feed-card-header">
+            <div class="feed-avatar">${rigIcon}</div>
+            <div class="feed-meta">
+              <div class="feed-handle">@${handle}</div>
+              <div class="feed-time">${when}</div>
+            </div>
+            <div class="feed-type-badge badge-checkin">✓ Check-in</div>
+          </div>
+          ${stars ? `<div class="feed-stars" style="margin-bottom:6px;font-size:15px">${stars}</div>` : ''}
+          <div class="feed-location">📍 ${loc}</div>
+          <div class="feed-actions">
+            <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">0</span></button>
+            <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
+          </div>
+        </div>`;
+    }
+
+    if (item._type === 'flag') {
+      const loc = item.stop_address ? `${item.stop_name} · ${item.stop_address}` : item.stop_name;
+      return `
+        <div class="feed-card">
+          <div class="feed-card-header">
+            <div class="feed-avatar flag-av">${rigIcon}</div>
+            <div class="feed-meta">
+              <div class="feed-handle">@${handle}</div>
+              <div class="feed-time">${when}</div>
+            </div>
+            <div class="feed-type-badge badge-flag">⚠ Flag</div>
+          </div>
+          <div class="feed-flag-banner">${item.flag_icon} ${item.flag_type} — ${loc}</div>
+          ${item.note ? `<div class="feed-body" style="margin-top:8px">"${item.note}"</div>` : ''}
+          <div class="feed-actions">
+            <button class="feed-action-btn" onclick="react(this)">👍 Helpful <span class="react-count">0</span></button>
+            <button class="feed-action-btn" onclick="react(this)">🔁 Share</button>
+          </div>
+        </div>`;
+    }
+    return '';
   }).join('');
 }
 
