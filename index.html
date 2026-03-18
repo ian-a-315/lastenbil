@@ -1942,16 +1942,16 @@
         </div>
 
         <div class="profile-hero">
-          <div class="stop-profile-name">Pilot Travel Center #437</div>
-          <div class="stop-profile-sub">Memphis, TN · I-40 Exit 182 · Open 24hrs</div>
+          <div class="stop-profile-name" id="sp-name">Pilot Travel Center #437</div>
+          <div class="stop-profile-sub" id="sp-sub">Memphis, TN · I-40 Exit 182 · Open 24hrs</div>
           <div class="overall-score-row">
-            <div class="score-big">4.2</div>
+            <div class="score-big" id="sp-score">4.2</div>
             <div>
-              <div class="score-stars">★★★★☆</div>
-              <div class="score-meta"><span>847 reviews</span> · <span>Last reviewed 8 min ago</span></div>
+              <div class="score-stars" id="sp-stars">★★★★☆</div>
+              <div class="score-meta" id="sp-meta"><span>847 reviews</span> · <span>Last reviewed 8 min ago</span></div>
             </div>
           </div>
-          <div class="flag-banner" style="display:inline-flex">✓ No active flags right now</div>
+          <div class="flag-banner" id="sp-flag-banner" style="display:inline-flex">✓ No active flags right now</div>
         </div>
 
         <div class="category-row">
@@ -2003,45 +2003,15 @@
         </div>
 
         <div class="reviews-section">
-          <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Recent Reviews</div>
-
-          <div class="review-card">
-            <div class="review-header">
-              <div>
-                <div class="reviewer-handle">@TexasHauler</div>
-                <div class="review-time">8 minutes ago · Checked in</div>
-              </div>
-              <div class="review-stars">★★★★☆</div>
-            </div>
-            <div class="review-body">"Showers were clean, parking was tight but found a spot on the east side of the lot. Food court is solid."</div>
-          </div>
-
-          <div class="review-card">
-            <div class="review-header">
-              <div>
-                <div class="reviewer-handle">@NightOwlNick</div>
-                <div class="review-time">2 hours ago · Written review</div>
-              </div>
-              <div class="review-stars">★★★★★</div>
-            </div>
-            <div class="review-body">"Best Subway on I-40. Shower tokens from the counter, quick in and out. Safe lot."</div>
-          </div>
-
-          <div class="review-card">
-            <div class="review-header">
-              <div>
-                <div class="reviewer-handle">@MidwestMile</div>
-                <div class="review-time">Yesterday</div>
-              </div>
-              <div class="review-stars">★★★☆☆</div>
-            </div>
-            <div class="review-body">"Fuel is pricey. Everything else is fine. Parking can fill up after midnight."</div>
+          <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Keep Moving Reviews</div>
+          <div id="sp-reviews">
+            <div style="padding:20px;text-align:center;color:var(--road-dust);font-size:13px">Loading community reviews…</div>
           </div>
         </div>
 
         <div style="height:100px"></div>
         <div class="checkin-btn" style="display:flex;gap:8px;padding:10px 16px;">
-          <button onclick="showScreen('checkin', document.querySelectorAll('.screen-nav button')[3])" style="flex:1">
+          <button onclick="goToCheckin()" style="flex:1">
             ＋ Check In
           </button>
           <button onclick="showScreen('flag', document.querySelectorAll('.screen-nav button')[7])" style="flex:1;background:rgba(232,80,80,0.15);color:var(--danger);border:1px solid rgba(232,80,80,0.4);border-radius:14px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;">
@@ -2346,54 +2316,30 @@
 
         <!-- Career stats -->
         <div class="diary-header">
-          <div class="diary-title">@TexasHauler's Road Diary</div>
+          <div class="diary-title" id="diary-title">My Road Diary</div>
           <div class="diary-career-stats">
             <div class="diary-stat">
-              <div class="diary-stat-val">348</div>
+              <div class="diary-stat-val" id="diary-stops">—</div>
               <div class="diary-stat-label">Stops</div>
             </div>
             <div class="diary-stat">
-              <div class="diary-stat-val">48</div>
+              <div class="diary-stat-val" id="diary-states">—</div>
               <div class="diary-stat-label">States</div>
             </div>
             <div class="diary-stat">
-              <div class="diary-stat-val">291</div>
+              <div class="diary-stat-val" id="diary-reviews">—</div>
               <div class="diary-stat-label">Reviews</div>
             </div>
             <div class="diary-stat">
-              <div class="diary-stat-val">4.1★</div>
+              <div class="diary-stat-val" id="diary-avg">—</div>
               <div class="diary-stat-label">Avg rating</div>
             </div>
           </div>
 
           <!-- State coverage -->
           <div class="diary-states-label">States covered</div>
-          <div class="diary-states-grid">
-            <div class="state-sq visited">AL</div><div class="state-sq visited">AR</div>
-            <div class="state-sq">AK</div><div class="state-sq visited">AZ</div>
-            <div class="state-sq visited">CA</div><div class="state-sq visited">CO</div>
-            <div class="state-sq">CT</div><div class="state-sq">DE</div>
-            <div class="state-sq visited">FL</div><div class="state-sq visited">GA</div>
-            <div class="state-sq">HI</div><div class="state-sq visited">IA</div>
-            <div class="state-sq visited">ID</div><div class="state-sq visited">IL</div>
-            <div class="state-sq visited">IN</div><div class="state-sq visited">KS</div>
-            <div class="state-sq visited">KY</div><div class="state-sq visited">LA</div>
-            <div class="state-sq">MA</div><div class="state-sq visited">MD</div>
-            <div class="state-sq">ME</div><div class="state-sq visited">MI</div>
-            <div class="state-sq visited">MN</div><div class="state-sq visited">MO</div>
-            <div class="state-sq visited">MS</div><div class="state-sq visited">MT</div>
-            <div class="state-sq visited">NC</div><div class="state-sq visited">ND</div>
-            <div class="state-sq visited">NE</div><div class="state-sq">NH</div>
-            <div class="state-sq">NJ</div><div class="state-sq visited">NM</div>
-            <div class="state-sq visited">NV</div><div class="state-sq visited">NY</div>
-            <div class="state-sq visited">OH</div><div class="state-sq visited">OK</div>
-            <div class="state-sq visited">OR</div><div class="state-sq visited">PA</div>
-            <div class="state-sq">RI</div><div class="state-sq visited">SC</div>
-            <div class="state-sq visited">SD</div><div class="state-sq visited">TN</div>
-            <div class="state-sq visited">TX</div><div class="state-sq visited">UT</div>
-            <div class="state-sq">VT</div><div class="state-sq visited">VA</div>
-            <div class="state-sq visited">WA</div><div class="state-sq visited">WI</div>
-            <div class="state-sq visited">WV</div><div class="state-sq visited">WY</div>
+          <div class="diary-states-grid" id="diary-states-grid">
+            <!-- populated by JS -->
           </div>
         </div>
 
@@ -2408,105 +2354,9 @@
 
         <!-- Stop grid -->
         <div class="diary-grid-wrap">
-          <div class="diary-count-label">348 stops logged</div>
-          <div class="diary-grid">
-
-            <div class="diary-tile">
-              <div class="diary-tile-top pilot">
-                <div class="diary-tile-brand">P</div>
-                <div class="diary-tile-stars-top">★★★★☆</div>
-              </div>
-              <div class="diary-tile-body">
-                <div class="diary-tile-name">Pilot #437</div>
-                <div class="diary-tile-sub">Memphis, TN · I-40</div>
-                <div class="diary-tile-note">"Showers clean, parking tight but manageable."</div>
-              </div>
-            </div>
-
-            <div class="diary-tile">
-              <div class="diary-tile-top ta">
-                <div class="diary-tile-brand">TA</div>
-                <div class="diary-tile-stars-top">★★★★★</div>
-              </div>
-              <div class="diary-tile-body">
-                <div class="diary-tile-name">TA Travel Center</div>
-                <div class="diary-tile-sub">Nashville, TN · I-24</div>
-                <div class="diary-tile-note">"Best showers on I-24. No wait, spotless."</div>
-              </div>
-            </div>
-
-            <div class="diary-tile">
-              <div class="diary-tile-top flyingj">
-                <div class="diary-tile-brand">FJ</div>
-                <div class="diary-tile-stars-top">★★★★☆</div>
-              </div>
-              <div class="diary-tile-body">
-                <div class="diary-tile-name">Flying J #1204</div>
-                <div class="diary-tile-sub">Amarillo, TX · I-40</div>
-                <div class="diary-tile-note">"Huge lot, easy in and out. Fuel was fair."</div>
-              </div>
-            </div>
-
-            <div class="diary-tile">
-              <div class="diary-tile-top loves">
-                <div class="diary-tile-brand">L♥</div>
-                <div class="diary-tile-stars-top">★★★☆☆</div>
-              </div>
-              <div class="diary-tile-body">
-                <div class="diary-tile-name">Love's #289</div>
-                <div class="diary-tile-sub">Memphis, TN · I-40</div>
-                <div class="diary-tile-note">"Parking was full at midnight. Move on."</div>
-              </div>
-            </div>
-
-            <div class="diary-tile">
-              <div class="diary-tile-top petro">
-                <div class="diary-tile-brand">PE</div>
-                <div class="diary-tile-stars-top">★★★★★</div>
-              </div>
-              <div class="diary-tile-body">
-                <div class="diary-tile-name">Petro #88</div>
-                <div class="diary-tile-sub">El Paso, TX · I-10</div>
-                <div class="diary-tile-note">"Iron Skillet was worth the stop alone."</div>
-              </div>
-            </div>
-
-            <div class="diary-tile">
-              <div class="diary-tile-top pilot">
-                <div class="diary-tile-brand">P</div>
-                <div class="diary-tile-stars-top">★★★★☆</div>
-              </div>
-              <div class="diary-tile-body">
-                <div class="diary-tile-name">Pilot #812</div>
-                <div class="diary-tile-sub">Albuquerque, NM · I-40</div>
-                <div class="diary-tile-note">"Good lot size. Subway inside was fresh."</div>
-              </div>
-            </div>
-
-            <div class="diary-tile">
-              <div class="diary-tile-top indie">
-                <div class="diary-tile-brand">★</div>
-                <div class="diary-tile-stars-top">★★★★★</div>
-              </div>
-              <div class="diary-tile-body">
-                <div class="diary-tile-name">Rip Griffin</div>
-                <div class="diary-tile-sub">Lubbock, TX · US-84</div>
-                <div class="diary-tile-note">"Hidden gem. Never crowded, great staff."</div>
-              </div>
-            </div>
-
-            <div class="diary-tile">
-              <div class="diary-tile-top ta">
-                <div class="diary-tile-brand">TA</div>
-                <div class="diary-tile-stars-top">★★★☆☆</div>
-              </div>
-              <div class="diary-tile-body">
-                <div class="diary-tile-name">TA #221</div>
-                <div class="diary-tile-sub">Oklahoma City, OK · I-40</div>
-                <div class="diary-tile-note">"Lot needs repaving. Inside is fine."</div>
-              </div>
-            </div>
-
+          <div class="diary-count-label" id="diary-count-label">Loading your diary…</div>
+          <div class="diary-grid" id="diary-grid">
+            <!-- populated by loadDiaryScreen() -->
           </div>
         </div>
         <div style="height:20px"></div>
@@ -2549,8 +2399,8 @@
             <div class="flag-stop-context">
               <div class="flag-stop-icon">📍</div>
               <div>
-                <div class="flag-stop-name">Pilot Travel Center #437</div>
-                <div class="flag-stop-sub">Memphis, TN · I-40 Exit 182</div>
+                <div class="flag-stop-name" id="flag-stop-name">—</div>
+                <div class="flag-stop-sub" id="flag-stop-sub">—</div>
               </div>
             </div>
             <div class="flag-step-title">What's the issue?</div>
@@ -2599,8 +2449,8 @@
             <div class="flag-stop-context">
               <div class="flag-stop-icon">📍</div>
               <div>
-                <div class="flag-stop-name">Pilot Travel Center #437</div>
-                <div class="flag-stop-sub">Memphis, TN · I-40 Exit 182</div>
+                <div class="flag-stop-name" id="flag-stop-name2">—</div>
+                <div class="flag-stop-sub" id="flag-stop-sub2">—</div>
               </div>
             </div>
             <div class="flag-step-title">Confirm & add detail</div>
@@ -2938,6 +2788,18 @@ function showScreen(id, btn) {
   document.querySelector('.phone-screen').scrollTop = 0;
   if (id === 'finder') loadFinderScreen();
   if (id === 'driver') loadDriverProfile();
+  if (id === 'profile') loadStopProfile();
+  if (id === 'diary') loadDiaryScreen();
+  if (id === 'flag') {
+    const el1 = document.getElementById('flag-stop-name');
+    const el2 = document.getElementById('flag-stop-sub');
+    const el3 = document.getElementById('flag-stop-name2');
+    const el4 = document.getElementById('flag-stop-sub2');
+    if (el1) el1.textContent = currentStop.name || '—';
+    if (el2) el2.textContent = currentStop.address || '—';
+    if (el3) el3.textContent = currentStop.name || '—';
+    if (el4) el4.textContent = currentStop.address || '—';
+  }
 }
 
 function renderAnnotations(id) {
@@ -3077,6 +2939,7 @@ function goFlagStep3() {
 function setDiaryYear(el, year) {
   document.querySelectorAll('.diary-year-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
+  renderDiary(year);
 }
 
 function setFeedFilter(el) {
@@ -3093,6 +2956,209 @@ function react(btn) {
 
 function showConfirmation() {
   document.getElementById('conf-screen').style.display = 'block';
+}
+
+// ── Stop Profile ─────────────────────────────────────────────
+function viewStop(name, place_id, address, googleRating, googleCount) {
+  currentStop = { name, place_id, address, googleRating: googleRating || 0, googleCount: googleCount || 0 };
+  showScreen('profile', document.querySelectorAll('.screen-nav button')[2]);
+}
+
+function goToCheckin() {
+  const el = document.getElementById('checkin-stop-name');
+  if (el) el.textContent = '📍 ' + currentStop.name + (currentStop.address ? ', ' + currentStop.address : '');
+  showScreen('checkin', document.querySelectorAll('.screen-nav button')[3]);
+}
+
+function ratingToStars(r) {
+  if (!r || isNaN(r)) return '☆☆☆☆☆';
+  const full = Math.min(Math.round(r), 5);
+  return '★'.repeat(full) + '☆'.repeat(5 - full);
+}
+
+async function loadStopProfile() {
+  const { name, place_id, address, googleRating, googleCount } = currentStop;
+
+  document.getElementById('sp-name').textContent = name || '—';
+  document.getElementById('sp-sub').textContent = address || '';
+
+  // Baseline: show Google rating while KM data loads
+  const gRating = parseFloat(googleRating);
+  document.getElementById('sp-score').textContent = gRating ? gRating.toFixed(1) : '—';
+  document.getElementById('sp-stars').textContent = ratingToStars(gRating);
+  document.getElementById('sp-meta').innerHTML = googleCount
+    ? `<span>${Number(googleCount).toLocaleString()} Google reviews</span>`
+    : `<span style="color:var(--road-dust)">No Google reviews</span>`;
+
+  document.getElementById('sp-reviews').innerHTML =
+    '<div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Loading community reviews…</div>';
+
+  if (!place_id) return;
+
+  // Query Keep Moving check-ins for this stop (join profiles for handle)
+  const { data: checkins } = await _sb
+    .from('checkins')
+    .select('rating, created_at, profiles(handle, rig_icon)')
+    .eq('stop_place_id', place_id)
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  if (checkins && checkins.length) {
+    const rated = checkins.filter(c => c.rating);
+    if (rated.length) {
+      const avg = rated.reduce((s, c) => s + c.rating, 0) / rated.length;
+      document.getElementById('sp-score').textContent = avg.toFixed(1);
+      document.getElementById('sp-stars').textContent = ratingToStars(avg);
+      document.getElementById('sp-meta').innerHTML =
+        `<span>${rated.length} Keep Moving ${rated.length === 1 ? 'review' : 'reviews'}</span> · <span>Last visited ${timeAgo(checkins[0].created_at)}</span>`;
+    } else {
+      document.getElementById('sp-meta').innerHTML =
+        `<span>${checkins.length} check-in${checkins.length > 1 ? 's' : ''}</span> · <span>Last visited ${timeAgo(checkins[0].created_at)}</span>`;
+    }
+
+    document.getElementById('sp-reviews').innerHTML = checkins.slice(0, 5).map(c => {
+      const handle = c.profiles?.handle || 'driver';
+      const rigIcon = c.profiles?.rig_icon || '🚛';
+      const stars = c.rating ? ratingToStars(c.rating) : '';
+      return `
+        <div class="review-card">
+          <div class="review-header">
+            <div>
+              <div class="reviewer-handle">${rigIcon} @${handle}</div>
+              <div class="review-time">${timeAgo(c.created_at)} · Checked in</div>
+            </div>
+            <div class="review-stars" style="font-size:14px;letter-spacing:1px">${stars}</div>
+          </div>
+        </div>`;
+    }).join('');
+  } else {
+    document.getElementById('sp-reviews').innerHTML = `
+      <div style="text-align:center;padding:32px 16px;color:var(--road-dust)">
+        <div style="font-size:36px;margin-bottom:12px">🛑</div>
+        <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">No Keep Moving check-ins yet</div>
+        <div style="font-size:13px">Be the first driver to rate this stop.</div>
+      </div>`;
+  }
+}
+
+// ── Road Diary ────────────────────────────────────────────────
+const ALL_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA',
+  'HI','IA','ID','IL','IN','KS','KY','LA','ME','MD','MA','MI','MN','MS',
+  'MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA',
+  'RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+let _allCheckins = [];
+
+function getBrandClass(name) {
+  const n = (name || '').toLowerCase();
+  if (n.includes('pilot')) return 'pilot';
+  if (n.includes("love's") || n.includes('loves')) return 'loves';
+  if (n.includes(' ta ') || n.startsWith('ta ') || n.includes('travel centers of america')) return 'ta';
+  if (n.includes('flying j') || n.includes('flyingj')) return 'flyingj';
+  if (n.includes('petro')) return 'petro';
+  return 'indie';
+}
+
+function getBrandLetter(name) {
+  const n = (name || '').toLowerCase();
+  if (n.includes('pilot')) return 'P';
+  if (n.includes("love's") || n.includes('loves')) return 'L♥';
+  if (n.includes(' ta ') || n.startsWith('ta ')) return 'TA';
+  if (n.includes('flying j')) return 'FJ';
+  if (n.includes('petro')) return 'PE';
+  return (name || '?').charAt(0).toUpperCase();
+}
+
+function getStateFromAddress(addr) {
+  if (!addr) return null;
+  const m = addr.match(/,\s*([A-Z]{2})(\s+\d+)?(\s*$)/);
+  return m ? m[1] : null;
+}
+
+async function loadDiaryScreen() {
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) return;
+
+  const { data: profile } = await _sb.from('profiles')
+    .select('handle')
+    .eq('id', session.user.id)
+    .single();
+
+  if (profile) {
+    document.getElementById('diary-title').textContent = `@${profile.handle}'s Road Diary`;
+  }
+
+  const { data: checkins } = await _sb.from('checkins')
+    .select('stop_name, stop_address, rating, created_at')
+    .eq('user_id', session.user.id)
+    .order('created_at', { ascending: false });
+
+  _allCheckins = checkins || [];
+  renderDiary('all');
+}
+
+function renderDiary(year) {
+  const checkins = year === 'all'
+    ? _allCheckins
+    : _allCheckins.filter(c => new Date(c.created_at).getFullYear().toString() === year);
+
+  // Career stats always from all-time data
+  const allRated = _allCheckins.filter(c => c.rating);
+  const visitedStates = new Set(
+    _allCheckins.map(c => getStateFromAddress(c.stop_address)).filter(Boolean)
+  );
+  const avgRating = allRated.length
+    ? (allRated.reduce((s, c) => s + c.rating, 0) / allRated.length).toFixed(1) + '★'
+    : '—';
+
+  document.getElementById('diary-stops').textContent = _allCheckins.length;
+  document.getElementById('diary-states').textContent = visitedStates.size;
+  document.getElementById('diary-reviews').textContent = allRated.length;
+  document.getElementById('diary-avg').textContent = avgRating;
+
+  // State grid
+  document.getElementById('diary-states-grid').innerHTML = ALL_STATES.map(s =>
+    `<div class="state-sq ${visitedStates.has(s) ? 'visited' : ''}">${s}</div>`
+  ).join('');
+
+  // Count label
+  const total = checkins.length;
+  document.getElementById('diary-count-label').textContent = total === 0
+    ? 'No stops yet — go check one in!'
+    : `${total} stop${total === 1 ? '' : 's'} logged${year !== 'all' ? ' in ' + year : ''}`;
+
+  // Diary grid
+  if (total === 0) {
+    document.getElementById('diary-grid').innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:32px 16px;color:var(--road-dust)">
+        <div style="font-size:40px;margin-bottom:12px">📓</div>
+        <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">Your diary is empty</div>
+        <div style="font-size:13px;line-height:1.5">Every stop you check in<br>becomes a tile here.</div>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('diary-grid').innerHTML = checkins.map(c => {
+    const brandClass = getBrandClass(c.stop_name);
+    const brandLetter = getBrandLetter(c.stop_name);
+    const stateMatch = (c.stop_address || '').match(/,\s*([A-Z]{2})/);
+    const state = stateMatch ? stateMatch[1] : '';
+    const city = (c.stop_address || '').split(',')[0].trim();
+    const stars = c.rating ? ratingToStars(c.rating) : '';
+    return `
+      <div class="diary-tile" onclick="viewStop('${c.stop_name.replace(/'/g,"\\'")}', null, '${(c.stop_address||'').replace(/'/g,"\\'")}', 0, 0)">
+        <div class="diary-tile-top ${brandClass}">
+          <div class="diary-tile-brand">${brandLetter}</div>
+          ${stars ? `<div class="diary-tile-stars-top">${stars}</div>` : ''}
+        </div>
+        <div class="diary-tile-body">
+          <div class="diary-tile-name">${c.stop_name}</div>
+          <div class="diary-tile-sub">${city}${state ? ', ' + state : ''} · ${timeAgo(c.created_at)}</div>
+          <div class="diary-tile-note" style="color:${stars ? 'var(--amber)' : 'var(--road-dust)'};font-style:normal">
+            ${stars || 'No rating'}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 // ── Driver Profile ──────────────────────────────────────────
@@ -3114,13 +3180,22 @@ async function loadDriverProfile() {
     document.getElementById('profile-rig').textContent = profile.rig_label || 'Driver';
   }
 
-  // Load check-in count
-  const { count } = await _sb.from('checkins')
-    .select('*', { count: 'exact', head: true })
+  // Load check-in count + states
+  const { data: allCheckins } = await _sb.from('checkins')
+    .select('stop_address, rating')
     .eq('user_id', userId);
 
-  document.getElementById('profile-stops').textContent = count || 0;
-  document.getElementById('profile-reviews').textContent = count || 0;
+  const count = allCheckins ? allCheckins.length : 0;
+  const stateCount = allCheckins
+    ? new Set(allCheckins.map(c => getStateFromAddress(c.stop_address)).filter(Boolean)).size
+    : 0;
+
+  document.getElementById('profile-stops').textContent = count;
+  document.getElementById('profile-reviews').textContent = allCheckins ? allCheckins.filter(c => c.rating).length : 0;
+
+  // Update states tile if it exists
+  const statesTile = document.querySelector('#screen-driver .stat-tile:nth-child(2) .stat-val');
+  if (statesTile) statesTile.textContent = stateCount;
 
   // Load recent check-ins
   const { data: recent } = await _sb.from('checkins')
@@ -3263,7 +3338,7 @@ function initFinderMap(lat, lng) {
     // Render stop cards
     document.getElementById('stops-list').innerHTML = stops.map(place => {
       const rating = place.rating ? place.rating.toFixed(1) : '—';
-      const count = place.user_ratings_total ? place.user_ratings_total.toLocaleString() : '0';
+      const count = place.user_ratings_total || 0;
       const addr = place.vicinity || '';
 
       // Haversine distance
@@ -3273,8 +3348,11 @@ function initFinderMap(lat, lng) {
       const a = Math.sin(dLat/2)**2 + Math.cos(lat * Math.PI/180) * Math.cos(place.geometry.location.lat() * Math.PI/180) * Math.sin(dLon/2)**2;
       const dist = (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1);
 
+      const safeName = place.name.replace(/'/g,"\\'");
+      const safeAddr = addr.replace(/'/g,"\\'");
+
       return `
-        <div class="stop-card" onclick="selectStop('${place.name.replace(/'/g,"\\'")}', '${place.place_id}', '${addr.replace(/'/g,"\\'")}')">
+        <div class="stop-card" onclick="viewStop('${safeName}', '${place.place_id}', '${safeAddr}', ${place.rating || 0}, ${count})">
           <div class="stop-card-header">
             <div>
               <div class="stop-name">${place.name}</div>
@@ -3282,11 +3360,12 @@ function initFinderMap(lat, lng) {
             </div>
             <div class="stop-rating">
               <div class="rating-big">${rating}</div>
-              <div class="rating-count">${count} reviews</div>
+              <div class="rating-count">${count.toLocaleString()} reviews</div>
             </div>
           </div>
-          <div style="margin-top:10px">
-            <button class="btn-primary" style="width:100%;padding:10px" onclick="event.stopPropagation();selectStop('${place.name.replace(/'/g,"\\'")}', '${place.place_id}', '${addr.replace(/'/g,"\\'")}')">Check In →</button>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="btn-primary" style="flex:1;padding:10px" onclick="event.stopPropagation();viewStop('${safeName}', '${place.place_id}', '${safeAddr}', ${place.rating || 0}, ${count})">View Stop →</button>
+            <button style="padding:10px 14px;background:var(--steel);border:1px solid #333;border-radius:10px;color:var(--road-dust);font-size:13px;font-weight:700;cursor:pointer" onclick="event.stopPropagation();selectStop('${safeName}', '${place.place_id}', '${safeAddr}')">＋ Check In</button>
           </div>
         </div>`;
     }).join('');
