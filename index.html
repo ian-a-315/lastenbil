@@ -4685,6 +4685,7 @@ async function handleAvatarSelect(e) {
   if (!session) return;
   const objUrl = URL.createObjectURL(file);
   const img = new Image();
+  img.onerror = () => { URL.revokeObjectURL(objUrl); showToast('Could not read photo. Try a different image.'); };
   img.onload = async () => {
     URL.revokeObjectURL(objUrl);
     // Center-crop to square, resize to 400x400
@@ -4694,12 +4695,14 @@ async function handleAvatarSelect(e) {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, 400, 400);
     canvas.toBlob(async blob => {
-      if (!blob) return;
+      if (!blob) { showToast('Could not process photo. Try again.'); return; }
       showToast('Uploading photo…');
       const path = `${session.user.id}/avatar.jpg`;
+      // Remove first in case the file already exists (avoids upsert policy issues)
+      await _sb.storage.from('stop-photos').remove([path]);
       const { error: upErr } = await _sb.storage.from('stop-photos')
-        .upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
-      if (upErr) { showToast('Upload failed. Try again.'); return; }
+        .upload(path, blob, { contentType: 'image/jpeg' });
+      if (upErr) { showToast(upErr.message || 'Upload failed. Try again.'); return; }
       const { data: { publicUrl } } = _sb.storage.from('stop-photos').getPublicUrl(path);
       const { error: dbErr } = await _sb.from('profiles')
         .update({ avatar_url: publicUrl }).eq('id', session.user.id);
@@ -4708,7 +4711,7 @@ async function handleAvatarSelect(e) {
         APP.profile.avatarUrl = publicUrl;
         showToast('Profile photo updated!');
       } else {
-        showToast('Could not save. Try again.');
+        showToast(dbErr.message || 'Could not save. Try again.');
       }
     }, 'image/jpeg', 0.85);
   };
