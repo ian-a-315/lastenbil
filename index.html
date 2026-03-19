@@ -3375,7 +3375,8 @@ const PADD_NAME = { R10:'East Coast', R20:'Midwest', R30:'Gulf Coast', R40:'Rock
 
 async function fetchDieselPrice(state) {
   if (!EIA_KEY || EIA_KEY === 'YOUR_EIA_KEY') return null;
-  const region = PADD[state] || 'NUS';
+  // Accept region code directly (e.g. 'NUS') or map from state abbreviation
+  const region = (state && state.length > 2) ? state : (PADD[state] || 'NUS');
   // Return cached value if fetched in this session
   if (APP.diesel.cache[region]) return APP.diesel.cache[region];
   try {
@@ -3669,20 +3670,21 @@ async function loadStopProfile() {
   document.getElementById('sp-reviews').innerHTML =
     '<div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Pulling driver reports...</div>';
 
-  // Diesel price
+  // Diesel price — fall back to national avg if state not parsed
   const dieselEl = document.getElementById('sp-diesel');
-  const state = parseState(address);
-  if (dieselEl && state) {
+  if (dieselEl) {
+    const state = parseState(address);
     dieselEl.style.display = 'none';
-    fetchDieselPrice(state).then(d => {
+    fetchDieselPrice(state || 'NUS').then(d => {
       if (!d) return;
       const date = new Date(d.period + 'T12:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric' });
+      const label = state ? `${d.region} regional avg` : 'U.S. national avg';
       dieselEl.innerHTML = `
         <div class="diesel-bar">
           <i data-lucide="fuel" class="icon-lg" style="color:var(--amber);flex-shrink:0"></i>
           <div>
             <div class="diesel-price">$${Number(d.price).toFixed(2)}<span style="font-size:12px;font-weight:400;color:var(--road-dust)">/gal diesel</span></div>
-            <div class="diesel-label">${d.region} regional avg · updated ${date}</div>
+            <div class="diesel-label">${label} · updated ${date}</div>
           </div>
         </div>`;
       dieselEl.style.display = 'block';
