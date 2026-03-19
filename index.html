@@ -2717,6 +2717,12 @@ const ANNOTATIONS = {
   }
 };
 
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str ?? '';
+  return d.innerHTML;
+}
+
 function showScreen(id, btn) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.screen-nav button').forEach(b => b.classList.remove('active'));
@@ -2820,8 +2826,25 @@ function handlePhotoSelect(e) {
   if (!file) return;
   e.target.value = '';
   if (APP.checkin.pendingPhotos.length >= 3) return;
-  APP.checkin.pendingPhotos.push(file);
-  renderPhotoPreviews();
+  const objUrl = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    URL.revokeObjectURL(objUrl);
+    const MAX = 1200;
+    let w = img.width, h = img.height;
+    if (w > MAX || h > MAX) {
+      if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+      else { w = Math.round(w * MAX / h); h = MAX; }
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    canvas.toBlob(blob => {
+      if (blob) APP.checkin.pendingPhotos.push(blob);
+      renderPhotoPreviews();
+    }, 'image/jpeg', 0.82);
+  };
+  img.src = objUrl;
 }
 
 function removePhoto(i) {
@@ -2829,13 +2852,17 @@ function removePhoto(i) {
   renderPhotoPreviews();
 }
 
+let _photoPreviewURLs = [];
 function renderPhotoPreviews() {
+  _photoPreviewURLs.forEach(u => URL.revokeObjectURL(u));
+  _photoPreviewURLs = [];
   const container = document.getElementById('photo-previews');
   const btn = document.getElementById('add-photo-btn');
   if (!container) return;
   const count = APP.checkin.pendingPhotos.length;
   container.innerHTML = APP.checkin.pendingPhotos.map((f, i) => {
     const url = URL.createObjectURL(f);
+    _photoPreviewURLs.push(url);
     return `<div style="position:relative;display:inline-block">
       <img src="${url}" class="photo-thumb">
       <button onclick="removePhoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#1a1d24;border:1px solid #555;color:var(--warm-white);font-size:11px;cursor:pointer;padding:0;line-height:1">×</button>
@@ -3433,6 +3460,9 @@ function viewStop(name, place_id, address, googleRating, googleCount, lat, lng) 
   APP.currentStop = { name, place_id, address, googleRating: googleRating || 0, googleCount: googleCount || 0, lat: lat || null, lng: lng || null };
   showScreen('profile', document.querySelectorAll('.screen-nav button')[2]);
 }
+function viewStopFromDiary(el) {
+  viewStop(el.dataset.name, el.dataset.pid || null, el.dataset.addr, 0, 0);
+}
 
 function goToCheckin() {
   resetCheckinState();
@@ -3556,7 +3586,7 @@ async function loadStopProfile() {
           ${photos.map(p => `
             <div class="sp-photo-item">
               <img src="${p.photo_url}" class="sp-photo-img" loading="lazy" onerror="this.parentElement.style.display='none'">
-              <div class="sp-photo-caption">📸 @${p.profiles?.handle || 'driver'} · ${timeAgo(p.created_at)}</div>
+              <div class="sp-photo-caption">📸 @${esc(p.profiles?.handle || 'driver')} · ${timeAgo(p.created_at)}</div>
             </div>`).join('')}
         </div>`;
     } else if (photosEl) {
@@ -3572,8 +3602,8 @@ async function loadStopProfile() {
           <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Tips from Drivers</div>
           ${tips.slice(0, 3).map(c => `
             <div style="background:var(--steel);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">
-              <div style="font-size:13px;color:var(--warm-white);line-height:1.5">${c.tip}</div>
-              <div style="font-size:11px;color:var(--road-dust);margin-top:4px">${c.profiles?.rig_icon || '🚛'} @${c.profiles?.handle || 'driver'} · ${timeAgo(c.created_at)}</div>
+              <div style="font-size:13px;color:var(--warm-white);line-height:1.5">${esc(c.tip)}</div>
+              <div style="font-size:11px;color:var(--road-dust);margin-top:4px">${c.profiles?.rig_icon || '🚛'} @${esc(c.profiles?.handle || 'driver')} · ${timeAgo(c.created_at)}</div>
             </div>`).join('')}`;
       } else {
         tipsEl.innerHTML = '';
@@ -3614,13 +3644,13 @@ async function loadStopProfile() {
         <div class="review-card">
           <div class="review-header">
             <div>
-              <div class="reviewer-handle">${rigIcon} @${handle}${followBtn}</div>
+              <div class="reviewer-handle">${rigIcon} @${esc(handle)}${followBtn}</div>
               <div class="review-time">${timeDisplay} · Checked in${since ? ` · <span style="color:var(--road-dust)">${since}</span>` : ''}</div>
             </div>
             <div class="review-stars" style="font-size:14px;letter-spacing:1px">${stars}</div>
           </div>
           ${spotsLabel ? `<div style="margin-top:6px;font-size:12px;color:var(--road-dust)">${spotsLabel}</div>` : ''}
-          ${c.note ? `<div style="margin-top:8px;font-size:13px;color:var(--warm-white);line-height:1.5;font-style:italic">"${c.note}"</div>` : ''}
+          ${c.note ? `<div style="margin-top:8px;font-size:13px;color:var(--warm-white);line-height:1.5;font-style:italic">"${esc(c.note)}"</div>` : ''}
           ${!isOwn ? `<button onclick="reportItem('checkin','${c.id}')" style="margin-top:8px;font-size:11px;color:var(--road-dust);background:none;border:none;cursor:pointer;padding:0">⚑ Report</button>` : ''}
         </div>`;
     }).join('');
@@ -3683,25 +3713,30 @@ function getStateFromAddress(addr) {
 }
 
 async function loadDiaryScreen() {
-  const { data: { session } } = await _sb.auth.getSession();
-  if (!session) return;
+  const countLabel = document.getElementById('diary-count-label');
+  try {
+    const { data: { session } } = await _sb.auth.getSession();
+    if (!session) return;
 
-  const { data: profile } = await _sb.from('profiles')
-    .select('handle')
-    .eq('id', session.user.id)
-    .single();
+    const { data: profile } = await _sb.from('profiles')
+      .select('handle')
+      .eq('id', session.user.id)
+      .single();
 
-  if (profile) {
-    document.getElementById('diary-title').textContent = `@${profile.handle}'s Road Diary`;
+    if (profile) {
+      document.getElementById('diary-title').textContent = `@${profile.handle}'s Road Diary`;
+    }
+
+    const { data: checkins } = await _sb.from('checkins')
+      .select('stop_name, stop_address, stop_place_id, rating, created_at')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false });
+
+    APP.diary.checkins = checkins || [];
+    renderDiary('all');
+  } catch (err) {
+    if (countLabel) countLabel.textContent = "Couldn't load — tap Road Diary to retry.";
   }
-
-  const { data: checkins } = await _sb.from('checkins')
-    .select('stop_name, stop_address, stop_place_id, rating, created_at')
-    .eq('user_id', session.user.id)
-    .order('created_at', { ascending: false });
-
-  APP.diary.checkins = checkins || [];
-  renderDiary('all');
 }
 
 function renderDiary(year) {
@@ -3754,14 +3789,14 @@ function renderDiary(year) {
     const stars = c.rating ? ratingToStars(c.rating) : '';
     const diaryPid = c.stop_place_id ? ("'" + c.stop_place_id + "'") : 'null';
     return `
-      <div class="diary-tile" onclick="viewStop('${c.stop_name.replace(/'/g,"\\'")}', ${diaryPid}, '${(c.stop_address||'').replace(/'/g,"\\'")}', 0, 0)">
+      <div class="diary-tile" onclick="viewStopFromDiary(this)" data-name="${esc(c.stop_name)}" data-pid="${c.stop_place_id || ''}" data-addr="${esc(c.stop_address || '')}">
         <div class="diary-tile-top ${brandClass}">
           <div class="diary-tile-brand">${brandLetter}</div>
           ${stars ? `<div class="diary-tile-stars-top">${stars}</div>` : ''}
         </div>
         <div class="diary-tile-body">
-          <div class="diary-tile-name">${c.stop_name}</div>
-          <div class="diary-tile-sub">${city}${state ? ', ' + state : ''} · ${timeAgo(c.created_at)}</div>
+          <div class="diary-tile-name">${esc(c.stop_name)}</div>
+          <div class="diary-tile-sub">${esc(city)}${state ? ', ' + state : ''} · ${timeAgo(c.created_at)}</div>
           <div class="diary-tile-note" style="color:${stars ? 'var(--amber)' : 'var(--road-dust)'};font-style:normal">
             ${stars || 'No rating'}
           </div>
@@ -3772,13 +3807,17 @@ function renderDiary(year) {
 
 // ── Feed ─────────────────────────────────────────────────────
 async function loadFeedScreen() {
-  document.getElementById('feed-list').innerHTML =
-    '<div style="padding:28px;text-align:center;color:var(--road-dust);font-size:13px">Checking the CB...</div>';
-  const { data: { session } } = await _sb.auth.getSession();
-  if (session) { APP.user = session.user.id; await getFollowIds(); }
-  await renderFeed();
-  if (APP.feed.pollInterval) clearInterval(APP.feed.pollInterval);
-  APP.feed.pollInterval = setInterval(renderFeed, 30000);
+  const feedEl = document.getElementById('feed-list');
+  feedEl.innerHTML = '<div style="padding:28px;text-align:center;color:var(--road-dust);font-size:13px">Checking the CB...</div>';
+  try {
+    const { data: { session } } = await _sb.auth.getSession();
+    if (session) { APP.user = session.user.id; await getFollowIds(); }
+    await renderFeed();
+    if (APP.feed.pollInterval) clearInterval(APP.feed.pollInterval);
+    APP.feed.pollInterval = setInterval(renderFeed, 30000);
+  } catch (err) {
+    feedEl.innerHTML = '<div style="padding:28px;text-align:center;color:var(--road-dust);font-size:13px">Couldn\'t load — <button onclick="loadFeedScreen()" style="color:var(--amber);background:none;border:none;cursor:pointer;font-size:13px;padding:0">tap to retry</button></div>';
+  }
 }
 
 async function renderFeed() {
@@ -3900,14 +3939,14 @@ async function renderFeed() {
           <div class="feed-card-header">
             <div class="feed-avatar">${rigIcon}</div>
             <div class="feed-meta">
-              <div class="feed-handle">@${handle}${followBtn}</div>
+              <div class="feed-handle">@${esc(handle)}${followBtn}</div>
               <div class="feed-time">${when}${sinceLabel ? ` · <span style="color:var(--road-dust);font-size:11px">${sinceLabel}</span>` : ''}</div>
             </div>
             <div class="feed-type-badge badge-checkin">✓ Check-in</div>
           </div>
           ${stars ? `<div class="feed-stars" style="margin-bottom:6px;font-size:15px">${stars}</div>` : ''}
-          <div class="feed-location">📍 ${loc}</div>
-          ${item.note ? `<div class="feed-body" style="margin-top:8px;font-size:13px;color:var(--warm-white);line-height:1.5;font-style:italic">"${item.note}"</div>` : ''}
+          <div class="feed-location">📍 ${esc(loc)}</div>
+          ${item.note ? `<div class="feed-body" style="margin-top:8px;font-size:13px;color:var(--warm-white);line-height:1.5;font-style:italic">"${esc(item.note)}"</div>` : ''}
           <div class="feed-actions">
             <button class="feed-action-btn ${hasReacted ? 'reacted' : ''}" onclick="react(this,'checkin','${item.id}')">👍 Helpful <span class="react-count">${helpCount}</span></button>
             <button class="feed-action-btn" onclick="shareItem('${safeName}','${safePid}')">🔁 Share</button>
@@ -3923,13 +3962,13 @@ async function renderFeed() {
           <div class="feed-card-header">
             <div class="feed-avatar flag-av">${rigIcon}</div>
             <div class="feed-meta">
-              <div class="feed-handle">@${handle}${followBtn}</div>
+              <div class="feed-handle">@${esc(handle)}${followBtn}</div>
               <div class="feed-time">${when}${sinceLabel ? ` · <span style="color:var(--road-dust);font-size:11px">${sinceLabel}</span>` : ''}</div>
             </div>
             <div class="feed-type-badge badge-flag">⚠ Flag</div>
           </div>
-          <div class="feed-flag-banner">${item.flag_icon} ${item.flag_type} — ${loc}</div>
-          ${item.note ? `<div class="feed-body" style="margin-top:8px">"${item.note}"</div>` : ''}
+          <div class="feed-flag-banner">${item.flag_icon} ${esc(item.flag_type)} — ${esc(loc)}</div>
+          ${item.note ? `<div class="feed-body" style="margin-top:8px">"${esc(item.note)}"</div>` : ''}
           <div class="feed-actions">
             <button class="feed-action-btn ${hasReacted ? 'reacted' : ''}" onclick="react(this,'flag','${item.id}')">👍 Helpful <span class="react-count">${helpCount}</span></button>
             <button class="feed-action-btn" onclick="shareItem('${safeName}','${safePid}')">🔁 Share</button>
@@ -3943,6 +3982,7 @@ async function renderFeed() {
 
 // ── Driver Profile ──────────────────────────────────────────
 async function loadDriverProfile() {
+  try {
   const { data: { session } } = await _sb.auth.getSession();
   if (!session) return;
 
@@ -3993,8 +4033,8 @@ async function loadDriverProfile() {
       return `
         <div class="recent-stop-item">
           <div class="recent-stop-info">
-            <div class="rs-name">${c.stop_name}</div>
-            <div class="rs-meta">${c.stop_address || ''} · ${when}</div>
+            <div class="rs-name">${esc(c.stop_name)}</div>
+            <div class="rs-meta">${esc(c.stop_address || '')} · ${when}</div>
           </div>
           <div class="rs-rating">${stars}</div>
         </div>`;
@@ -4003,6 +4043,9 @@ async function loadDriverProfile() {
 
   // Render badge shelf
   evaluateBadges(userId).then(({ stats, earned }) => renderBadgeShelf(stats, earned));
+  } catch (err) {
+    document.getElementById('profile-handle').textContent = 'Couldn\'t load — tap Profile to retry.';
+  }
 }
 
 function timeAgo(iso) {
@@ -4027,6 +4070,7 @@ function parkingSpotsLabel(v) {
 }
 
 async function signOut() {
+  if (APP.feed.pollInterval) { clearInterval(APP.feed.pollInterval); APP.feed.pollInterval = null; }
   await _sb.auth.signOut();
   APP.user = null;
   APP.follows.ids = new Set();
@@ -4254,6 +4298,8 @@ async function signIn() {
 
 // ── Sign-up (onboarding) ────────────────────────────────────
 async function completeSignUp() {
+  const btn = document.getElementById('complete-btn');
+  if (btn.disabled) return;
   const handle = document.getElementById('handle-input').value.trim();
   const email = document.getElementById('signup-email').value.trim();
   const password = document.getElementById('signup-password').value;
@@ -4279,7 +4325,6 @@ async function completeSignUp() {
     return;
   }
 
-  const btn = document.getElementById('complete-btn');
   btn.textContent = 'Creating your account…';
   btn.disabled = true;
 
