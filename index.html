@@ -4323,8 +4323,6 @@ async function completeSignUp() {
   }
 
   // Save profile
-  const { data: { session: insertSession } } = await _sb.auth.getSession();
-  console.log('Insert session uid:', insertSession?.user?.id, '| authData uid:', authData?.user?.id);
   const { error: profileError } = await _sb.from('profiles').insert({
     id: authData.user.id,
     handle: handle,
