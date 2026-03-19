@@ -3027,9 +3027,9 @@ async function submitCheckin() {
     (async () => {
       for (const file of photos) {
         const path = `${session.user.id}/${checkinId}/${Date.now()}.jpg`;
-        const { data: up } = await _sb.storage.from('stop-photos').upload(path, file, { upsert: false });
+        const { data: up } = await _sb.storage.from('stop-phots').upload(path, file, { upsert: false });
         if (up) {
-          const { data: { publicUrl } } = _sb.storage.from('stop-photos').getPublicUrl(path);
+          const { data: { publicUrl } } = _sb.storage.from('stop-phots').getPublicUrl(path);
           await _sb.from('checkin_photos').insert({
             checkin_id: checkinId,
             user_id: session.user.id,
@@ -4699,11 +4699,11 @@ async function handleAvatarSelect(e) {
       showToast('Uploading photo…');
       const path = `${session.user.id}/avatar.jpg`;
       // Remove first in case the file already exists (avoids upsert policy issues)
-      await _sb.storage.from('stop-photos').remove([path]);
-      const { error: upErr } = await _sb.storage.from('stop-photos')
+      await _sb.storage.from('stop-phots').remove([path]);
+      const { error: upErr } = await _sb.storage.from('stop-phots')
         .upload(path, blob, { contentType: 'image/jpeg' });
       if (upErr) { showToast(upErr.message || 'Upload failed. Try again.'); return; }
-      const { data: { publicUrl } } = _sb.storage.from('stop-photos').getPublicUrl(path);
+      const { data: { publicUrl } } = _sb.storage.from('stop-phots').getPublicUrl(path);
       const { error: dbErr } = await _sb.from('profiles')
         .update({ avatar_url: publicUrl }).eq('id', session.user.id);
       if (!dbErr) {
