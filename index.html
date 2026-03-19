@@ -1914,13 +1914,13 @@
         </div>
 
         <div class="profile-hero">
-          <div class="stop-profile-name" id="sp-name">Pilot Travel Center #437</div>
-          <div class="stop-profile-sub" id="sp-sub">Memphis, TN · I-40 Exit 182 · Open 24hrs</div>
+          <div class="stop-profile-name" id="sp-name">Loading…</div>
+          <div class="stop-profile-sub" id="sp-sub"></div>
           <div class="overall-score-row">
-            <div class="score-big" id="sp-score">4.2</div>
+            <div class="score-big" id="sp-score">—</div>
             <div>
-              <div class="score-stars" id="sp-stars">★★★★☆</div>
-              <div class="score-meta" id="sp-meta"><span>847 reviews</span> · <span>Last reviewed 8 min ago</span></div>
+              <div class="score-stars" id="sp-stars"></div>
+              <div class="score-meta" id="sp-meta"></div>
             </div>
           </div>
           <div class="flag-banner" id="sp-flag-banner" style="display:inline-flex">✓ No active flags right now</div>
@@ -2245,15 +2245,15 @@
           <div class="diary-title" id="diary-title">My Road Diary</div>
           <div class="diary-career-stats">
             <div class="diary-stat">
-              <div class="diary-stat-val" id="diary-stops">—</div>
+              <div class="diary-stat-val" id="diary-stops">0</div>
               <div class="diary-stat-label">Stops</div>
             </div>
             <div class="diary-stat">
-              <div class="diary-stat-val" id="diary-states">—</div>
+              <div class="diary-stat-val" id="diary-states">0</div>
               <div class="diary-stat-label">States</div>
             </div>
             <div class="diary-stat">
-              <div class="diary-stat-val" id="diary-reviews">—</div>
+              <div class="diary-stat-val" id="diary-reviews">0</div>
               <div class="diary-stat-label">Reviews</div>
             </div>
             <div class="diary-stat">
@@ -2404,8 +2404,7 @@
             <div class="flag-confirm-title">Flag posted!</div>
             <div class="flag-confirm-sub">Your flag is live at<br><strong style="color:var(--warm-white)" id="flag-confirm-stop-name">—</strong></div>
             <div class="flag-confirm-stat">
-              <strong id="flag-confirm-driver-count">—</strong>
-              <span>drivers within 50 miles will see this flag</span>
+              <span>Drivers nearby will be alerted</span>
             </div>
             <div class="flag-expire-badge">⏱ Auto-expires in 3 hours</div>
             <button class="btn-primary" style="width:100%" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">Back to map →</button>
@@ -3268,7 +3267,7 @@ async function getGeoPosition() {
 
 // Share a stop via Web Share API or clipboard fallback
 async function shareItem(stopName, placeId) {
-  const url = placeId ? `https://keep-moving-app.vercel.app/?stop=${placeId}` : 'https://keep-moving-app.vercel.app';
+  const url = placeId ? `https://keep-moving-app.vercel.app/?stop=${placeId}&n=${encodeURIComponent(stopName)}` : 'https://keep-moving-app.vercel.app';
   const text = `Check out ${stopName} on Keep Moving — the trucker community app.`;
   if (navigator.share) {
     try { await navigator.share({ title: stopName, text, url }); } catch {}
@@ -4551,7 +4550,7 @@ async function loadStopFromParam(session) {
     _sb.from('checkins').select('stop_name, stop_address, rating').eq('stop_place_id', placeId).limit(20),
     _sb.from('checkins').select('*', { count: 'exact', head: true }).eq('stop_place_id', placeId)
   ]);
-  const name = stopData?.[0]?.stop_name || 'A truck stop';
+  const name = params.get('n') ? decodeURIComponent(params.get('n')) : (stopData?.[0]?.stop_name || 'A truck stop');
   const address = stopData?.[0]?.stop_address || '';
   const rated = (stopData || []).filter(c => c.rating);
   const avgRating = rated.length ? (rated.reduce((s, c) => s + c.rating, 0) / rated.length).toFixed(1) : null;
