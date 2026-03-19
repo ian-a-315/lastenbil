@@ -4132,7 +4132,7 @@ async function loadDriverProfile() {
   if (profile) {
     const avatarEl = document.getElementById('profile-avatar');
     if (profile.avatar_url) {
-      avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="Profile photo">`;
+      avatarEl.innerHTML = `<img src="${profile.avatar_url}?t=${Date.now()}" alt="Profile photo">`;
     } else if (profile.rig_icon) {
       avatarEl.textContent = profile.rig_icon;
     } else {
@@ -4707,7 +4707,8 @@ async function handleAvatarSelect(e) {
       const { error: dbErr } = await _sb.from('profiles')
         .update({ avatar_url: publicUrl }).eq('id', session.user.id);
       if (!dbErr) {
-        document.getElementById('profile-avatar').innerHTML = `<img src="${publicUrl}" alt="Profile photo">`;
+        const bust = `${publicUrl}?t=${Date.now()}`;
+        document.getElementById('profile-avatar').innerHTML = `<img src="${bust}" alt="Profile photo">`;
         APP.profile.avatarUrl = publicUrl;
         showToast('Profile photo updated!');
       } else {
