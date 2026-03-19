@@ -4304,6 +4304,15 @@ async function completeSignUp() {
       return;
     }
     authData = signUpData;
+    if (!authData?.user) {
+      btn.textContent = "That's my rig →";
+      btn.disabled = false;
+      goOnboard(2);
+      const errEl = document.getElementById('signup-error');
+      errEl.innerHTML = 'An account with that email already exists. <button onclick="openSignIn()" style="color:var(--amber);background:none;border:none;cursor:pointer;padding:0;font-size:inherit;text-decoration:underline">Sign in instead →</button>';
+      errEl.style.display = 'block';
+      return;
+    }
   }
 
   // Validate invite code and determine founding_driver status
@@ -4314,6 +4323,8 @@ async function completeSignUp() {
   }
 
   // Save profile
+  const { data: { session: insertSession } } = await _sb.auth.getSession();
+  console.log('Insert session uid:', insertSession?.user?.id, '| authData uid:', authData?.user?.id);
   const { error: profileError } = await _sb.from('profiles').insert({
     id: authData.user.id,
     handle: handle,
@@ -4327,12 +4338,22 @@ async function completeSignUp() {
 
   APP.profile = { handle, rigIcon: APP.onboard.rigIcon };
 
-  if (profileError && profileError.code !== '23505') {
-    // 23505 = duplicate, ignore (user refreshed)
-    goOnboard(2);
-    document.getElementById('signup-error').textContent = 'Handle already taken. Try another.';
-    document.getElementById('signup-error').style.display = 'block';
-    return;
+  if (profileError) {
+    console.error('Profile insert error:', profileError.code, profileError.message);
+    if (profileError.code !== '23505') {
+      // 23505 = duplicate, ignore (user refreshed)
+      goOnboard(2);
+      const errEl = document.getElementById('signup-error');
+      if (profileError.code === '42P01' || profileError.message?.includes('permission')) {
+        errEl.textContent = 'Account setup failed. Please try again.';
+      } else if (profileError.code === '23505') {
+        errEl.textContent = 'Handle already taken. Try another.';
+      } else {
+        errEl.textContent = profileError.message || 'Account setup failed. Please try again.';
+      }
+      errEl.style.display = 'block';
+      return;
+    }
   }
 
   goOnboard(4);
