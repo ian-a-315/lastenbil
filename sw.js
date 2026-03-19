@@ -1,5 +1,10 @@
-const CACHE = 'keepmoving-v3';
-const ASSETS = ['/', '/index.html', '/manifest.json'];
+const CACHE = 'keepmoving-v4';
+const ASSETS = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js',
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
@@ -16,7 +21,22 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Always fetch fresh from network, fall back to cache
+  const url = e.request.url;
+  // Cache-first for CDN assets — ensures offline works after first load
+  if (url.includes('unpkg.com') || url.includes('cdn.jsdelivr.net')) {
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        if (cached) return cached;
+        return fetch(e.request).then(response => {
+          const clone = response.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+          return response;
+        });
+      })
+    );
+    return;
+  }
+  // Network-first for everything else, fall back to cache
   e.respondWith(
     fetch(e.request).catch(() => caches.match(e.request))
   );
