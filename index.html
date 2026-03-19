@@ -4689,7 +4689,7 @@ async function handleAvatarSelect(e) {
     canvas.toBlob(async blob => {
       if (!blob) return;
       showToast('Uploading photo…');
-      const path = `avatars/${session.user.id}.jpg`;
+      const path = `${session.user.id}/avatar.jpg`;
       const { error: upErr } = await _sb.storage.from('stop-photos')
         .upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
       if (upErr) { showToast('Upload failed. Try again.'); return; }
