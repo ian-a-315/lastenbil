@@ -4697,7 +4697,7 @@ async function handleAvatarSelect(e) {
     canvas.toBlob(async blob => {
       if (!blob) { showToast('Could not process photo. Try again.'); return; }
       showToast('Uploading photo…');
-      const path = `${session.user.id}/avatar.jpg`;
+      const path = `${session.user.id}/avatar/photo.jpg`;
       // Remove first in case the file already exists (avoids upsert policy issues)
       await _sb.storage.from('stop-phots').remove([path]);
       const { error: upErr } = await _sb.storage.from('stop-phots')
