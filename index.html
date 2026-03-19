@@ -2084,6 +2084,15 @@
             <input type="file" accept="image/*" capture="environment" id="photo-file-input" style="display:none" onchange="handlePhotoSelect(event)">
           </div>
 
+          <div id="draft-banner" style="display:none;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);border-radius:12px;padding:12px 14px;margin-top:12px">
+            <div style="font-size:11px;font-weight:700;color:var(--amber);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">📋 Unsaved check-in</div>
+            <div style="font-size:13px;color:var(--warm-white);margin-bottom:10px" id="draft-banner-text"></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn-primary" onclick="restoreDraft()" style="flex:1;padding:10px;font-size:13px">Restore it →</button>
+              <button class="btn-secondary" onclick="dismissDraft()" style="padding:10px 14px;font-size:13px">Start fresh</button>
+            </div>
+          </div>
+
           <div style="margin-top:16px">
             <button class="btn-primary" id="checkin-submit-btn" onclick="submitCheckin()" style="width:100%">Next →</button>
           </div>
@@ -2926,6 +2935,8 @@ async function submitCheckin() {
   const noteVal = (document.getElementById('checkin-note')?.value || '').trim() || null;
   const tipVal  = (document.getElementById('checkin-tip')?.value  || '').trim() || null;
 
+  saveDraft(noteVal, tipVal);
+
   const { data: inserted, error } = await _sb.from('checkins').insert({
     user_id: session.user.id,
     stop_name: APP.currentStop.name,
@@ -2957,14 +2968,15 @@ async function submitCheckin() {
     return;
   }
 
+  clearDraft();
+
   // Upload photos in background (non-blocking)
   if (inserted?.id && APP.checkin.pendingPhotos.length > 0) {
     const checkinId = inserted.id;
     const photos = [...APP.checkin.pendingPhotos];
     (async () => {
       for (const file of photos) {
-        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-        const path = `${session.user.id}/${checkinId}/${Date.now()}.${ext}`;
+        const path = `${session.user.id}/${checkinId}/${Date.now()}.jpg`;
         const { data: up } = await _sb.storage.from('stop-photos').upload(path, file, { upsert: false });
         if (up) {
           const { data: { publicUrl } } = _sb.storage.from('stop-photos').getPublicUrl(path);
@@ -3464,10 +3476,64 @@ function viewStopFromDiary(el) {
   viewStop(el.dataset.name, el.dataset.pid || null, el.dataset.addr, 0, 0);
 }
 
+// ── Check-in draft (localStorage resilience) ─────────────────
+const DRAFT_KEY = 'km_draft';
+function saveDraft(note, tip) {
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({
+      stop: { ...APP.currentStop },
+      rating: APP.checkin.rating,
+      cats: { ...APP.checkin.cats },
+      parkingSpots: APP.checkin.parkingSpots,
+      quietAtNight: APP.checkin.quietAtNight,
+      note, tip, savedAt: Date.now()
+    }));
+  } catch(e) {}
+}
+function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch(e) {} }
+function loadDraft() { try { return JSON.parse(localStorage.getItem(DRAFT_KEY)); } catch(e) { return null; } }
+
+function restoreDraft() {
+  const d = loadDraft();
+  if (!d) return;
+  APP.currentStop = d.stop;
+  const stopEl = document.getElementById('checkin-stop-name');
+  if (stopEl) stopEl.textContent = '📍 ' + d.stop.name + (d.stop.address ? ', ' + d.stop.address : '');
+  if (d.rating) rateStar(d.rating);
+  Object.entries(d.cats || {}).forEach(([cat, val]) => { if (val) rateCategory(cat, val); });
+  if (d.parkingSpots) {
+    APP.checkin.parkingSpots = d.parkingSpots;
+    document.querySelectorAll('.spot-btn').forEach(b => {
+      b.classList.toggle('selected', (b.getAttribute('onclick') || '').includes(`'${d.parkingSpots}'`));
+    });
+  }
+  if (d.quietAtNight !== null && d.quietAtNight !== undefined) setQuiet(d.quietAtNight);
+  const noteEl = document.getElementById('checkin-note');
+  if (noteEl && d.note) noteEl.value = d.note;
+  const tipEl = document.getElementById('checkin-tip');
+  if (tipEl && d.tip) tipEl.value = d.tip;
+  document.getElementById('draft-banner').style.display = 'none';
+}
+
+function dismissDraft() {
+  clearDraft();
+  document.getElementById('draft-banner').style.display = 'none';
+}
+
 function goToCheckin() {
   resetCheckinState();
   const el = document.getElementById('checkin-stop-name');
   if (el) el.textContent = '📍 ' + APP.currentStop.name + (APP.currentStop.address ? ', ' + APP.currentStop.address : '');
+  const draft = loadDraft();
+  const bannerEl = document.getElementById('draft-banner');
+  const bannerText = document.getElementById('draft-banner-text');
+  if (draft && bannerEl && bannerText && (Date.now() - draft.savedAt) < 86400000) {
+    bannerText.textContent = `You have an unsaved check-in for ${esc(draft.stop.name)}. Restore your ratings and notes?`;
+    bannerEl.style.display = 'block';
+  } else {
+    clearDraft();
+    if (bannerEl) bannerEl.style.display = 'none';
+  }
   showScreen('checkin', document.querySelectorAll('.screen-nav button')[3]);
 }
 
