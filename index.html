@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Keep Moving">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
   /* ── Reset & Base ─────────────────────────────────────────── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1808,6 +1809,24 @@
     }
     body { background: var(--midnight); }
   }
+
+  /* ── Lucide Icons ──────────────────────────────────────────── */
+  .icon { width:16px; height:16px; display:inline-block; vertical-align:middle; flex-shrink:0; }
+  .icon-sm { width:14px; height:14px; }
+  .icon-md { width:18px; height:18px; }
+  .icon-lg { width:20px; height:20px; }
+  .icon-xl { width:24px; height:24px; }
+  .tab-icon i { width:20px; height:20px; display:block; margin:0 auto; }
+  .cat-icon i { width:18px; height:18px; }
+  .filter-chip i { width:14px; height:14px; vertical-align:middle; margin-right:3px; }
+  .flag-type-icon i { width:28px; height:28px; display:block; margin:0 auto; }
+  .flag-confirm-icon i { width:48px; height:48px; }
+  .flag-stop-icon i { width:18px; height:18px; }
+  .flag-preview-icon i { width:28px; height:28px; }
+  .flag-expire-note i { width:14px; height:14px; }
+  .flag-expire-badge i { width:14px; height:14px; }
+  .check-circle i { width:32px; height:32px; stroke:var(--success); }
+  .feed-action-btn i { width:14px; height:14px; }
 </style>
 </head>
 <body>
@@ -1860,8 +1879,8 @@
         <div class="nav-bar">
           <div class="nav-logo">KEEP<span>●</span>MOVING</div>
           <div style="display:flex;gap:8px">
-            <div class="nav-icon">🔍</div>
-            <div class="nav-icon">👤</div>
+            <div class="nav-icon"><i data-lucide="search" class="icon-sm"></i></div>
+            <div class="nav-icon"><i data-lucide="user" class="icon-sm"></i></div>
           </div>
         </div>
 
@@ -1869,19 +1888,19 @@
         <div class="map-placeholder" style="position:relative">
           <div id="finder-map" style="width:100%;height:100%"></div>
           <div class="map-search">
-            <span style="opacity:0.5">🔍</span>
+            <span style="opacity:0.5"><i data-lucide="search" class="icon-sm"></i></span>
             <input id="stop-search-input" type="text" placeholder="Search any stop or highway..." autocomplete="off">
           </div>
         </div>
 
         <!-- Filters -->
         <div class="filter-row">
-          <div class="filter-chip" data-keyword="showers" onclick="toggleFinderFilter(this)">🚿 Showers</div>
-          <div class="filter-chip" data-keyword="parking" onclick="toggleFinderFilter(this)">🅿 Parking</div>
-          <div class="filter-chip" data-keyword="food restaurant" onclick="toggleFinderFilter(this)">🍔 Food</div>
-          <div class="filter-chip" data-keyword="fuel diesel" onclick="toggleFinderFilter(this)">⛽ Fuel</div>
-          <div class="filter-chip" data-keyword="CAT scale weigh station" onclick="toggleFinderFilter(this)">⚖ CAT Scale</div>
-          <div class="filter-chip" data-keyword="dog park pet friendly" onclick="toggleFinderFilter(this)">🐕 Dog Park</div>
+          <div class="filter-chip" data-keyword="showers" onclick="toggleFinderFilter(this)"><i data-lucide="droplets" class="icon"></i> Showers</div>
+          <div class="filter-chip" data-keyword="parking" onclick="toggleFinderFilter(this)"><i data-lucide="square-parking" class="icon"></i> Parking</div>
+          <div class="filter-chip" data-keyword="food restaurant" onclick="toggleFinderFilter(this)"><i data-lucide="utensils" class="icon"></i> Food</div>
+          <div class="filter-chip" data-keyword="fuel diesel" onclick="toggleFinderFilter(this)"><i data-lucide="fuel" class="icon"></i> Fuel</div>
+          <div class="filter-chip" data-keyword="CAT scale weigh station" onclick="toggleFinderFilter(this)"><i data-lucide="scale" class="icon"></i> CAT Scale</div>
+          <div class="filter-chip" data-keyword="dog park pet friendly" onclick="toggleFinderFilter(this)"><i data-lucide="dog" class="icon"></i> Dog Park</div>
         </div>
 
         <!-- Stop list -->
@@ -1891,15 +1910,15 @@
         <div style="height:60px"></div>
         <div class="tab-bar">
           <div class="tab">
-            <div class="tab-icon active-tab">🗺️</div>
+            <div class="tab-icon active-tab"><i data-lucide="map" class="icon-lg"></i></div>
             <div class="tab-label active-tab">Find</div>
           </div>
           <div class="tab" onclick="showScreen('feed', document.querySelectorAll('.screen-nav button')[5])">
-            <div class="tab-icon">📋</div>
+            <div class="tab-icon"><i data-lucide="clipboard-list" class="icon-lg"></i></div>
             <div class="tab-label">Feed</div>
           </div>
           <div class="tab" onclick="showScreen('driver', document.querySelectorAll('.screen-nav button')[4])">
-            <div class="tab-icon">👤</div>
+            <div class="tab-icon"><i data-lucide="user" class="icon-lg"></i></div>
             <div class="tab-label">Profile</div>
           </div>
         </div>
@@ -1923,37 +1942,37 @@
               <div class="score-meta" id="sp-meta"></div>
             </div>
           </div>
-          <div class="flag-banner" id="sp-flag-banner" style="display:inline-flex">✓ No active flags right now</div>
+          <div class="flag-banner" id="sp-flag-banner" style="display:inline-flex"><i data-lucide="check" class="icon-sm"></i> No active flags right now</div>
         </div>
 
         <div class="category-row" id="sp-cat-section">
           <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">Ratings by Category</div>
           <div class="cat-item">
-            <div class="cat-icon">🅿</div>
+            <div class="cat-icon"><i data-lucide="square-parking" class="icon-md"></i></div>
             <div class="cat-label">Parking</div>
             <div class="cat-bar-wrap"><div class="cat-bar" id="sp-bar-parking" style="width:0%"></div></div>
             <div class="cat-score" id="sp-score-parking">—</div>
           </div>
           <div class="cat-item">
-            <div class="cat-icon">🚿</div>
+            <div class="cat-icon"><i data-lucide="droplets" class="icon-md"></i></div>
             <div class="cat-label">Showers</div>
             <div class="cat-bar-wrap"><div class="cat-bar" id="sp-bar-showers" style="width:0%"></div></div>
             <div class="cat-score" id="sp-score-showers">—</div>
           </div>
           <div class="cat-item">
-            <div class="cat-icon">🍔</div>
+            <div class="cat-icon"><i data-lucide="utensils" class="icon-md"></i></div>
             <div class="cat-label">Food</div>
             <div class="cat-bar-wrap"><div class="cat-bar" id="sp-bar-food" style="width:0%"></div></div>
             <div class="cat-score" id="sp-score-food">—</div>
           </div>
           <div class="cat-item">
-            <div class="cat-icon">🔒</div>
+            <div class="cat-icon"><i data-lucide="lock" class="icon-md"></i></div>
             <div class="cat-label">Safety</div>
             <div class="cat-bar-wrap"><div class="cat-bar" id="sp-bar-safety" style="width:0%"></div></div>
             <div class="cat-score" id="sp-score-safety">—</div>
           </div>
           <div class="cat-item">
-            <div class="cat-icon">⛽</div>
+            <div class="cat-icon"><i data-lucide="fuel" class="icon-md"></i></div>
             <div class="cat-label">Fuel Price</div>
             <div class="cat-bar-wrap"><div class="cat-bar" id="sp-bar-fuel" style="width:0%"></div></div>
             <div class="cat-score" id="sp-score-fuel">—</div>
@@ -1983,7 +2002,7 @@
             ＋ Check In
           </button>
           <button onclick="showScreen('flag', document.querySelectorAll('.screen-nav button')[7])" style="flex:1;background:rgba(232,80,80,0.15);color:var(--danger);border:1px solid rgba(232,80,80,0.4);border-radius:14px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;">
-            🚩 Flag Issue
+            <i data-lucide="flag" class="icon"></i> Flag Issue
           </button>
         </div>
       </div>
@@ -2007,7 +2026,7 @@
 
           <div class="checkin-step-label">Step 2 of 5</div>
           <div class="checkin-step-title">How was it overall?</div>
-          <div class="checkin-stop-name" id="checkin-stop-name">📍 Pilot Travel Center #437, Memphis TN</div>
+          <div class="checkin-stop-name" id="checkin-stop-name"><i data-lucide="map-pin" class="icon"></i> Pilot Travel Center #437, Memphis TN</div>
 
           <div class="star-row" id="star-row">
             <div class="star" onclick="rateStar(1)">★</div>
@@ -2022,7 +2041,7 @@
           <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">Rate by category <span style="color:#444;font-size:10px">— optional</span></div>
           <div class="cat-rating-section">
             <div class="cat-rating-row">
-              <div class="cat-rating-label"><span>🅿</span> Parking</div>
+              <div class="cat-rating-label"><span><i data-lucide="square-parking" class="icon-sm"></i></span> Parking</div>
               <div class="mini-stars" id="cat-parking">
                 <span onclick="rateCategory('parking',1)">★</span><span onclick="rateCategory('parking',2)">★</span><span onclick="rateCategory('parking',3)">★</span><span onclick="rateCategory('parking',4)">★</span><span onclick="rateCategory('parking',5)">★</span>
               </div>
@@ -2030,32 +2049,32 @@
             <div style="padding:10px 0 8px;border-bottom:1px solid #2a2d35">
               <div style="font-size:11px;color:var(--road-dust);margin-bottom:8px">How full was the lot?</div>
               <div style="display:flex;gap:6px;flex-wrap:wrap">
-                <button class="spot-btn" onclick="selectParkingSpots('wide_open',this)">🟢 Wide open</button>
-                <button class="spot-btn" onclick="selectParkingSpots('plenty',this)">🟡 Plenty</button>
-                <button class="spot-btn" onclick="selectParkingSpots('tight',this)">🟠 Tight</button>
-                <button class="spot-btn" onclick="selectParkingSpots('full',this)">🔴 Full</button>
+                <button class="spot-btn" onclick="selectParkingSpots('wide_open',this)"><span class="dot-parking" style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:5px;vertical-align:middle"></span>Wide open</button>
+                <button class="spot-btn" onclick="selectParkingSpots('plenty',this)"><span class="dot-parking" style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block;margin-right:5px;vertical-align:middle"></span>Plenty</button>
+                <button class="spot-btn" onclick="selectParkingSpots('tight',this)"><span class="dot-parking" style="width:8px;height:8px;border-radius:50%;background:#f97316;display:inline-block;margin-right:5px;vertical-align:middle"></span>Tight</button>
+                <button class="spot-btn" onclick="selectParkingSpots('full',this)"><span class="dot-parking" style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;margin-right:5px;vertical-align:middle"></span>Full</button>
               </div>
             </div>
             <div class="cat-rating-row">
-              <div class="cat-rating-label"><span>🚿</span> Showers</div>
+              <div class="cat-rating-label"><span><i data-lucide="droplets" class="icon-sm"></i></span> Showers</div>
               <div class="mini-stars" id="cat-showers">
                 <span onclick="rateCategory('showers',1)">★</span><span onclick="rateCategory('showers',2)">★</span><span onclick="rateCategory('showers',3)">★</span><span onclick="rateCategory('showers',4)">★</span><span onclick="rateCategory('showers',5)">★</span>
               </div>
             </div>
             <div class="cat-rating-row">
-              <div class="cat-rating-label"><span>🍔</span> Food</div>
+              <div class="cat-rating-label"><span><i data-lucide="utensils" class="icon-sm"></i></span> Food</div>
               <div class="mini-stars" id="cat-food">
                 <span onclick="rateCategory('food',1)">★</span><span onclick="rateCategory('food',2)">★</span><span onclick="rateCategory('food',3)">★</span><span onclick="rateCategory('food',4)">★</span><span onclick="rateCategory('food',5)">★</span>
               </div>
             </div>
             <div class="cat-rating-row">
-              <div class="cat-rating-label"><span>🔒</span> Safety</div>
+              <div class="cat-rating-label"><span><i data-lucide="lock" class="icon-sm"></i></span> Safety</div>
               <div class="mini-stars" id="cat-safety">
                 <span onclick="rateCategory('safety',1)">★</span><span onclick="rateCategory('safety',2)">★</span><span onclick="rateCategory('safety',3)">★</span><span onclick="rateCategory('safety',4)">★</span><span onclick="rateCategory('safety',5)">★</span>
               </div>
             </div>
             <div class="cat-rating-row">
-              <div class="cat-rating-label"><span>⛽</span> Fuel Price</div>
+              <div class="cat-rating-label"><span><i data-lucide="fuel" class="icon-sm"></i></span> Fuel Price</div>
               <div class="mini-stars" id="cat-fuel">
                 <span onclick="rateCategory('fuel',1)">★</span><span onclick="rateCategory('fuel',2)">★</span><span onclick="rateCategory('fuel',3)">★</span><span onclick="rateCategory('fuel',4)">★</span><span onclick="rateCategory('fuel',5)">★</span>
               </div>
@@ -2067,10 +2086,10 @@
           </div>
 
           <div style="margin-top:20px">
-            <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">🔇 Quiet at night?</div>
+            <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px"><i data-lucide="volume-x" class="icon-sm"></i> Quiet at night?</div>
             <div style="display:flex;gap:8px">
-              <button class="quiet-btn" id="quiet-yes" onclick="setQuiet(true)">👍 Yes</button>
-              <button class="quiet-btn" id="quiet-no" onclick="setQuiet(false)">📢 No</button>
+              <button class="quiet-btn" id="quiet-yes" onclick="setQuiet(true)"><i data-lucide="moon" class="icon-sm"></i> Yes</button>
+              <button class="quiet-btn" id="quiet-no" onclick="setQuiet(false)"><i data-lucide="volume-2" class="icon-sm"></i> No</button>
             </div>
           </div>
 
@@ -2080,12 +2099,12 @@
 
           <div style="margin-top:20px">
             <div id="photo-previews" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"></div>
-            <button class="btn-secondary" id="add-photo-btn" onclick="addPhoto()" style="font-size:13px;padding:10px 16px;width:auto">📸 Add photo <span style="color:var(--road-dust);font-size:11px">(optional)</span></button>
+            <button class="btn-secondary" id="add-photo-btn" onclick="addPhoto()" style="font-size:13px;padding:10px 16px;width:auto"><i data-lucide="camera" class="icon"></i> Add photo <span style="color:var(--road-dust);font-size:11px">(optional)</span></button>
             <input type="file" accept="image/*" capture="environment" id="photo-file-input" style="display:none" onchange="handlePhotoSelect(event)">
           </div>
 
           <div id="draft-banner" style="display:none;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);border-radius:12px;padding:12px 14px;margin-top:12px">
-            <div style="font-size:11px;font-weight:700;color:var(--amber);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">📋 Unsaved check-in</div>
+            <div style="font-size:11px;font-weight:700;color:var(--amber);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px"><i data-lucide="clipboard" class="icon-sm"></i> Unsaved check-in</div>
             <div style="font-size:13px;color:var(--warm-white);margin-bottom:10px" id="draft-banner-text"></div>
             <div style="display:flex;gap:8px">
               <button class="btn-primary" onclick="restoreDraft()" style="flex:1;padding:10px;font-size:13px">Restore it →</button>
@@ -2101,8 +2120,8 @@
         <!-- Confirmation state (hidden by default) -->
         <div id="conf-screen" style="display:none;background:var(--midnight);position:absolute;inset:0;top:58px;">
           <div class="confirmation-screen">
-            <div class="check-circle">✓</div>
-            <div class="conf-title">Stop logged! 🛑</div>
+            <div class="check-circle"><i data-lucide="circle-check-big" class="icon-xl"></i></div>
+            <div class="conf-title">Stop logged!</div>
             <div class="conf-stat"><span id="conf-stop-name">That stop</span> added<br>to your road diary.</div>
             <div class="conf-count">
               <strong id="conf-checkin-count">1</strong>
@@ -2134,12 +2153,12 @@
         <div class="profile-screen">
           <div class="profile-top">
             <div class="profile-row">
-              <div class="avatar" id="profile-avatar">🚛</div>
+              <div class="avatar" id="profile-avatar"><i data-lucide="truck" class="icon-xl"></i></div>
               <div class="profile-info">
                 <div class="handle" id="profile-handle">@—</div>
                 <div class="real-name" id="profile-rig">—</div>
-                <div class="location">🐋 Founding Driver</div>
-                <button onclick="openEditProfile()" style="font-size:11px;color:var(--amber);background:none;border:none;cursor:pointer;font-weight:700;padding:2px 0;margin-top:4px">✏️ Edit profile</button>
+                <div class="location"><i data-lucide="anchor" class="icon-sm"></i> Founding Driver</div>
+                <button onclick="openEditProfile()" style="font-size:11px;color:var(--amber);background:none;border:none;cursor:pointer;font-weight:700;padding:2px 0;margin-top:4px"><i data-lucide="pencil" class="icon-sm"></i> Edit profile</button>
               </div>
             </div>
             <div class="stats-grid">
@@ -2183,15 +2202,15 @@
 
         <div class="tab-bar">
           <div class="tab" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">
-            <div class="tab-icon">🗺️</div>
+            <div class="tab-icon"><i data-lucide="map" class="icon-lg"></i></div>
             <div class="tab-label">Find</div>
           </div>
           <div class="tab" onclick="showScreen('feed', document.querySelectorAll('.screen-nav button')[5])">
-            <div class="tab-icon">📋</div>
+            <div class="tab-icon"><i data-lucide="clipboard-list" class="icon-lg"></i></div>
             <div class="tab-label">Feed</div>
           </div>
           <div class="tab">
-            <div class="tab-icon active-tab">👤</div>
+            <div class="tab-icon active-tab"><i data-lucide="user" class="icon-lg"></i></div>
             <div class="tab-label active-tab">Profile</div>
           </div>
         </div>
@@ -2227,15 +2246,15 @@
 
         <div class="tab-bar">
           <div class="tab" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">
-            <div class="tab-icon">🗺️</div>
+            <div class="tab-icon"><i data-lucide="map" class="icon-lg"></i></div>
             <div class="tab-label">Find</div>
           </div>
           <div class="tab">
-            <div class="tab-icon active-tab">📋</div>
+            <div class="tab-icon active-tab"><i data-lucide="clipboard-list" class="icon-lg"></i></div>
             <div class="tab-label active-tab">Feed</div>
           </div>
           <div class="tab" onclick="showScreen('driver', document.querySelectorAll('.screen-nav button')[4])">
-            <div class="tab-icon">👤</div>
+            <div class="tab-icon"><i data-lucide="user" class="icon-lg"></i></div>
             <div class="tab-label">Profile</div>
           </div>
         </div>
@@ -2298,15 +2317,15 @@
 
         <div class="tab-bar">
           <div class="tab" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">
-            <div class="tab-icon">🗺️</div>
+            <div class="tab-icon"><i data-lucide="map" class="icon-lg"></i></div>
             <div class="tab-label">Find</div>
           </div>
           <div class="tab" onclick="showScreen('feed', document.querySelectorAll('.screen-nav button')[5])">
-            <div class="tab-icon">📋</div>
+            <div class="tab-icon"><i data-lucide="clipboard-list" class="icon-lg"></i></div>
             <div class="tab-label">Feed</div>
           </div>
           <div class="tab" onclick="showScreen('driver', document.querySelectorAll('.screen-nav button')[4])">
-            <div class="tab-icon active-tab">👤</div>
+            <div class="tab-icon active-tab"><i data-lucide="user" class="icon-lg"></i></div>
             <div class="tab-label active-tab">Profile</div>
           </div>
         </div>
@@ -2332,7 +2351,7 @@
           </div>
           <div class="flag-screen">
             <div class="flag-stop-context">
-              <div class="flag-stop-icon">📍</div>
+              <div class="flag-stop-icon"><i data-lucide="map-pin" class="icon-md"></i></div>
               <div>
                 <div class="flag-stop-name" id="flag-stop-name">—</div>
                 <div class="flag-stop-sub" id="flag-stop-sub">—</div>
@@ -2341,28 +2360,28 @@
             <div class="flag-step-title">What's the issue?</div>
             <div class="flag-step-sub">Pick the best description. Other drivers will see this in real time.</div>
             <div class="flag-type-grid">
-              <div class="flag-type-tile" onclick="selectFlag(this,'🅿','Parking Full')">
-                <div class="flag-type-icon">🅿</div>
+              <div class="flag-type-tile" onclick="selectFlag(this,'square-parking','Parking Full')">
+                <div class="flag-type-icon"><i data-lucide="square-parking" class="icon-xl"></i></div>
                 <div class="flag-type-label">Parking Full</div>
               </div>
-              <div class="flag-type-tile" onclick="selectFlag(this,'🚿','Showers Closed')">
-                <div class="flag-type-icon">🚿</div>
+              <div class="flag-type-tile" onclick="selectFlag(this,'droplets','Showers Closed')">
+                <div class="flag-type-icon"><i data-lucide="droplets" class="icon-xl"></i></div>
                 <div class="flag-type-label">Showers Closed</div>
               </div>
-              <div class="flag-type-tile" onclick="selectFlag(this,'⏳','Long Wait')">
-                <div class="flag-type-icon">⏳</div>
+              <div class="flag-type-tile" onclick="selectFlag(this,'clock','Long Wait')">
+                <div class="flag-type-icon"><i data-lucide="clock" class="icon-xl"></i></div>
                 <div class="flag-type-label">Long Wait</div>
               </div>
-              <div class="flag-type-tile" onclick="selectFlag(this,'⚠️','Road Hazard')">
-                <div class="flag-type-icon">⚠️</div>
+              <div class="flag-type-tile" onclick="selectFlag(this,'triangle-alert','Road Hazard')">
+                <div class="flag-type-icon"><i data-lucide="triangle-alert" class="icon-xl"></i></div>
                 <div class="flag-type-label">Road Hazard</div>
               </div>
-              <div class="flag-type-tile" onclick="selectFlag(this,'🚧','Construction')">
-                <div class="flag-type-icon">🚧</div>
+              <div class="flag-type-tile" onclick="selectFlag(this,'construction','Construction')">
+                <div class="flag-type-icon"><i data-lucide="construction" class="icon-xl"></i></div>
                 <div class="flag-type-label">Construction</div>
               </div>
-              <div class="flag-type-tile" onclick="selectFlag(this,'⚖','Weigh Station')">
-                <div class="flag-type-icon">⚖</div>
+              <div class="flag-type-tile" onclick="selectFlag(this,'scale','Weigh Station')">
+                <div class="flag-type-icon"><i data-lucide="scale" class="icon-xl"></i></div>
                 <div class="flag-type-label">Weigh Station Open</div>
               </div>
             </div>
@@ -2382,7 +2401,7 @@
           </div>
           <div class="flag-screen">
             <div class="flag-stop-context">
-              <div class="flag-stop-icon">📍</div>
+              <div class="flag-stop-icon"><i data-lucide="map-pin" class="icon-md"></i></div>
               <div>
                 <div class="flag-stop-name" id="flag-stop-name2">—</div>
                 <div class="flag-stop-sub" id="flag-stop-sub2">—</div>
@@ -2390,7 +2409,7 @@
             </div>
             <div class="flag-step-title">Confirm & add detail</div>
             <div id="flag-selected-preview" class="flag-selected-preview">
-              <div class="flag-preview-icon" id="flag-prev-icon">🅿</div>
+              <div class="flag-preview-icon" id="flag-prev-icon"><i data-lucide="square-parking" class="icon-xl"></i></div>
               <div>
                 <div class="flag-preview-type" id="flag-prev-type">Parking Full</div>
                 <div class="flag-preview-sub">Flagged by you · just now</div>
@@ -2399,9 +2418,9 @@
             <div class="flag-note-label">Add a note <span style="color:#444;font-size:10px">— optional</span></div>
             <textarea class="flag-note-input" placeholder="e.g. Both entrances backed up, tried east lot too..."></textarea>
             <div class="flag-expire-note">
-              ⏱ This flag auto-expires in <strong style="color:var(--warm-white);margin:0 3px">3 hours</strong> unless confirmed by other drivers
+              <i data-lucide="timer" class="icon-sm"></i> This flag auto-expires in <strong style="color:var(--warm-white);margin:0 3px">3 hours</strong> unless confirmed by other drivers
             </div>
-            <button class="btn-primary" style="width:100%;background:var(--danger);border-color:var(--danger)" onclick="goFlagStep3()">🚩 Post Flag</button>
+            <button class="btn-primary" style="width:100%;background:var(--danger);border-color:var(--danger)" onclick="goFlagStep3()"><i data-lucide="flag" class="icon"></i> Post Flag</button>
             <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="backFlagStep1()">← Change flag type</button>
           </div>
         </div>
@@ -2409,13 +2428,13 @@
         <!-- Step 3: Confirmation -->
         <div id="flag-step3" style="display:none">
           <div class="flag-confirm-screen">
-            <div class="flag-confirm-icon">🚩</div>
+            <div class="flag-confirm-icon"><i data-lucide="flag" class="icon-xl" style="width:48px;height:48px;color:var(--danger)"></i></div>
             <div class="flag-confirm-title">Flag posted!</div>
             <div class="flag-confirm-sub" id="flag-confirm-sub">Your flag is live</div>
             <div class="flag-confirm-stat">
               <span>Drivers nearby will be alerted</span>
             </div>
-            <div class="flag-expire-badge">⏱ Auto-expires in 3 hours</div>
+            <div class="flag-expire-badge"><i data-lucide="timer" class="icon-sm"></i> Auto-expires in 3 hours</div>
             <button class="btn-primary" style="width:100%" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">Back to map →</button>
             <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="showScreen('profile', document.querySelectorAll('.screen-nav button')[2])">Back to stop</button>
           </div>
@@ -2441,14 +2460,14 @@
             <div class="onboard-sub">Keep Moving is the first app built around driver identity — not just directions.</div>
             <div class="onboard-value-list">
               <div class="onboard-value-item">
-                <div class="onboard-value-icon">🗺️</div>
+                <div class="onboard-value-icon"><i data-lucide="map" class="icon-xl"></i></div>
                 <div class="onboard-value-text">
                   <strong>Find the best stops, right now</strong>
                   <span>Real-time ratings and flags from drivers already on the road.</span>
                 </div>
               </div>
               <div class="onboard-value-item">
-                <div class="onboard-value-icon">📓</div>
+                <div class="onboard-value-icon"><i data-lucide="book-open" class="icon-xl"></i></div>
                 <div class="onboard-value-text">
                   <strong>Log every stop you've ever visited</strong>
                   <span>Rate it, review it, build a road diary that's yours forever.</span>
@@ -2568,7 +2587,7 @@
             <div class="onboard-pip done"></div>
             <div class="onboard-pip done"></div>
           </div>
-          <div class="onboard-step-num" style="color:var(--success)">✓ Profile created</div>
+          <div class="onboard-step-num" style="color:var(--success)"><i data-lucide="check" class="icon-sm"></i> Profile created</div>
           <div class="onboard-headline">Welcome to the<br><span>road community.</span></div>
           <div class="onboard-sub">Your diary starts now. Every stop you log becomes part of your story.</div>
 
@@ -2732,6 +2751,10 @@ function esc(str) {
   return d.innerHTML;
 }
 
+function renderIcons(el) {
+  if (window.lucide) lucide.createIcons({ el: el || document });
+}
+
 function showScreen(id, btn) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.screen-nav button').forEach(b => b.classList.remove('active'));
@@ -2740,6 +2763,7 @@ function showScreen(id, btn) {
   document.getElementById('conf-screen').style.display = 'none';
   renderAnnotations(id);
   document.querySelector('.phone-screen').scrollTop = 0;
+  renderIcons(document.getElementById('screen-' + id));
   if (id === 'finder') loadFinderScreen();
   if (id === 'driver') loadDriverProfile();
   if (id === 'profile') loadStopProfile();
@@ -2793,7 +2817,7 @@ const APP = {
   checkin:     { rating: 0, cats: { parking: 0, showers: 0, food: 0, safety: 0, fuel: 0 }, parkingSpots: null, quietAtNight: null, pendingPhotos: [], newBadges: [], pendingPostcard: null },
   profile:     { handle: '', rigIcon: '🚛' },
   onboard:     { rigIcon: '🚛', rigLabel: 'Semi', inviteCode: null },
-  flag:        { icon: '🅿', type: 'Parking Full' },
+  flag:        { icon: 'square-parking', type: 'Parking Full' },
   feed:        { filter: 'following', pollInterval: null },
   diary:       { checkins: [] },
   finder:      { loaded: false, map: null, lat: null, lng: null },
@@ -2884,8 +2908,9 @@ function renderPhotoPreviews() {
       btn.style.display = '';
       const inner = btn.querySelector('span') || btn;
       btn.innerHTML = count === 0
-        ? '📸 Add photo <span style="color:var(--road-dust);font-size:11px">(optional)</span>'
-        : `📸 Add another <span style="color:var(--road-dust);font-size:11px">(${3 - count} left)</span>`;
+        ? '<i data-lucide="camera" class="icon"></i> Add photo <span style="color:var(--road-dust);font-size:11px">(optional)</span>'
+        : `<i data-lucide="camera" class="icon"></i> Add another <span style="color:var(--road-dust);font-size:11px">(${3 - count} left)</span>`;
+      renderIcons(btn);
     }
   }
 }
@@ -2915,7 +2940,7 @@ function selectStop(name, place_id, address, lat, lng) {
   APP.currentStop = { name, place_id, address, lat: lat || null, lng: lng || null, googleRating: 0, googleCount: 0 };
   resetCheckinState();
   const el = document.getElementById('checkin-stop-name');
-  if (el) el.textContent = '📍 ' + name + (address ? ', ' + address : '');
+  if (el) { el.innerHTML = '<i data-lucide="map-pin" class="icon"></i> ' + esc(name) + (address ? ', ' + esc(address) : ''); renderIcons(el); }
   showScreen('checkin', document.querySelectorAll('.screen-nav button')[3]);
 }
 
@@ -3092,17 +3117,19 @@ function selectRig(tile, icon, label) {
   APP.onboard.rigLabel = label.split('/')[0].trim();
 }
 
-function selectFlag(tile, icon, type) {
+function selectFlag(tile, iconName, type) {
   document.querySelectorAll('.flag-type-tile').forEach(t => t.classList.remove('selected'));
   tile.classList.add('selected');
-  APP.flag.icon = icon;
+  APP.flag.icon = iconName;
   APP.flag.type = type;
 }
 
 function goFlagStep2() {
   document.getElementById('flag-step1').style.display = 'none';
   document.getElementById('flag-step2').style.display = 'block';
-  document.getElementById('flag-prev-icon').textContent = APP.flag.icon;
+  const prevIconEl = document.getElementById('flag-prev-icon');
+  prevIconEl.innerHTML = `<i data-lucide="${APP.flag.icon}"></i>`;
+  renderIcons(prevIconEl);
   document.getElementById('flag-prev-type').textContent = APP.flag.type;
 }
 
@@ -3430,7 +3457,7 @@ function renderBadgeShelf(stats, earned) {
     const isEarned = earned.has(badge.id);
     const pct = Math.round((progress / badge.goal) * 100);
     const progLabel = isEarned
-      ? '✓ Earned'
+      ? '<i data-lucide="check" class="icon-sm"></i> Earned'
       : badge.goal === 1 ? '' : `${progress} / ${badge.goal}`;
     return `
       <div class="badge-row ${isEarned ? '' : 'locked'}">
@@ -3445,6 +3472,7 @@ function renderBadgeShelf(stats, earned) {
         </div>
       </div>`;
   }).join('');
+  renderIcons(el);
 }
 
 function showBadgeUnlock(badge) {
@@ -3498,7 +3526,7 @@ function restoreDraft() {
   if (!d) return;
   APP.currentStop = d.stop;
   const stopEl = document.getElementById('checkin-stop-name');
-  if (stopEl) stopEl.textContent = '📍 ' + d.stop.name + (d.stop.address ? ', ' + d.stop.address : '');
+  if (stopEl) stopEl.innerHTML = '<i data-lucide="map-pin" class="icon"></i> ' + esc(d.stop.name) + (d.stop.address ? ', ' + esc(d.stop.address) : '');
   if (d.rating) rateStar(d.rating);
   Object.entries(d.cats || {}).forEach(([cat, val]) => { if (val) rateCategory(cat, val); });
   if (d.parkingSpots) {
@@ -3523,7 +3551,7 @@ function dismissDraft() {
 function goToCheckin() {
   resetCheckinState();
   const el = document.getElementById('checkin-stop-name');
-  if (el) el.textContent = '📍 ' + APP.currentStop.name + (APP.currentStop.address ? ', ' + APP.currentStop.address : '');
+  if (el) el.innerHTML = '<i data-lucide="map-pin" class="icon"></i> ' + esc(APP.currentStop.name) + (APP.currentStop.address ? ', ' + esc(APP.currentStop.address) : '');
   const draft = loadDraft();
   const bannerEl = document.getElementById('draft-banner');
   const bannerText = document.getElementById('draft-banner-text');
@@ -3581,7 +3609,8 @@ async function loadStopProfile() {
       flagBanner.textContent = `${f.flag_icon} ${f.flag_type} · flagged ${timeAgo(f.created_at)}`;
     } else {
       flagBanner.style.cssText = 'display:inline-flex';
-      flagBanner.textContent = '✓ No active flags right now';
+      flagBanner.innerHTML = '<i data-lucide="check" class="icon-sm"></i> No active flags right now';
+      renderIcons(flagBanner);
     }
   }
 
@@ -3637,7 +3666,7 @@ async function loadStopProfile() {
         const label = quietVotes.length === 1
           ? (quietYes ? '1 driver says it\'s quiet at night' : '1 driver says it\'s noisy at night')
           : `${pct}% of drivers say it's quiet at night · ${quietVotes.length} votes`;
-        quietEl.innerHTML = `<div style="font-size:13px;color:var(--road-dust)">🔇 ${label}</div>`;
+        quietEl.innerHTML = `<div style="font-size:13px;color:var(--road-dust)"><i data-lucide="volume-x" class="icon-sm"></i> ${label}</div>`;
       } else {
         quietEl.innerHTML = '';
       }
@@ -3669,7 +3698,7 @@ async function loadStopProfile() {
           ${tips.slice(0, 3).map(c => `
             <div style="background:var(--steel);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">
               <div style="font-size:13px;color:var(--warm-white);line-height:1.5">${esc(c.tip)}</div>
-              <div style="font-size:11px;color:var(--road-dust);margin-top:4px">${c.profiles?.rig_icon || '🚛'} @${esc(c.profiles?.handle || 'driver')} · ${timeAgo(c.created_at)}</div>
+              <div style="font-size:11px;color:var(--road-dust);margin-top:4px">${c.profiles?.rig_icon || '<i data-lucide="truck" class="icon-md"></i>'} @${esc(c.profiles?.handle || 'driver')} · ${timeAgo(c.created_at)}</div>
             </div>`).join('')}`;
       } else {
         tipsEl.innerHTML = '';
@@ -3680,7 +3709,7 @@ async function loadStopProfile() {
     const hereNow = checkins.filter(c => isFresh(c.created_at)).length;
     const hereEl = document.getElementById('sp-here-now');
     if (hereEl) hereEl.innerHTML = hereNow > 0
-      ? `<span style="background:#064e3b;color:#34d399;padding:3px 10px;border-radius:12px;font-weight:700">🟢 ${hereNow} here now</span>`
+      ? `<span style="background:#064e3b;color:#34d399;padding:3px 10px;border-radius:12px;font-weight:700"><span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:4px;vertical-align:middle;flex-shrink:0"></span>${hereNow} here now</span>`
       : '';
 
     // "No recent activity" prompt
@@ -3693,16 +3722,19 @@ async function loadStopProfile() {
         : '';
     }
 
+    renderIcons(document.getElementById('sp-quiet'));
+    renderIcons(document.getElementById('sp-here-now'));
+
     document.getElementById('sp-reviews').innerHTML = checkins.slice(0, 5).map(c => {
-      const handle = c.profiles?.handle || 'driver';
-      const rigIcon = c.profiles?.rig_icon || '🚛';
+      const handle  = c.profiles?.handle || 'driver';
+      const rigIcon = c.profiles?.rig_icon || '<i data-lucide="truck" class="icon-md"></i>';
       const stars = c.rating ? ratingToStars(c.rating) : '';
       const isOwn = c.user_id === APP.user;
       const isFollowing = APP.follows.ids.has(c.user_id);
       const followBtn = isOwn ? '' : `<button class="follow-btn ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${c.user_id}','${handle}',this)">${isFollowing ? 'Following' : '+ Follow'}</button>`;
       const fresh = isFresh(c.created_at);
       const timeDisplay = fresh
-        ? `<span style="font-weight:700;color:#34d399">🟢 ${timeAgo(c.created_at)}</span>`
+        ? `<span style="font-weight:700;color:#34d399"><span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:4px;vertical-align:middle;flex-shrink:0"></span>${timeAgo(c.created_at)}</span>`
         : timeAgo(c.created_at);
       const since = memberSince(c.profiles?.created_at);
       const spotsLabel = c.parking_spots ? parkingSpotsLabel(c.parking_spots) : '';
@@ -3717,9 +3749,10 @@ async function loadStopProfile() {
           </div>
           ${spotsLabel ? `<div style="margin-top:6px;font-size:12px;color:var(--road-dust)">${spotsLabel}</div>` : ''}
           ${c.note ? `<div style="margin-top:8px;font-size:13px;color:var(--warm-white);line-height:1.5;font-style:italic">"${esc(c.note)}"</div>` : ''}
-          ${!isOwn ? `<button onclick="reportItem('checkin','${c.id}')" style="margin-top:8px;font-size:11px;color:var(--road-dust);background:none;border:none;cursor:pointer;padding:0">⚑ Report</button>` : ''}
+          ${!isOwn ? `<button onclick="reportItem('checkin','${c.id}')" style="margin-top:8px;font-size:11px;color:var(--road-dust);background:none;border:none;cursor:pointer;padding:0"><i data-lucide="flag" class="icon-sm"></i> Report</button>` : ''}
         </div>`;
     }).join('');
+    renderIcons(document.getElementById('sp-reviews'));
   } else {
     // Reset category bars to empty
     ['parking','showers','food','safety','fuel'].forEach(cat => {
@@ -3740,10 +3773,11 @@ async function loadStopProfile() {
     if (tipsElEmpty) tipsElEmpty.innerHTML = '';
     document.getElementById('sp-reviews').innerHTML = `
       <div style="text-align:center;padding:32px 16px;color:var(--road-dust)">
-        <div style="font-size:36px;margin-bottom:12px">🛑</div>
+        <div style="font-size:36px;margin-bottom:12px"><i data-lucide="inbox" class="icon-xl"></i></div>
         <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">No Keep Moving check-ins yet</div>
         <div style="font-size:13px">Be the first driver to rate this stop.</div>
       </div>`;
+    renderIcons(document.getElementById('sp-reviews'));
   }
 }
 
@@ -3839,10 +3873,11 @@ function renderDiary(year) {
   if (total === 0) {
     document.getElementById('diary-grid').innerHTML = `
       <div style="grid-column:1/-1;text-align:center;padding:32px 16px;color:var(--road-dust)">
-        <div style="font-size:40px;margin-bottom:12px">📓</div>
+        <div style="font-size:40px;margin-bottom:12px"><i data-lucide="book-open" class="icon-xl"></i></div>
         <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">Your diary is empty</div>
         <div style="font-size:13px;line-height:1.5">Every stop you check in<br>becomes a tile here.</div>
       </div>`;
+    renderIcons(document.getElementById('diary-grid'));
     return;
   }
 
@@ -3869,6 +3904,7 @@ function renderDiary(year) {
         </div>
       </div>`;
   }).join('');
+  renderIcons(document.getElementById('diary-grid'));
 }
 
 // ── Feed ─────────────────────────────────────────────────────
@@ -3894,11 +3930,12 @@ async function renderFeed() {
   if (filter === 'following' && APP.follows.ids.size === 0) {
     feedEl.innerHTML = `
       <div style="text-align:center;padding:48px 20px;color:var(--road-dust)">
-        <div style="font-size:40px;margin-bottom:14px">👥</div>
+        <div style="font-size:40px;margin-bottom:14px"><i data-lucide="users" class="icon-xl"></i></div>
         <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">No one followed yet</div>
         <div style="font-size:13px;line-height:1.5;margin-bottom:20px">Follow drivers from the feed<br>to see their check-ins here.</div>
         <button class="btn-secondary" style="padding:10px 20px;font-size:13px" onclick="setFeedFilter(document.querySelector('.feed-filter[data-filter=nearby]'))">See Nearby →</button>
       </div>`;
+    renderIcons(feedEl);
     return;
   }
 
@@ -3910,10 +3947,11 @@ async function renderFeed() {
     catch {
       feedEl.innerHTML = `
         <div style="text-align:center;padding:48px 20px;color:var(--road-dust)">
-          <div style="font-size:40px;margin-bottom:14px">📍</div>
+          <div style="font-size:40px;margin-bottom:14px"><i data-lucide="map-pin" class="icon-xl"></i></div>
           <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">Location needed</div>
           <div style="font-size:13px;line-height:1.5">Allow location access to see activity near you.</div>
         </div>`;
+      renderIcons(feedEl);
       return;
     }
   }
@@ -3970,24 +4008,25 @@ async function renderFeed() {
   // Empty states per tab
   if (!items.length) {
     const msg = {
-      following: { icon: '👥', title: 'No activity yet',         sub: "Drivers you follow haven't checked in yet." },
-      nearby:    { icon: '📍', title: 'Nothing nearby',          sub: 'No check-ins or flags within 25 miles.' },
-      trending:  { icon: '🔥', title: 'No trending posts today', sub: 'Check back later or switch to Nearby.' },
-    }[filter] || { icon: '📋', title: 'Feed is empty', sub: 'Be the first to check in at a stop.' };
+      following: { icon: '<i data-lucide="users" class="icon-md"></i>', title: 'No activity yet',         sub: "Drivers you follow haven't checked in yet." },
+      nearby:    { icon: '<i data-lucide="map-pin" class="icon-md"></i>', title: 'Nothing nearby',          sub: 'No check-ins or flags within 25 miles.' },
+      trending:  { icon: '<i data-lucide="flame" class="icon-md"></i>', title: 'No trending posts today', sub: 'Check back later or switch to Nearby.' },
+    }[filter] || { icon: '<i data-lucide="clipboard-list" class="icon-md"></i>', title: 'Feed is empty', sub: 'Be the first to check in at a stop.' };
     feedEl.innerHTML = `
       <div style="text-align:center;padding:48px 20px;color:var(--road-dust)">
         <div style="font-size:40px;margin-bottom:14px">${msg.icon}</div>
         <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">${msg.title}</div>
         <div style="font-size:13px;line-height:1.5">${msg.sub}</div>
       </div>`;
+    renderIcons(feedEl);
     return;
   }
 
   feedEl.innerHTML = items.map(item => {
     const handle      = item.profiles?.handle   || 'driver';
-    const rigIcon     = item.profiles?.rig_icon || '🚛';
+    const rigIcon     = item.profiles?.rig_icon || '<i data-lucide="truck" class="icon-md"></i>';
     const fresh       = isFresh(item.created_at);
-    const when        = fresh ? `<span style="font-weight:700;color:#34d399">🟢 ${timeAgo(item.created_at)}</span>` : timeAgo(item.created_at);
+    const when        = fresh ? `<span style="font-weight:700;color:#34d399"><span style="width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:3px;vertical-align:middle"></span>${timeAgo(item.created_at)}</span>` : timeAgo(item.created_at);
     const sinceLabel  = memberSince(item.profiles?.created_at);
     const isOwn       = item.user_id === APP.user;
     const isFollowing = APP.follows.ids.has(item.user_id);
@@ -4008,15 +4047,15 @@ async function renderFeed() {
               <div class="feed-handle">@${esc(handle)}${followBtn}</div>
               <div class="feed-time">${when}${sinceLabel ? ` · <span style="color:var(--road-dust);font-size:11px">${sinceLabel}</span>` : ''}</div>
             </div>
-            <div class="feed-type-badge badge-checkin">✓ Check-in</div>
+            <div class="feed-type-badge badge-checkin"><i data-lucide="check" class="icon-sm"></i> Check-in</div>
           </div>
           ${stars ? `<div class="feed-stars" style="margin-bottom:6px;font-size:15px">${stars}</div>` : ''}
-          <div class="feed-location">📍 ${esc(loc)}</div>
+          <div class="feed-location"><i data-lucide="map-pin" class="icon-sm"></i> ${esc(loc)}</div>
           ${item.note ? `<div class="feed-body" style="margin-top:8px;font-size:13px;color:var(--warm-white);line-height:1.5;font-style:italic">"${esc(item.note)}"</div>` : ''}
           <div class="feed-actions">
-            <button class="feed-action-btn ${hasReacted ? 'reacted' : ''}" onclick="react(this,'checkin','${item.id}')">👍 Helpful <span class="react-count">${helpCount}</span></button>
-            <button class="feed-action-btn" onclick="shareItem('${safeName}','${safePid}')">🔁 Share</button>
-            ${!isOwn ? `<button class="feed-action-btn" onclick="reportItem('checkin','${item.id}')">⚑ Report</button>` : ''}
+            <button class="feed-action-btn ${hasReacted ? 'reacted' : ''}" onclick="react(this,'checkin','${item.id}')"><i data-lucide="thumbs-up" class="icon-sm"></i> Helpful <span class="react-count">${helpCount}</span></button>
+            <button class="feed-action-btn" onclick="shareItem('${safeName}','${safePid}')"><i data-lucide="share-2" class="icon-sm"></i> Share</button>
+            ${!isOwn ? `<button class="feed-action-btn" onclick="reportItem('checkin','${item.id}')"><i data-lucide="flag" class="icon-sm"></i> Report</button>` : ''}
           </div>
         </div>`;
     }
@@ -4031,19 +4070,20 @@ async function renderFeed() {
               <div class="feed-handle">@${esc(handle)}${followBtn}</div>
               <div class="feed-time">${when}${sinceLabel ? ` · <span style="color:var(--road-dust);font-size:11px">${sinceLabel}</span>` : ''}</div>
             </div>
-            <div class="feed-type-badge badge-flag">⚠ Flag</div>
+            <div class="feed-type-badge badge-flag"><i data-lucide="triangle-alert" class="icon-sm"></i> Flag</div>
           </div>
           <div class="feed-flag-banner">${item.flag_icon} ${esc(item.flag_type)} — ${esc(loc)}</div>
           ${item.note ? `<div class="feed-body" style="margin-top:8px">"${esc(item.note)}"</div>` : ''}
           <div class="feed-actions">
-            <button class="feed-action-btn ${hasReacted ? 'reacted' : ''}" onclick="react(this,'flag','${item.id}')">👍 Helpful <span class="react-count">${helpCount}</span></button>
-            <button class="feed-action-btn" onclick="shareItem('${safeName}','${safePid}')">🔁 Share</button>
-            ${!isOwn ? `<button class="feed-action-btn" onclick="reportItem('flag','${item.id}')">⚑ Report</button>` : ''}
+            <button class="feed-action-btn ${hasReacted ? 'reacted' : ''}" onclick="react(this,'flag','${item.id}')"><i data-lucide="thumbs-up" class="icon-sm"></i> Helpful <span class="react-count">${helpCount}</span></button>
+            <button class="feed-action-btn" onclick="shareItem('${safeName}','${safePid}')"><i data-lucide="share-2" class="icon-sm"></i> Share</button>
+            ${!isOwn ? `<button class="feed-action-btn" onclick="reportItem('flag','${item.id}')"><i data-lucide="flag" class="icon-sm"></i> Report</button>` : ''}
           </div>
         </div>`;
     }
     return '';
   }).join('');
+  renderIcons(feedEl);
 }
 
 // ── Driver Profile ──────────────────────────────────────────
@@ -4061,10 +4101,16 @@ async function loadDriverProfile() {
     .single();
 
   if (profile) {
-    document.getElementById('profile-avatar').textContent = profile.rig_icon || '🚛';
+    const avatarEl = document.getElementById('profile-avatar');
+    if (profile.rig_icon) {
+      avatarEl.textContent = profile.rig_icon;
+    } else {
+      avatarEl.innerHTML = '<i data-lucide="truck" class="icon-xl"></i>';
+      renderIcons(avatarEl);
+    }
     document.getElementById('profile-handle').textContent = '@' + profile.handle;
     document.getElementById('profile-rig').textContent = profile.rig_label || 'Driver';
-    APP.profile = { handle: profile.handle, rigIcon: profile.rig_icon || '🚛' };
+    APP.profile = { handle: profile.handle, rigIcon: profile.rig_icon || '' };
   }
 
   // Load check-in count + states
@@ -4083,7 +4129,7 @@ async function loadDriverProfile() {
   const statesEl = document.getElementById('profile-states');
   if (statesEl) statesEl.textContent = stateCount;
   const streakEl = document.getElementById('profile-streak');
-  if (streakEl) streakEl.textContent = streak > 0 ? `🔥 ${streak}` : '0';
+  if (streakEl) streakEl.innerHTML = streak > 0 ? `<i data-lucide="flame" class="icon-sm" style="color:#f97316"></i> ${streak}` : '0';
 
   // Load recent check-ins
   const { data: recent } = await _sb.from('checkins')
@@ -4109,6 +4155,7 @@ async function loadDriverProfile() {
 
   // Render badge shelf
   evaluateBadges(userId).then(({ stats, earned }) => renderBadgeShelf(stats, earned));
+  renderIcons(document.getElementById('screen-driver'));
   } catch (err) {
     document.getElementById('profile-handle').textContent = 'Couldn\'t load — tap Profile to retry.';
   }
@@ -4132,7 +4179,8 @@ function isFresh(iso) {
 }
 
 function parkingSpotsLabel(v) {
-  return { wide_open: '🟢 Wide open', plenty: '🟡 Plenty of room', tight: '🟠 Tight squeeze', full: '🔴 Full' }[v] || '';
+  const dot = (c) => `<span style="width:8px;height:8px;border-radius:50%;background:${c};display:inline-block;margin-right:4px;vertical-align:middle;flex-shrink:0"></span>`;
+  return { wide_open: dot('#22c55e') + 'Wide open', plenty: dot('#f59e0b') + 'Plenty of room', tight: dot('#f97316') + 'Tight squeeze', full: dot('#ef4444') + 'Full' }[v] || '';
 }
 
 async function signOut() {
@@ -4308,7 +4356,7 @@ function searchNearby(lat, lng, filterKeyword) {
           <div class="stop-card-header">
             <div>
               <div class="stop-name">${place.name}</div>
-              <div class="stop-dist">📍 ${dist} mi · ${addr}</div>
+              <div class="stop-dist"><i data-lucide="map-pin" class="icon-sm"></i> ${dist} mi · ${addr}</div>
             </div>
             <div class="stop-rating">
               <div class="rating-big">${rating}</div>
@@ -4321,6 +4369,7 @@ function searchNearby(lat, lng, filterKeyword) {
           </div>
         </div>`;
     }).join('');
+    renderIcons(document.getElementById('stops-list'));
   });
 }
 
@@ -4683,6 +4732,7 @@ async function loadStopFromParam(session) {
 
 // ── Initialize ──────────────────────────────────────────────
 renderAnnotations('splash');
+renderIcons();
 
 // Detect invite code in URL
 const _inviteParam = new URLSearchParams(window.location.search).get('invite');
@@ -4751,7 +4801,7 @@ if ('serviceWorker' in navigator) {
 
 <!-- Stop teaser overlay (for shared ?stop= links) -->
 <div id="stop-teaser-overlay" style="display:none;position:fixed;inset:0;background:rgba(13,15,20,0.97);z-index:500;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center">
-  <div style="font-size:48px;margin-bottom:16px">🚛</div>
+  <div style="font-size:48px;margin-bottom:16px"><i data-lucide="truck" style="width:48px;height:48px;color:var(--amber)"></i></div>
   <div style="font-size:11px;color:var(--amber);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">KEEP MOVING</div>
   <div id="teaser-stop-name" style="font-size:20px;font-weight:800;color:var(--warm-white);margin-bottom:6px">Loading stop…</div>
   <div id="teaser-stop-address" style="font-size:13px;color:var(--road-dust);margin-bottom:8px"></div>
