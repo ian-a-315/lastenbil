@@ -812,7 +812,21 @@
     justify-content: center;
     font-size: 28px;
     flex-shrink: 0;
+    overflow: hidden;
+    cursor: pointer;
   }
+  .avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .avatar-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
+  .avatar-cam-badge {
+    position: absolute; bottom: 0; right: 0;
+    width: 22px; height: 22px;
+    background: var(--amber); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--asphalt);
+    pointer-events: none;
+  }
+  .feed-avatar { overflow: hidden; }
+  .feed-avatar img { width:100%; height:100%; object-fit:cover; }
   .profile-info .handle {
     font-size: 20px;
     font-weight: 800;
@@ -2153,7 +2167,11 @@
         <div class="profile-screen">
           <div class="profile-top">
             <div class="profile-row">
-              <div class="avatar" id="profile-avatar"><i data-lucide="truck" class="icon-xl"></i></div>
+              <div class="avatar-wrap">
+                <div class="avatar" id="profile-avatar" onclick="document.getElementById('avatar-file-input').click()"><i data-lucide="truck" class="icon-xl"></i></div>
+                <div class="avatar-cam-badge"><i data-lucide="camera" style="width:11px;height:11px;stroke:white"></i></div>
+              </div>
+              <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="handleAvatarSelect(event)">
               <div class="profile-info">
                 <div class="handle" id="profile-handle">@—</div>
                 <div class="real-name" id="profile-rig">—</div>
@@ -3617,7 +3635,7 @@ async function loadStopProfile() {
   // Query check-ins and photos in parallel
   const [{ data: checkins }, { data: photos }] = await Promise.all([
     _sb.from('checkins')
-      .select('id, rating, rating_parking, rating_showers, rating_food, rating_safety, rating_fuel, parking_spots, quiet_at_night, tip, note, created_at, user_id, profiles(handle, rig_icon, created_at)')
+      .select('id, rating, rating_parking, rating_showers, rating_food, rating_safety, rating_fuel, parking_spots, quiet_at_night, tip, note, created_at, user_id, profiles(handle, rig_icon, avatar_url, created_at)')
       .eq('stop_place_id', place_id)
       .order('created_at', { ascending: false })
       .limit(20),
@@ -3698,7 +3716,7 @@ async function loadStopProfile() {
           ${tips.slice(0, 3).map(c => `
             <div style="background:var(--steel);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px">
               <div style="font-size:13px;color:var(--warm-white);line-height:1.5">${esc(c.tip)}</div>
-              <div style="font-size:11px;color:var(--road-dust);margin-top:4px">${c.profiles?.rig_icon || '<i data-lucide="truck" class="icon-md"></i>'} @${esc(c.profiles?.handle || 'driver')} · ${timeAgo(c.created_at)}</div>
+              <div style="font-size:11px;color:var(--road-dust);margin-top:4px">${c.profiles?.avatar_url ? `<img src="${c.profiles.avatar_url}" style="width:18px;height:18px;border-radius:50%;object-fit:cover;vertical-align:middle">` : (c.profiles?.rig_icon || '<i data-lucide="truck" class="icon-sm"></i>')} @${esc(c.profiles?.handle || 'driver')} · ${timeAgo(c.created_at)}</div>
             </div>`).join('')}`;
       } else {
         tipsEl.innerHTML = '';
@@ -3727,7 +3745,9 @@ async function loadStopProfile() {
 
     document.getElementById('sp-reviews').innerHTML = checkins.slice(0, 5).map(c => {
       const handle  = c.profiles?.handle || 'driver';
-      const rigIcon = c.profiles?.rig_icon || '<i data-lucide="truck" class="icon-md"></i>';
+      const rigIcon = c.profiles?.avatar_url
+        ? `<img src="${c.profiles.avatar_url}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;vertical-align:middle">`
+        : (c.profiles?.rig_icon || '<i data-lucide="truck" class="icon-md"></i>');
       const stars = c.rating ? ratingToStars(c.rating) : '';
       const isOwn = c.user_id === APP.user;
       const isFollowing = APP.follows.ids.has(c.user_id);
@@ -3960,11 +3980,11 @@ async function renderFeed() {
 
   const [{ data: checkins }, { data: flags }] = await Promise.all([
     _sb.from('checkins')
-      .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, rating, note, created_at, user_id, profiles(handle, rig_icon, created_at)')
+      .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, rating, note, created_at, user_id, profiles(handle, rig_icon, avatar_url, created_at)')
       .order('created_at', { ascending: false })
       .limit(30),
     _sb.from('flags')
-      .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, flag_type, flag_icon, note, created_at, user_id, profiles(handle, rig_icon, created_at)')
+      .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, flag_type, flag_icon, note, created_at, user_id, profiles(handle, rig_icon, avatar_url, created_at)')
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false })
       .limit(20)
@@ -4024,7 +4044,9 @@ async function renderFeed() {
 
   feedEl.innerHTML = items.map(item => {
     const handle      = item.profiles?.handle   || 'driver';
-    const rigIcon     = item.profiles?.rig_icon || '<i data-lucide="truck" class="icon-md"></i>';
+    const rigIcon     = item.profiles?.avatar_url
+      ? `<img src="${item.profiles.avatar_url}" alt="avatar">`
+      : (item.profiles?.rig_icon || '<i data-lucide="truck" class="icon-md"></i>');
     const fresh       = isFresh(item.created_at);
     const when        = fresh ? `<span style="font-weight:700;color:#34d399"><span style="width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:3px;vertical-align:middle"></span>${timeAgo(item.created_at)}</span>` : timeAgo(item.created_at);
     const sinceLabel  = memberSince(item.profiles?.created_at);
@@ -4096,13 +4118,15 @@ async function loadDriverProfile() {
 
   // Load profile
   const { data: profile } = await _sb.from('profiles')
-    .select('handle, rig_icon, rig_label')
+    .select('handle, rig_icon, rig_label, avatar_url')
     .eq('id', userId)
     .single();
 
   if (profile) {
     const avatarEl = document.getElementById('profile-avatar');
-    if (profile.rig_icon) {
+    if (profile.avatar_url) {
+      avatarEl.innerHTML = `<img src="${profile.avatar_url}" alt="Profile photo">`;
+    } else if (profile.rig_icon) {
       avatarEl.textContent = profile.rig_icon;
     } else {
       avatarEl.innerHTML = '<i data-lucide="truck" class="icon-xl"></i>';
@@ -4110,7 +4134,7 @@ async function loadDriverProfile() {
     }
     document.getElementById('profile-handle').textContent = '@' + profile.handle;
     document.getElementById('profile-rig').textContent = profile.rig_label || 'Driver';
-    APP.profile = { handle: profile.handle, rigIcon: profile.rig_icon || '' };
+    APP.profile = { handle: profile.handle, rigIcon: profile.rig_icon || '', avatarUrl: profile.avatar_url || '' };
   }
 
   // Load check-in count + states
@@ -4643,6 +4667,45 @@ async function sharePostcard() {
 function dismissPostcard() {
   document.getElementById('postcard-overlay').style.display = 'none';
   _postcardBlob = null;
+}
+
+// ── Avatar Upload ────────────────────────────────────────────
+async function handleAvatarSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) return;
+  const objUrl = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = async () => {
+    URL.revokeObjectURL(objUrl);
+    // Center-crop to square, resize to 400x400
+    const size = Math.min(img.width, img.height);
+    const canvas = document.createElement('canvas');
+    canvas.width = 400; canvas.height = 400;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, 400, 400);
+    canvas.toBlob(async blob => {
+      if (!blob) return;
+      showToast('Uploading photo…');
+      const path = `avatars/${session.user.id}.jpg`;
+      const { error: upErr } = await _sb.storage.from('stop-photos')
+        .upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
+      if (upErr) { showToast('Upload failed. Try again.'); return; }
+      const { data: { publicUrl } } = _sb.storage.from('stop-photos').getPublicUrl(path);
+      const { error: dbErr } = await _sb.from('profiles')
+        .update({ avatar_url: publicUrl }).eq('id', session.user.id);
+      if (!dbErr) {
+        document.getElementById('profile-avatar').innerHTML = `<img src="${publicUrl}" alt="Profile photo">`;
+        APP.profile.avatarUrl = publicUrl;
+        showToast('Profile photo updated!');
+      } else {
+        showToast('Could not save. Try again.');
+      }
+    }, 'image/jpeg', 0.85);
+  };
+  img.src = objUrl;
 }
 
 // ── Edit Profile ─────────────────────────────────────────────
