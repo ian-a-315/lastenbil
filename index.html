@@ -4724,7 +4724,7 @@ const RIG_ICONS = ['🚛','🚚','🚜','🚌','🚐','🛻','🏎','🚑','🚒
 function openEditProfile() {
   const overlay = document.getElementById('edit-profile-overlay');
   overlay.style.display = 'flex';
-  const currentIcon = document.getElementById('profile-avatar').textContent;
+  const currentIcon = APP.profile.rigIcon || '';
   document.getElementById('rig-icon-picker').innerHTML = RIG_ICONS.map(icon =>
     `<button data-icon="${icon}" onclick="selectRigIcon(this)" style="font-size:28px;padding:8px;background:${icon === currentIcon ? 'var(--steel)' : 'transparent'};border:2px solid ${icon === currentIcon ? 'var(--amber)' : 'transparent'};border-radius:10px;cursor:pointer">${icon}</button>`
   ).join('');
@@ -4746,13 +4746,19 @@ async function saveEditProfile() {
   const { data: { session } } = await _sb.auth.getSession();
   if (!session) return;
   const selectedBtn = document.querySelector('#rig-icon-picker button[data-selected="true"]');
-  const rigIcon = selectedBtn ? selectedBtn.dataset.icon : document.getElementById('profile-avatar').textContent;
+  const rigIcon = selectedBtn ? selectedBtn.dataset.icon : (APP.profile.rigIcon || '');
   const rigLabel = document.getElementById('edit-rig-label').value.trim();
   const { error } = await _sb.from('profiles')
     .update({ rig_icon: rigIcon, rig_label: rigLabel })
     .eq('id', session.user.id);
   if (!error) {
-    document.getElementById('profile-avatar').textContent = rigIcon;
+    APP.profile.rigIcon = rigIcon;
+    // Only update avatar display if user has no photo
+    if (!APP.profile.avatarUrl) {
+      const avatarEl = document.getElementById('profile-avatar');
+      if (rigIcon) { avatarEl.textContent = rigIcon; }
+      else { avatarEl.innerHTML = '<i data-lucide="truck" class="icon-xl"></i>'; renderIcons(avatarEl); }
+    }
     document.getElementById('profile-rig').textContent = rigLabel || 'Driver';
     closeEditProfile();
     showToast('Profile updated!');
