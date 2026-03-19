@@ -1831,6 +1831,15 @@
     body { background: var(--midnight); }
   }
 
+  /* ── Diesel Price Bar ──────────────────────────────────────── */
+  .diesel-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--steel); border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 12px; font-size: 13px;
+  }
+  .diesel-price { font-size: 18px; font-weight: 800; color: var(--amber); }
+  .diesel-label { font-size: 11px; color: var(--road-dust); margin-top: 1px; }
+
   /* ── Lucide Icons ──────────────────────────────────────────── */
   .icon { width:16px; height:16px; display:inline-block; vertical-align:middle; flex-shrink:0; }
   .icon-sm { width:14px; height:14px; }
@@ -2000,6 +2009,8 @@
             <div class="cat-score" id="sp-score-fuel">—</div>
           </div>
         </div>
+
+        <div id="sp-diesel" style="display:none;margin:0 0 4px"></div>
 
         <div id="sp-quiet" style="padding:0 0 12px"></div>
 
@@ -2838,6 +2849,8 @@ function renderAnnotations(id) {
 }
 
 // ── App State ────────────────────────────────────────────────
+const EIA_KEY = 'YOUR_EIA_KEY'; // get free key at eia.gov/opendata
+
 const APP = {
   user:        null,   // cached session user ID
   follows:     { ids: new Set(), loaded: false },
@@ -2850,6 +2863,7 @@ const APP = {
   feed:        { filter: 'following', pollInterval: null },
   diary:       { checkins: [] },
   finder:      { loaded: false, map: null, lat: null, lng: null },
+  diesel:      { cache: {} },   // keyed by PADD region code
   screen:      'splash'
 };
 
@@ -3341,6 +3355,42 @@ function parseState(address) {
 }
 function getStateFromAddress(address) { return parseState(address); }
 
+// ── EIA Diesel Prices ─────────────────────────────────────────
+const PADD = {
+  // East Coast
+  CT:'R10',DC:'R10',DE:'R10',FL:'R10',GA:'R10',MA:'R10',MD:'R10',
+  ME:'R10',NC:'R10',NH:'R10',NJ:'R10',NY:'R10',PA:'R10',RI:'R10',
+  SC:'R10',VA:'R10',VT:'R10',WV:'R10',
+  // Midwest
+  IL:'R20',IN:'R20',IA:'R20',KS:'R20',KY:'R20',MI:'R20',MN:'R20',
+  MO:'R20',NE:'R20',ND:'R20',OH:'R20',SD:'R20',TN:'R20',WI:'R20',
+  // Gulf Coast
+  AL:'R30',AR:'R30',LA:'R30',MS:'R30',NM:'R30',OK:'R30',TX:'R30',
+  // Rocky Mountain
+  CO:'R40',ID:'R40',MT:'R40',UT:'R40',WY:'R40',
+  // West Coast
+  AK:'R50',AZ:'R50',CA:'R50',HI:'R50',NV:'R50',OR:'R50',WA:'R50',
+};
+const PADD_NAME = { R10:'East Coast', R20:'Midwest', R30:'Gulf Coast', R40:'Rocky Mtn', R50:'West Coast' };
+
+async function fetchDieselPrice(state) {
+  if (!EIA_KEY || EIA_KEY === 'YOUR_EIA_KEY') return null;
+  const region = PADD[state] || 'NUS';
+  // Return cached value if fetched in this session
+  if (APP.diesel.cache[region]) return APP.diesel.cache[region];
+  try {
+    const url = `https://api.eia.gov/v2/petroleum/pri/gnd/data/?frequency=weekly&data[0]=value&facets[duoarea][]=${region}&facets[product][]=EPD2D&sort[0][column]=period&sort[0][direction]=desc&length=1&api_key=${EIA_KEY}`;
+    const res = await fetch(url);
+    const json = await res.json();
+    const row = json?.response?.data?.[0];
+    if (!row) return null;
+    const result = { price: row.value, period: row.period, region: PADD_NAME[region] || region };
+    APP.diesel.cache[region] = result;
+    return result;
+  } catch { return null; }
+}
+
+
 // Get driver's current GPS position — cached for 5 minutes
 async function getGeoPosition() {
   const now = Date.now();
@@ -3618,6 +3668,27 @@ async function loadStopProfile() {
 
   document.getElementById('sp-reviews').innerHTML =
     '<div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Pulling driver reports...</div>';
+
+  // Diesel price
+  const dieselEl = document.getElementById('sp-diesel');
+  const state = parseState(address);
+  if (dieselEl && state) {
+    dieselEl.style.display = 'none';
+    fetchDieselPrice(state).then(d => {
+      if (!d) return;
+      const date = new Date(d.period + 'T12:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric' });
+      dieselEl.innerHTML = `
+        <div class="diesel-bar">
+          <i data-lucide="fuel" class="icon-lg" style="color:var(--amber);flex-shrink:0"></i>
+          <div>
+            <div class="diesel-price">$${Number(d.price).toFixed(2)}<span style="font-size:12px;font-weight:400;color:var(--road-dust)">/gal diesel</span></div>
+            <div class="diesel-label">${d.region} regional avg · updated ${date}</div>
+          </div>
+        </div>`;
+      dieselEl.style.display = 'block';
+      renderIcons(dieselEl);
+    });
+  }
 
   if (!place_id) return;
 
