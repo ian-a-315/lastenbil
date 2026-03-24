@@ -153,57 +153,6 @@
     border-radius: 3px;
   }
 
-  /* ── Annotations panel ────────────────────────────────────── */
-  .annotations {
-    width: 320px;
-    padding: 8px 0;
-    flex-shrink: 0;
-  }
-  .annotations h2 {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--amber);
-    margin-bottom: 4px;
-    letter-spacing: 1px;
-  }
-  .annotations .screen-desc {
-    font-size: 13px;
-    color: var(--road-dust);
-    margin-bottom: 20px;
-    line-height: 1.5;
-  }
-  .annotation {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 14px;
-    align-items: flex-start;
-  }
-  .ann-num {
-    width: 22px;
-    height: 22px;
-    background: var(--amber);
-    color: var(--midnight);
-    border-radius: 50%;
-    font-size: 11px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .ann-text strong {
-    display: block;
-    font-size: 13px;
-    color: var(--warm-white);
-    margin-bottom: 2px;
-  }
-  .ann-text span {
-    font-size: 12px;
-    color: var(--road-dust);
-    line-height: 1.4;
-  }
-
   /* ── SCREEN STYLES ────────────────────────────────────────── */
 
   /* Splash */
@@ -1809,14 +1758,12 @@
 
   /* Responsive — tablet */
   @media (max-width: 900px) {
-    .annotations { display: none; }
     .phone-wrap { padding: 20px; }
   }
 
   /* Responsive — mobile: hide dev chrome, go full screen */
   @media (max-width: 600px) {
     .desktop-bar { display: none; }
-    .annotations { display: none; }
     .phone-wrap { padding: 0; margin: 0; }
     .phone-shell {
       width: 100vw;
@@ -2696,114 +2643,10 @@
     <div class="phone-home-bar"><div class="home-bar-pill"></div></div>
   </div><!-- /phone-shell -->
 
-  <!-- ── ANNOTATIONS ────────────────────────────────────── -->
-  <div class="annotations" id="annotations">
-    <!-- Filled by JS -->
-  </div>
 
 </div><!-- /phone-wrap -->
 
 <script>
-const ANNOTATIONS = {
-  splash: {
-    title: "Screen 1 — Splash / Onboarding",
-    desc: "No account required. Value before friction. The only ask is location permission.",
-    notes: [
-      { title: "Headlight mark", text: "The two amber dots are the Keep Moving brand mark — instantly evocative of the road at night." },
-      { title: "Location first", text: "\"Allow Location\" is the only action needed to see value. No email, no form, no friction." },
-      { title: "Powered by Cover Whale", text: "Appears once, at the bottom, small. Builds trust without being intrusive." },
-      { title: "Skip to sign in", text: "Returning users can bypass the splash without friction." },
-    ]
-  },
-  finder: {
-    title: "Screen 2 — Stop Finder",
-    desc: "The core utility screen. Answers the immediate question: where should I stop right now?",
-    notes: [
-      { title: "Map + list", text: "Map gives spatial context. List gives quick scannable detail. Driver chooses how to browse." },
-      { title: "Amber pins = high rated", text: "Strong visual signal — amber means good, muted means proceed with caution." },
-      { title: "Active flag on Love's", text: "\"Parking FULL\" banner is the most valuable real-time data. Saves drivers a wasted detour." },
-      { title: "Recency always visible", text: "\"8 minutes ago\" on each card. Freshness is trust. This is the differentiator from every competitor." },
-      { title: "Filter chips", text: "One-tap filters for the most common needs. \"Showers\" is pre-selected because it's the most common filter." },
-    ]
-  },
-  profile: {
-    title: "Screen 3 — Stop Profile",
-    desc: "Everything a driver needs to decide whether to pull in — at a glance.",
-    notes: [
-      { title: "Overall score + recency", text: "Big number + \"reviewed 8 min ago\" builds immediate trust." },
-      { title: "Weighted category bars", text: "Safety and Parking weighted higher. Drivers care about these most at 2am." },
-      { title: "Active flags", text: "Real-time driver-posted flags appear prominently. Auto-expire after 3 hours." },
-      { title: "Review feed is chronological", text: "Most recent first. No algorithm. Drivers trust drivers, not a ranking system." },
-      { title: "Sticky CTA", text: "\"Check In Here\" is always visible at the bottom. Geofence-gated — only enabled when nearby." },
-    ]
-  },
-  checkin: {
-    title: "Screen 4 — Check-In Flow",
-    desc: "The flywheel moment. Turns a utility action into a diary entry. Must feel effortless.",
-    notes: [
-      { title: "Progress dots", text: "5 steps shown. Driver knows exactly how much is left. Never feels tricked into a long flow." },
-      { title: "One big action", text: "Tapping a star IS the check-in. Everything else is optional enhancement." },
-      { title: "Category ratings pre-populated", text: "Shown with defaults, driver can adjust or leave as-is. Optional = low friction." },
-      { title: "Confirmation = social proof", text: "\"412 drivers will see your review tonight\" makes drivers feel like contributors, not just users." },
-      { title: "Stop count increments", text: "348 → 349. The diary grows. This is the identity moment." },
-    ]
-  },
-  feed: {
-    title: "Screen 6 — Community Feed",
-    desc: "The social pulse of the road. Real check-ins, live flags, driver tips, and milestones from the community.",
-    notes: [
-      { title: "Three feed modes", text: "Following = drivers you know. Nearby = activity within 50 miles of you. Trending = most-reacted posts right now. Nearby is the killer feature — ultra-local relevance." },
-      { title: "Five card types", text: "Check-in, Flag, Tip, Milestone, Photo. Each has a distinct badge color so drivers can scan the feed in seconds without reading every word." },
-      { title: "Flags bubble to the top", text: "Real-time flags (parking full, hazards) are the highest-urgency content. They get a red accent treatment so they visually pop even when scrolling fast." },
-      { title: "'Helpful' reaction", text: "Not a generic 'like' — a Helpful button. Drivers are here for utility, not clout. The language reinforces that every post has practical value." },
-      { title: "Milestones build identity", text: "500 stops is a career achievement. Surfacing it in the feed makes drivers feel seen and inspires newer drivers to keep logging. This is the retention flywheel." },
-    ]
-  },
-  onboard: {
-    title: "Screen 9 — Onboarding",
-    desc: "The first impression. Value before friction. A driver goes from zero to road identity in 4 steps — no credit card, no barrier, no reason to bounce.",
-    notes: [
-      { title: "Step 1 — Value first, ask later", text: "Three value props before a single input field. The driver understands what they're signing up FOR before they're asked to give anything. This is the opposite of how most apps work." },
-      { title: "Step 2 — Handle = identity", text: "Asking for a handle instead of a name immediately signals this is a community, not a form. @HighwayHauler is an identity. 'John Smith' is a database entry. Suggestions reduce blank-field anxiety." },
-      { title: "Step 3 — Rig selection", text: "Purely for personalization — a Hotshot doesn't need the same stop recommendations as an 18-wheeler. But it also does something subtle: it makes the driver feel seen. Someone built this for THEIR specific life on the road." },
-      { title: "Step 4 — Founding Driver badge", text: "The whale badge appears on Day 1. It's permanent and can never be earned by later users. This creates urgency to join early and makes founding drivers feel like insiders, not just early adopters." },
-      { title: "0 stops, zero shame", text: "The profile card shows 0 stops proudly. The diary starts now — and the CTA is 'Find my first stop' not 'Get started'. Specific language, not generic." },
-    ]
-  },
-  flag: {
-    title: "Screen 8 — Flag Flow",
-    desc: "The fastest way to help another driver. 3 steps, under 15 seconds. This is the community contribution that makes Keep Moving a real-time safety tool.",
-    notes: [
-      { title: "Two buttons on Stop Profile", text: "Check In and Flag Issue sit side by side. Check In is positive (how was it?). Flag is urgent (something's wrong right now). Same stop, two different contributions." },
-      { title: "6 flag types in a grid", text: "Parking Full, Showers Closed, Long Wait, Road Hazard, Construction, Weigh Station. These are the exact problems that cost a driver 30-90 minutes if they pull in blind. Icons make selection instant — no reading required." },
-      { title: "3-step progress with back nav", text: "Drivers always know where they are. Step 2 shows what they selected so they can verify before posting. One tap to go back if they picked the wrong type." },
-      { title: "Auto-expire mechanic", text: "Flags auto-expire in 3 hours. This is critical — stale flags destroy trust. The expiry is shown at every step so drivers know their flag won't haunt the stop forever." },
-      { title: "Confirmation = impact", text: "'412 drivers within 50 miles will see this flag' — same principle as the check-in confirmation. Making the driver feel their contribution matters is how you build the habit." },
-    ]
-  },
-  diary: {
-    title: "Screen 7 — Road Diary",
-    desc: "The Letterboxd moment. A driver's entire road life, visualized as a grid. This is what makes Keep Moving an identity, not just a utility.",
-    notes: [
-      { title: "Grid = pride", text: "A 2-column tile grid mirrors Letterboxd's film grid exactly. 348 stop tiles is a career statement. Drivers with big grids will show this screen to other drivers." },
-      { title: "Brand color headers", text: "Pilot is red, Love's is magenta, TA is blue, Flying J is orange. Color-coded tiles let drivers scan their history by chain at a glance — just like movie posters provide color on Letterboxd." },
-      { title: "State coverage map", text: "Amber squares = visited. Gray squares = not yet. The 48-state challenge is a natural goal. Drivers will chase it. This is the retention mechanic hiding in plain sight." },
-      { title: "Year filter", text: "Drivers can browse by year — 2022, 2023, 2024. It turns the diary into a timeline you can actually navigate. 'What was I doing in 2023?' becomes a question the app can answer." },
-      { title: "Career stats at a glance", text: "348 stops, 48 states, 291 reviews, 4.1★ avg. Four numbers that tell a whole career story. No other app has ever made a driver feel like their stats matter." },
-    ]
-  },
-  driver: {
-    title: "Screen 5 — Driver Profile",
-    desc: "The road diary. Built automatically from check-ins. This is what makes drivers come back.",
-    notes: [
-      { title: "Stats are career milestones", text: "348 stops, 48 states, 14-week streak. These are achievements, not metrics." },
-      { title: "Founding Driver badge", text: "Amber and prominent. Permanent reward for early adopters. Creates urgency to join." },
-      { title: "Badges are earned, never bought", text: "Night Owl, Shower Scout, 48-Stater — all from real behavior. Authentic identity." },
-      { title: "Recent stops = diary feel", text: "The list of recent stops with ratings is the Letterboxd moment — your road story, visible." },
-      { title: "Full road diary CTA", text: "The full history is always one tap away. Drivers with 300+ stops will check this often." },
-    ]
-  }
-};
 
 function esc(str) {
   const d = document.createElement('div');
@@ -2821,7 +2664,6 @@ function showScreen(id, btn) {
   document.getElementById('screen-' + id).classList.add('active');
   if (btn) btn.classList.add('active');
   document.getElementById('conf-screen').style.display = 'none';
-  renderAnnotations(id);
   document.querySelector('.phone-screen').scrollTop = 0;
   renderIcons(document.getElementById('screen-' + id));
   if (id === 'finder') loadFinderScreen();
@@ -2848,24 +2690,6 @@ function showScreen(id, btn) {
       if (el) el.textContent = APP.currentStop.address || '—';
     });
   }
-}
-
-function renderAnnotations(id) {
-  const data = ANNOTATIONS[id];
-  const el = document.getElementById('annotations');
-  el.innerHTML = `
-    <h2>${data.title}</h2>
-    <div class="screen-desc">${data.desc}</div>
-    ${data.notes.map((n, i) => `
-      <div class="annotation">
-        <div class="ann-num">${i+1}</div>
-        <div class="ann-text">
-          <strong>${n.title}</strong>
-          <span>${n.text}</span>
-        </div>
-      </div>
-    `).join('')}
-  `;
 }
 
 // ── App State ────────────────────────────────────────────────
@@ -4811,7 +4635,7 @@ const _sb = supabase.createClient(
   try {
     const { count } = await _sb.from('checkins').select('*', { count: 'exact', head: true });
     const el = document.getElementById('splash-counter');
-    if (el && count > 0) el.textContent = `${count.toLocaleString()} driver check-ins and counting`;
+    if (el && count >= 100) el.textContent = `${count.toLocaleString()} driver check-ins and counting`;
   } catch {}
 })();
 
@@ -5216,7 +5040,6 @@ async function loadStopFromParam(session) {
 }
 
 // ── Initialize ──────────────────────────────────────────────
-renderAnnotations('splash');
 renderIcons();
 
 // Detect invite code in URL
