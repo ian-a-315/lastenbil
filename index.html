@@ -11,6 +11,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Keep Moving">
+<meta property="og:title" content="Keep Moving — Real Stop Reviews for Truck Drivers">
+<meta property="og:description" content="Check-ins from drivers already there. Find parking, showers, and fuel along your route.">
+<meta property="og:image" content="https://keep-moving-app.vercel.app/icons/icon-512.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://keep-moving-app.vercel.app">
 <link rel="apple-touch-icon" href="/icons/icon-180.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
 <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167.png">
@@ -1701,6 +1706,9 @@
     font-weight: 400;
   }
 
+  /* iOS zoom prevention — inputs under 16px trigger auto-zoom on tap */
+  input, textarea, select { font-size: 16px; }
+
   /* ── Auth styles ──────────────────────────────────────────── */
   .auth-input {
     width: 100%;
@@ -1709,7 +1717,6 @@
     border-radius: 10px;
     padding: 13px 14px;
     color: var(--warm-white);
-    font-size: 15px;
     outline: none;
     margin-top: 10px;
   }
@@ -2535,7 +2542,7 @@
               </div>
             </div>
           </div>
-          <button class="btn-primary" style="width:100%" onclick="goOnboard(3)">That's my handle →</button>
+          <button class="btn-primary" style="width:100%" onclick="validateStep2()">That's my handle →</button>
           <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="goOnboard(1)">← Back</button>
         </div>
 
@@ -2666,6 +2673,11 @@ function showScreen(id, btn) {
   document.getElementById('conf-screen').style.display = 'none';
   document.querySelector('.phone-screen').scrollTop = 0;
   renderIcons(document.getElementById('screen-' + id));
+  if (id === 'checkin' && !APP.currentStop.place_id) {
+    // No stop selected — bounce to finder instead of showing "Unknown Stop"
+    showScreen('finder', document.querySelectorAll('.screen-nav button')[1]);
+    return;
+  }
   if (id === 'finder') loadFinderScreen();
   if (id === 'driver') loadDriverProfile();
   if (id === 'profile') loadStopProfile();
@@ -2996,6 +3008,41 @@ function goOnboard(step) {
       document.querySelector('#onboard-s4 .onboard-sub').textContent = "You're one of the first 1,600. Your badge is official — it's on your profile now.";
     }
   }
+}
+
+function validateStep2() {
+  const handle   = (document.getElementById('handle-input')?.value || '').trim();
+  const email    = (document.getElementById('signup-email')?.value || '').trim();
+  const password = document.getElementById('signup-password')?.value || '';
+  const errEl    = document.getElementById('signup-error');
+  errEl.style.display = 'none';
+
+  if (!handle) {
+    errEl.textContent = 'Choose a handle before continuing.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!/^[a-zA-Z0-9_]+$/.test(handle)) {
+    errEl.textContent = 'Handle can only contain letters, numbers, and underscores.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!email) {
+    errEl.textContent = 'Enter your email address.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!password) {
+    errEl.textContent = 'Enter a password.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (password.length < 8) {
+    errEl.textContent = 'Password must be at least 8 characters.';
+    errEl.style.display = 'block';
+    return;
+  }
+  goOnboard(3);
 }
 
 function pickHandle(name) {
@@ -3947,7 +3994,7 @@ async function renderFeed() {
 
   feedEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Loading…</div>';
 
-  const [{ data: checkins }, { data: flags }] = await Promise.all([
+  const [checkinResult, flagResult] = await Promise.all([
     _sb.from('checkins')
       .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, rating, note, created_at, user_id, profiles(handle, rig_icon, avatar_url, created_at)')
       .order('created_at', { ascending: false })
@@ -3958,6 +4005,26 @@ async function renderFeed() {
       .order('created_at', { ascending: false })
       .limit(20)
   ]);
+
+  // If the join query failed (e.g. column missing, RLS), fall back without profiles join
+  let checkins = checkinResult.data;
+  let flags    = flagResult.data;
+  if (checkinResult.error || !checkins) {
+    console.warn('Feed checkins query error:', checkinResult.error?.message);
+    const { data: fallback } = await _sb.from('checkins')
+      .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, rating, note, created_at, user_id')
+      .order('created_at', { ascending: false })
+      .limit(30);
+    checkins = fallback;
+  }
+  if (flagResult.error || !flags) {
+    const { data: fallback } = await _sb.from('flags')
+      .select('id, stop_name, stop_address, stop_place_id, stop_lat, stop_lng, flag_type, flag_icon, note, created_at, user_id')
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(20);
+    flags = fallback;
+  }
 
   let items = [
     ...(checkins || []).map(c => ({ ...c, _type: 'checkin' })),
