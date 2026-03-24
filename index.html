@@ -4631,6 +4631,21 @@ function searchAlongRoute(filterKeyword) {
     const destCity = result.routes[0].legs[result.routes[0].legs.length - 1].end_address.split(',')[0];
     stopsLabel.textContent = `${stops.length} stops to ${destCity}`;
 
+    // Fetch most recent KM check-in per stop for recency signal
+    const routePlaceIds = stops.map(p => p.place_id).filter(Boolean);
+    let routeRecencyMap = {};
+    try {
+      const { data: routeCheckins } = await _sb
+        .from('checkins')
+        .select('stop_place_id, created_at, profiles(handle)')
+        .in('stop_place_id', routePlaceIds)
+        .order('created_at', { ascending: false })
+        .limit(routePlaceIds.length * 3);
+      for (const c of (routeCheckins || [])) {
+        if (!routeRecencyMap[c.stop_place_id]) routeRecencyMap[c.stop_place_id] = c;
+      }
+    } catch {}
+
     // Render stop cards with mile marker badges
     stopsList.innerHTML = stops.map((place, i) => {
       const rating = place.rating ? place.rating.toFixed(1) : '—';
@@ -4641,6 +4656,18 @@ function searchAlongRoute(filterKeyword) {
       const safeName = place.name.replace(/'/g, "\\'");
       const safeAddr = addr.replace(/'/g, "\\'");
       const mile = Math.round(distanceMiles(APP.finder.lat, APP.finder.lng, pLat, pLng));
+
+      const recent = routeRecencyMap[place.place_id];
+      const recencyHtml = recent ? (() => {
+        const ageMs = Date.now() - new Date(recent.created_at).getTime();
+        const fresh = ageMs < 7200000;
+        const color = fresh ? '#34d399' : 'var(--road-dust)';
+        const handle = recent.profiles?.handle || 'driver';
+        return `<div style="display:flex;align-items:center;gap:6px;margin:8px 0 2px;font-size:12px;font-weight:700;color:${color}">
+          <span style="width:7px;height:7px;border-radius:50%;background:${color};flex-shrink:0"></span>
+          @${handle} · ${timeAgo(recent.created_at)}
+        </div>`;
+      })() : '';
 
       return `
         <div class="stop-card" onclick="viewStop('${safeName}','${place.place_id}','${safeAddr}',${place.rating||0},${count},${pLat},${pLng})">
@@ -4658,6 +4685,7 @@ function searchAlongRoute(filterKeyword) {
               <div class="rating-count">${count.toLocaleString()} reviews</div>
             </div>
           </div>
+          ${recencyHtml}
           <div style="margin-top:10px;display:flex;gap:8px">
             <button class="btn-primary" style="flex:1;padding:10px" onclick="event.stopPropagation();viewStop('${safeName}','${place.place_id}','${safeAddr}',${place.rating||0},${count},${pLat},${pLng})">View Stop →</button>
             <button style="padding:10px 14px;background:var(--steel);border:1px solid #333;border-radius:10px;color:var(--road-dust);font-size:13px;font-weight:700;cursor:pointer" onclick="event.stopPropagation();selectStop('${safeName}','${place.place_id}','${safeAddr}',${pLat},${pLng})">＋ Check In</button>
@@ -4681,7 +4709,7 @@ function searchNearby(lat, lng, filterKeyword) {
     location: center,
     rankBy: google.maps.places.RankBy.DISTANCE,
     keyword
-  }, (results, status) => {
+  }, async (results, status) => {
     if (status !== google.maps.places.PlacesServiceStatus.OK || !results.length) {
       document.getElementById('stops-label').textContent = 'No stops found nearby';
       document.getElementById('stops-list').innerHTML = '<div style="padding:20px;text-align:center;color:var(--road-dust)">Try moving to a different area.</div>';
@@ -4704,6 +4732,21 @@ function searchNearby(lat, lng, filterKeyword) {
       APP.finder.markers.push(m);
     });
 
+    // Fetch most recent KM check-in per stop for recency signal
+    const placeIds = stops.map(p => p.place_id).filter(Boolean);
+    let recencyMap = {};
+    try {
+      const { data: recentCheckins } = await _sb
+        .from('checkins')
+        .select('stop_place_id, created_at, profiles(handle)')
+        .in('stop_place_id', placeIds)
+        .order('created_at', { ascending: false })
+        .limit(placeIds.length * 3);
+      for (const c of (recentCheckins || [])) {
+        if (!recencyMap[c.stop_place_id]) recencyMap[c.stop_place_id] = c;
+      }
+    } catch {}
+
     // Render stop cards
     document.getElementById('stops-list').innerHTML = stops.map(place => {
       const rating = place.rating ? place.rating.toFixed(1) : '—';
@@ -4722,6 +4765,18 @@ function searchNearby(lat, lng, filterKeyword) {
       const pLat = place.geometry.location.lat();
       const pLng = place.geometry.location.lng();
 
+      const recent = recencyMap[place.place_id];
+      const recencyHtml = recent ? (() => {
+        const ageMs = Date.now() - new Date(recent.created_at).getTime();
+        const fresh = ageMs < 7200000; // < 2 hours
+        const color = fresh ? '#34d399' : 'var(--road-dust)';
+        const handle = recent.profiles?.handle || 'driver';
+        return `<div style="display:flex;align-items:center;gap:6px;margin:8px 0 2px;font-size:12px;font-weight:700;color:${color}">
+          <span style="width:7px;height:7px;border-radius:50%;background:${color};flex-shrink:0"></span>
+          @${handle} · ${timeAgo(recent.created_at)}
+        </div>`;
+      })() : '';
+
       return `
         <div class="stop-card" onclick="viewStop('${safeName}', '${place.place_id}', '${safeAddr}', ${place.rating || 0}, ${count}, ${pLat}, ${pLng})">
           <div class="stop-card-header">
@@ -4734,6 +4789,7 @@ function searchNearby(lat, lng, filterKeyword) {
               <div class="rating-count">${count.toLocaleString()} reviews</div>
             </div>
           </div>
+          ${recencyHtml}
           <div style="margin-top:10px;display:flex;gap:8px">
             <button class="btn-primary" style="flex:1;padding:10px" onclick="event.stopPropagation();viewStop('${safeName}', '${place.place_id}', '${safeAddr}', ${place.rating || 0}, ${count}, ${pLat}, ${pLng})">View Stop →</button>
             <button style="padding:10px 14px;background:var(--steel);border:1px solid #333;border-radius:10px;color:var(--road-dust);font-size:13px;font-weight:700;cursor:pointer" onclick="event.stopPropagation();selectStop('${safeName}', '${place.place_id}', '${safeAddr}', ${pLat}, ${pLng})">＋ Check In</button>
