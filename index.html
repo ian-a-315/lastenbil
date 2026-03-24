@@ -2064,8 +2064,8 @@
         <div class="checkin-screen">
           <div class="checkin-step-label">Checking in at</div>
           <div class="checkin-stop-name" id="checkin-stop-name"><i data-lucide="map-pin" class="icon"></i> Pilot Travel Center #437, Memphis TN</div>
-          <div class="checkin-step-title" style="margin-top:20px">How was it overall?</div>
 
+          <div class="checkin-step-title" style="margin-top:20px">How was it overall?</div>
           <div class="star-row" id="star-row">
             <div class="star" onclick="rateStar(1)">★</div>
             <div class="star" onclick="rateStar(2)">★</div>
@@ -2073,75 +2073,21 @@
             <div class="star lit" onclick="rateStar(4)">★</div>
             <div class="star" onclick="rateStar(5)">★</div>
           </div>
+          <div style="text-align:center;font-size:14px;color:var(--road-dust);margin-bottom:24px">Tap a star to rate</div>
 
-          <div style="text-align:center;font-size:14px;color:var(--road-dust);margin-bottom:28px">Tap a star to rate</div>
-
-          <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">Rate by category <span style="color:#444;font-size:10px">— optional</span></div>
-          <div class="cat-rating-section">
-            <div class="cat-rating-row">
-              <div class="cat-rating-label"><span><i data-lucide="square-parking" class="icon-sm"></i></span> Parking</div>
-              <div class="mini-stars" id="cat-parking">
-                <span onclick="rateCategory('parking',1)">★</span><span onclick="rateCategory('parking',2)">★</span><span onclick="rateCategory('parking',3)">★</span><span onclick="rateCategory('parking',4)">★</span><span onclick="rateCategory('parking',5)">★</span>
-              </div>
-            </div>
-            <div style="padding:10px 0 8px;border-bottom:1px solid #2a2d35">
-              <div style="font-size:11px;color:var(--road-dust);margin-bottom:8px">How full was the lot?</div>
-              <div style="display:flex;gap:6px;flex-wrap:wrap">
-                <button class="spot-btn" onclick="selectParkingSpots('wide_open',this)"><span class="dot-parking" style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:5px;vertical-align:middle"></span>Wide open</button>
-                <button class="spot-btn" onclick="selectParkingSpots('plenty',this)"><span class="dot-parking" style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block;margin-right:5px;vertical-align:middle"></span>Plenty</button>
-                <button class="spot-btn" onclick="selectParkingSpots('tight',this)"><span class="dot-parking" style="width:8px;height:8px;border-radius:50%;background:#f97316;display:inline-block;margin-right:5px;vertical-align:middle"></span>Tight</button>
-                <button class="spot-btn" onclick="selectParkingSpots('full',this)"><span class="dot-parking" style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;margin-right:5px;vertical-align:middle"></span>Full</button>
-              </div>
-            </div>
-            <div class="cat-rating-row">
-              <div class="cat-rating-label"><span><i data-lucide="droplets" class="icon-sm"></i></span> Showers</div>
-              <div class="mini-stars" id="cat-showers">
-                <span onclick="rateCategory('showers',1)">★</span><span onclick="rateCategory('showers',2)">★</span><span onclick="rateCategory('showers',3)">★</span><span onclick="rateCategory('showers',4)">★</span><span onclick="rateCategory('showers',5)">★</span>
-              </div>
-            </div>
-            <div class="cat-rating-row">
-              <div class="cat-rating-label"><span><i data-lucide="utensils" class="icon-sm"></i></span> Food</div>
-              <div class="mini-stars" id="cat-food">
-                <span onclick="rateCategory('food',1)">★</span><span onclick="rateCategory('food',2)">★</span><span onclick="rateCategory('food',3)">★</span><span onclick="rateCategory('food',4)">★</span><span onclick="rateCategory('food',5)">★</span>
-              </div>
-            </div>
-            <div class="cat-rating-row">
-              <div class="cat-rating-label"><span><i data-lucide="lock" class="icon-sm"></i></span> Safety</div>
-              <div class="mini-stars" id="cat-safety">
-                <span onclick="rateCategory('safety',1)">★</span><span onclick="rateCategory('safety',2)">★</span><span onclick="rateCategory('safety',3)">★</span><span onclick="rateCategory('safety',4)">★</span><span onclick="rateCategory('safety',5)">★</span>
-              </div>
-            </div>
-            <div class="cat-rating-row">
-              <div class="cat-rating-label"><span><i data-lucide="fuel" class="icon-sm"></i></span> Fuel Price</div>
-              <div class="mini-stars" id="cat-fuel">
-                <span onclick="rateCategory('fuel',1)">★</span><span onclick="rateCategory('fuel',2)">★</span><span onclick="rateCategory('fuel',3)">★</span><span onclick="rateCategory('fuel',4)">★</span><span onclick="rateCategory('fuel',5)">★</span>
-              </div>
+          <!-- Parking fullness — high signal, always visible -->
+          <div style="margin-bottom:24px">
+            <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px"><i data-lucide="square-parking" class="icon-sm"></i> How full was the lot?</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button class="spot-btn" onclick="selectParkingSpots('wide_open',this)"><span style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:5px;vertical-align:middle"></span>Wide open</button>
+              <button class="spot-btn" onclick="selectParkingSpots('plenty',this)"><span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block;margin-right:5px;vertical-align:middle"></span>Plenty</button>
+              <button class="spot-btn" onclick="selectParkingSpots('tight',this)"><span style="width:8px;height:8px;border-radius:50%;background:#f97316;display:inline-block;margin-right:5px;vertical-align:middle"></span>Tight</button>
+              <button class="spot-btn" onclick="selectParkingSpots('full',this)"><span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;margin-right:5px;vertical-align:middle"></span>Full</button>
             </div>
           </div>
 
-          <div style="margin-top:24px">
-            <textarea id="checkin-note" placeholder="Anything other drivers should know?" style="width:100%;background:var(--steel);border:1px solid #333;border-radius:12px;color:var(--warm-white);font-size:14px;font-family:inherit;padding:14px;resize:none;height:88px;outline:none;line-height:1.5;" maxlength="280"></textarea>
-          </div>
-
-          <div style="margin-top:20px">
-            <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px"><i data-lucide="volume-x" class="icon-sm"></i> Quiet at night?</div>
-            <div style="display:flex;gap:8px">
-              <button class="quiet-btn" id="quiet-yes" onclick="setQuiet(true)"><i data-lucide="moon" class="icon-sm"></i> Yes</button>
-              <button class="quiet-btn" id="quiet-no" onclick="setQuiet(false)"><i data-lucide="volume-2" class="icon-sm"></i> No</button>
-            </div>
-          </div>
-
-          <div style="margin-top:20px">
-            <textarea id="checkin-tip" placeholder="What should the next driver know? (parking tricks, entrances, timing)" style="width:100%;background:var(--steel);border:1px solid #333;border-radius:12px;color:var(--warm-white);font-size:14px;font-family:inherit;padding:14px;resize:none;height:72px;outline:none;line-height:1.5;" maxlength="280"></textarea>
-          </div>
-
-          <div style="margin-top:20px">
-            <div id="photo-previews" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"></div>
-            <button class="btn-secondary" id="add-photo-btn" onclick="addPhoto()" style="font-size:13px;padding:10px 16px;width:auto"><i data-lucide="camera" class="icon"></i> Add photo <span style="color:var(--road-dust);font-size:11px">(optional)</span></button>
-            <input type="file" accept="image/*" capture="environment" id="photo-file-input" style="display:none" onchange="handlePhotoSelect(event)">
-          </div>
-
-          <div id="draft-banner" style="display:none;background:rgba(10,199,192,0.08);border:1px solid rgba(10,199,192,0.25);border-radius:12px;padding:12px 14px;margin-top:12px">
+          <!-- Draft banner -->
+          <div id="draft-banner" style="display:none;background:rgba(10,199,192,0.08);border:1px solid rgba(10,199,192,0.25);border-radius:12px;padding:12px 14px;margin-bottom:16px">
             <div style="font-size:11px;font-weight:700;color:var(--amber);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px"><i data-lucide="clipboard" class="icon-sm"></i> Unsaved check-in</div>
             <div style="font-size:13px;color:var(--warm-white);margin-bottom:10px" id="draft-banner-text"></div>
             <div style="display:flex;gap:8px">
@@ -2150,9 +2096,72 @@
             </div>
           </div>
 
-          <div style="margin-top:16px">
-            <button class="btn-primary" id="checkin-submit-btn" onclick="submitCheckin()" style="width:100%">Next →</button>
+          <!-- Primary submit — available immediately -->
+          <button class="btn-primary" id="checkin-submit-btn" onclick="submitCheckin()" style="width:100%;margin-bottom:16px">Post check-in →</button>
+
+          <!-- Add more detail — collapsed by default -->
+          <button id="checkin-detail-toggle" onclick="toggleCheckinDetail()" style="background:none;border:1px solid #2a2d35;border-radius:10px;color:var(--road-dust);font-size:13px;padding:10px 16px;width:100%;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;margin-bottom:4px">
+            <i data-lucide="plus" class="icon-sm"></i> Add more detail
+          </button>
+
+          <div id="checkin-detail" style="display:none;padding-top:8px">
+            <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">Rate by category</div>
+            <div class="cat-rating-section">
+              <div class="cat-rating-row">
+                <div class="cat-rating-label"><span><i data-lucide="square-parking" class="icon-sm"></i></span> Parking</div>
+                <div class="mini-stars" id="cat-parking">
+                  <span onclick="rateCategory('parking',1)">★</span><span onclick="rateCategory('parking',2)">★</span><span onclick="rateCategory('parking',3)">★</span><span onclick="rateCategory('parking',4)">★</span><span onclick="rateCategory('parking',5)">★</span>
+                </div>
+              </div>
+              <div class="cat-rating-row">
+                <div class="cat-rating-label"><span><i data-lucide="droplets" class="icon-sm"></i></span> Showers</div>
+                <div class="mini-stars" id="cat-showers">
+                  <span onclick="rateCategory('showers',1)">★</span><span onclick="rateCategory('showers',2)">★</span><span onclick="rateCategory('showers',3)">★</span><span onclick="rateCategory('showers',4)">★</span><span onclick="rateCategory('showers',5)">★</span>
+                </div>
+              </div>
+              <div class="cat-rating-row">
+                <div class="cat-rating-label"><span><i data-lucide="utensils" class="icon-sm"></i></span> Food</div>
+                <div class="mini-stars" id="cat-food">
+                  <span onclick="rateCategory('food',1)">★</span><span onclick="rateCategory('food',2)">★</span><span onclick="rateCategory('food',3)">★</span><span onclick="rateCategory('food',4)">★</span><span onclick="rateCategory('food',5)">★</span>
+                </div>
+              </div>
+              <div class="cat-rating-row">
+                <div class="cat-rating-label"><span><i data-lucide="lock" class="icon-sm"></i></span> Safety</div>
+                <div class="mini-stars" id="cat-safety">
+                  <span onclick="rateCategory('safety',1)">★</span><span onclick="rateCategory('safety',2)">★</span><span onclick="rateCategory('safety',3)">★</span><span onclick="rateCategory('safety',4)">★</span><span onclick="rateCategory('safety',5)">★</span>
+                </div>
+              </div>
+              <div class="cat-rating-row">
+                <div class="cat-rating-label"><span><i data-lucide="fuel" class="icon-sm"></i></span> Fuel Price</div>
+                <div class="mini-stars" id="cat-fuel">
+                  <span onclick="rateCategory('fuel',1)">★</span><span onclick="rateCategory('fuel',2)">★</span><span onclick="rateCategory('fuel',3)">★</span><span onclick="rateCategory('fuel',4)">★</span><span onclick="rateCategory('fuel',5)">★</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:20px">
+              <div style="font-size:11px;color:var(--road-dust);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px"><i data-lucide="volume-x" class="icon-sm"></i> Quiet at night?</div>
+              <div style="display:flex;gap:8px">
+                <button class="quiet-btn" id="quiet-yes" onclick="setQuiet(true)"><i data-lucide="moon" class="icon-sm"></i> Yes</button>
+                <button class="quiet-btn" id="quiet-no" onclick="setQuiet(false)"><i data-lucide="volume-2" class="icon-sm"></i> No</button>
+              </div>
+            </div>
+
+            <div style="margin-top:20px">
+              <textarea id="checkin-tip" placeholder="Driver tip — parking tricks, best entrance, timing?" style="width:100%;background:var(--steel);border:1px solid #333;border-radius:12px;color:var(--warm-white);font-size:14px;font-family:inherit;padding:14px;resize:none;height:72px;outline:none;line-height:1.5;" maxlength="280"></textarea>
+            </div>
+
+            <div style="margin-top:12px">
+              <textarea id="checkin-note" placeholder="Anything else other drivers should know?" style="width:100%;background:var(--steel);border:1px solid #333;border-radius:12px;color:var(--warm-white);font-size:14px;font-family:inherit;padding:14px;resize:none;height:72px;outline:none;line-height:1.5;" maxlength="280"></textarea>
+            </div>
+
+            <div style="margin-top:16px">
+              <div id="photo-previews" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"></div>
+              <button class="btn-secondary" id="add-photo-btn" onclick="addPhoto()" style="font-size:13px;padding:10px 16px;width:auto"><i data-lucide="camera" class="icon"></i> Add photo <span style="color:var(--road-dust);font-size:11px">(optional)</span></button>
+              <input type="file" accept="image/*" capture="environment" id="photo-file-input" style="display:none" onchange="handlePhotoSelect(event)">
+            </div>
           </div>
+
         </div>
 
         <!-- Confirmation state (hidden by default) -->
@@ -2897,6 +2906,17 @@ function selectParkingSpots(val, btn) {
   btn.classList.add('selected');
 }
 
+function toggleCheckinDetail() {
+  const detail = document.getElementById('checkin-detail');
+  const toggle = document.getElementById('checkin-detail-toggle');
+  const open = detail.style.display === 'none';
+  detail.style.display = open ? 'block' : 'none';
+  toggle.innerHTML = open
+    ? '<i data-lucide="minus" class="icon-sm"></i> Less detail'
+    : '<i data-lucide="plus" class="icon-sm"></i> Add more detail';
+  if (open) renderIcons(toggle);
+}
+
 function setQuiet(val) {
   APP.checkin.quietAtNight = val;
   document.getElementById('quiet-yes')?.classList.toggle('selected', val === true);
@@ -2988,6 +3008,11 @@ function resetCheckinState() {
   const tipEl = document.getElementById('checkin-tip');
   if (tipEl) tipEl.value = '';
   renderPhotoPreviews();
+  // Collapse detail section so next check-in starts clean
+  const detailEl = document.getElementById('checkin-detail');
+  const toggleEl = document.getElementById('checkin-detail-toggle');
+  if (detailEl) detailEl.style.display = 'none';
+  if (toggleEl) toggleEl.innerHTML = '<i data-lucide="plus" class="icon-sm"></i> Add more detail';
   // Restore form / hide confirmation for next check-in
   const formEl = document.querySelector('#screen-checkin .checkin-screen');
   if (formEl) formEl.style.display = '';
@@ -3010,7 +3035,7 @@ async function submitCheckin() {
 
   const { data: { session } } = await _sb.auth.getSession();
   if (!session) {
-    btn.textContent = 'Next →';
+    btn.textContent = 'Post check-in →';
     btn.disabled = false;
     showScreen('splash', document.querySelectorAll('.screen-nav button')[0]);
     return;
@@ -3048,7 +3073,7 @@ async function submitCheckin() {
     console.error(error);
     btn.textContent = 'Something went wrong — try again';
     btn.style.background = 'var(--danger)';
-    setTimeout(() => { btn.textContent = 'Next →'; btn.style.background = ''; }, 3000);
+    setTimeout(() => { btn.textContent = 'Post check-in →'; btn.style.background = ''; }, 3000);
     showToast(error.message || 'Check-in failed');
     return;
   }
@@ -4047,6 +4072,13 @@ async function loadFeedScreen() {
   try {
     const { data: { session } } = await _sb.auth.getSession();
     if (session) { APP.user = session.user.id; await getFollowIds(); }
+    // New users with no follows land on Trending so the feed feels alive
+    if (APP.follows.ids.size === 0 && APP.feed.filter === 'following') {
+      APP.feed.filter = 'trending';
+      document.querySelectorAll('.feed-filter').forEach(f => f.classList.remove('active'));
+      const trendEl = document.querySelector('.feed-filter[data-filter="trending"]');
+      if (trendEl) trendEl.classList.add('active');
+    }
     await renderFeed();
     if (APP.feed.pollInterval) clearInterval(APP.feed.pollInterval);
     APP.feed.pollInterval = setInterval(renderFeed, 30000);
@@ -4127,14 +4159,15 @@ async function renderFeed() {
     }
   }
 
-  // Trending: filter to items with ≥3 reactions in last 24h
+  // Trending: prefer ≥3 reactions in last 24h, fall back to all recent activity
   if (filter === 'trending') {
     const since24h = new Date(Date.now() - 86400000).toISOString();
     const { data: recentRx } = await _sb.from('reactions').select('target_id').gt('created_at', since24h);
     for (const r of (recentRx || [])) {
       trendCounts[r.target_id] = (trendCounts[r.target_id] || 0) + 1;
     }
-    items = items.filter(i => (trendCounts[i.id] || 0) >= 3);
+    const hotItems = items.filter(i => (trendCounts[i.id] || 0) >= 3);
+    items = hotItems.length > 0 ? hotItems : items; // fall back to all recent if nothing hits threshold
     items.sort((a, b) => (trendCounts[b.id] || 0) - (trendCounts[a.id] || 0));
   }
 
