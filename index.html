@@ -7,7 +7,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#8B5CF6">
+<meta name="theme-color" content="#623776">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Keep Moving">
@@ -27,11 +27,11 @@
     --midnight:    #0D0F14;
     --asphalt:     #1A1D24;
     --steel:       #242830;
-    --amber:       #8B5CF6;
-    --ember:       #6D28D9;
+    --amber:       #0ac7c0;
+    --ember:       #0D9488;
     --warm-white:  #F5F0E8;
     --road-dust:   #9A9080;
-    --cw-purple:   #4A2472;
+    --cw-purple:   #623776;
     --success:     #4CAF7D;
     --danger:      #E85050;
   }
@@ -110,7 +110,7 @@
     width: 390px;
     background: #1c1c1e;
     border-radius: 50px;
-    box-shadow: 0 0 0 2px #333, 0 40px 80px rgba(0,0,0,0.8), 0 0 120px rgba(139,92,246,0.12);
+    box-shadow: 0 0 0 2px #333, 0 40px 80px rgba(0,0,0,0.8), 0 0 120px rgba(10,199,192,0.12);
     overflow: hidden;
     position: relative;
     flex-shrink: 0;
@@ -228,7 +228,7 @@
     transform: translateX(-50%);
     width: 300px;
     height: 200px;
-    background: radial-gradient(ellipse, rgba(245,166,35,0.15) 0%, transparent 70%);
+    background: radial-gradient(ellipse, rgba(10,199,192,0.12) 0%, transparent 70%);
   }
   .headlights {
     display: flex;
@@ -240,7 +240,7 @@
     height: 28px;
     background: var(--amber);
     border-radius: 50%;
-    box-shadow: 0 0 20px rgba(245,166,35,0.6), 0 0 40px rgba(245,166,35,0.3);
+    box-shadow: 0 0 20px rgba(10,199,192,0.6), 0 0 40px rgba(10,199,192,0.3);
   }
   .splash h1 {
     font-size: 42px;
@@ -363,7 +363,7 @@
     padding: 4px 8px;
     border-radius: 20px;
     white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(245,166,35,0.4);
+    box-shadow: 0 2px 8px rgba(10,199,192,0.4);
   }
   .map-pin .pin-bubble.low {
     background: var(--steel);
@@ -437,7 +437,7 @@
     flex-shrink: 0;
   }
   .filter-chip.on {
-    background: rgba(245,166,35,0.15);
+    background: rgba(10,199,192,0.12);
     border-color: var(--amber);
     color: var(--amber);
   }
@@ -698,7 +698,7 @@
     transition: all 0.15s;
     user-select: none;
   }
-  .star.lit { opacity: 1; filter: drop-shadow(0 0 8px rgba(245,166,35,0.5)); }
+  .star.lit { opacity: 1; filter: drop-shadow(0 0 8px rgba(10,199,192,0.5)); }
   .cat-rating-section {
     margin-top: 8px;
   }
@@ -908,8 +908,8 @@
     gap: 6px;
   }
   .badge-chip.founding {
-    background: rgba(245,166,35,0.15);
-    border: 1px solid rgba(245,166,35,0.4);
+    background: rgba(10,199,192,0.12);
+    border: 1px solid rgba(10,199,192,0.35);
     color: var(--amber);
   }
   /* Badge shelf list */
@@ -917,7 +917,7 @@
   .badge-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #1e2028; }
   .badge-row:last-child { border-bottom: none; }
   .badge-icon-box { width: 40px; height: 40px; background: var(--steel); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-  .badge-icon-box.earned { background: rgba(139,92,246,0.2); }
+  .badge-icon-box.earned { background: rgba(10,199,192,0.15); }
   .badge-row.locked .badge-icon-box { opacity: 0.4; }
   .badge-info { flex: 1; min-width: 0; }
   .badge-name { font-size: 13px; font-weight: 700; color: var(--warm-white); margin-bottom: 1px; }
@@ -1003,9 +1003,9 @@
     transition: all 0.2s;
   }
   .feed-filter.active {
-    background: rgba(245,166,35,0.15);
+    background: rgba(10,199,192,0.12);
     color: var(--amber);
-    border-color: rgba(245,166,35,0.4);
+    border-color: rgba(10,199,192,0.35);
   }
   .feed-list { padding: 10px 14px; }
   .feed-card {
@@ -1057,8 +1057,8 @@
   }
   .badge-checkin  { background: rgba(74,180,125,0.15); color: var(--success); }
   .badge-flag     { background: rgba(232,80,80,0.15);  color: var(--danger); }
-  .badge-tip      { background: rgba(245,166,35,0.15); color: var(--amber); }
-  .badge-milestone{ background: rgba(74,36,114,0.3);   color: #b88fec; }
+  .badge-tip      { background: rgba(10,199,192,0.12); color: var(--amber); }
+  .badge-milestone{ background: rgba(98,55,118,0.3);   color: #c09ad0; }
   .feed-body {
     font-size: 13px;
     color: var(--warm-white);
@@ -1087,8 +1087,8 @@
     margin-bottom: 10px;
   }
   .feed-milestone-banner {
-    background: rgba(74,36,114,0.2);
-    border: 1px solid rgba(184,143,236,0.3);
+    background: rgba(98,55,118,0.2);
+    border: 1px solid rgba(141,90,162,0.3);
     border-radius: 10px;
     padding: 12px;
     text-align: center;
@@ -1126,7 +1126,7 @@
     transition: all 0.2s;
   }
   .feed-action-btn:hover, .feed-action-btn.reacted {
-    background: rgba(245,166,35,0.1);
+    background: rgba(10,199,192,0.1);
     color: var(--amber);
   }
   .photo-placeholder {
@@ -1214,9 +1214,9 @@
     transition: all 0.2s;
   }
   .diary-year-btn.active {
-    background: rgba(245,166,35,0.15);
+    background: rgba(10,199,192,0.12);
     color: var(--amber);
-    border-color: rgba(245,166,35,0.4);
+    border-color: rgba(10,199,192,0.35);
   }
   .diary-states-wrap {
     padding: 10px 16px;
@@ -1483,8 +1483,8 @@
     color: var(--road-dust);
   }
   .flag-expire-badge {
-    background: rgba(245,166,35,0.1);
-    border: 1px solid rgba(245,166,35,0.3);
+    background: rgba(10,199,192,0.1);
+    border: 1px solid rgba(10,199,192,0.3);
     border-radius: 20px;
     padding: 6px 14px;
     font-size: 12px;
@@ -1655,10 +1655,10 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-  .rig-tile:hover { border-color: rgba(245,166,35,0.4); }
+  .rig-tile:hover { border-color: rgba(10,199,192,0.4); }
   .rig-tile.selected {
     border-color: var(--amber);
-    background: rgba(245,166,35,0.08);
+    background: rgba(10,199,192,0.08);
   }
   .rig-tile-icon { font-size: 32px; margin-bottom: 8px; }
   .rig-tile-label {
@@ -1673,7 +1673,7 @@
   }
   .welcome-card {
     background: linear-gradient(135deg, var(--asphalt), var(--steel));
-    border: 1px solid rgba(245,166,35,0.3);
+    border: 1px solid rgba(10,199,192,0.25);
     border-radius: 16px;
     padding: 20px;
     margin-bottom: 24px;
@@ -1733,8 +1733,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    background: rgba(245,166,35,0.1);
-    border: 1px solid rgba(245,166,35,0.3);
+    background: rgba(10,199,192,0.1);
+    border: 1px solid rgba(10,199,192,0.3);
     border-radius: 12px;
     padding: 12px 16px;
     margin-bottom: 28px;
@@ -1886,7 +1886,8 @@
             <div class="headlight"></div>
           </div>
           <h1>KEEP MOVING</h1>
-          <p>Find your next stop.</p>
+          <p>Real check-ins from drivers already there.</p>
+          <div id="splash-counter" style="font-size:12px;color:var(--road-dust);margin:-4px 0 6px;min-height:16px"></div>
           <button class="btn-primary" onclick="requestLocationThenOnboard()">Get Started →</button>
           <button class="btn-secondary" onclick="openSignIn()">Sign In</button>
           <div class="splash-powered">Powered by Cover Whale</div>
@@ -1922,6 +1923,18 @@
             <span style="opacity:0.5"><i data-lucide="search" class="icon-sm"></i></span>
             <input id="stop-search-input" type="text" placeholder="Search any stop or highway..." autocomplete="off">
           </div>
+        </div>
+
+        <!-- Route destination bar -->
+        <div id="route-bar" style="padding:10px 14px 0;display:flex;gap:8px;align-items:center">
+          <div style="flex:1;background:var(--steel);border:1px solid #333;border-radius:10px;display:flex;align-items:center;padding:10px 12px;gap:8px">
+            <i data-lucide="navigation" class="icon-sm" style="color:var(--amber);flex-shrink:0"></i>
+            <input id="route-dest-input" type="text" placeholder="Where are you heading?"
+              style="flex:1;background:none;border:none;color:var(--warm-white);font-size:14px;outline:none;min-width:0;font-family:inherit"
+              autocomplete="off">
+            <button id="route-clear-btn" onclick="clearRoute()" style="display:none;background:none;border:none;color:var(--road-dust);cursor:pointer;font-size:18px;line-height:1;padding:0;flex-shrink:0">×</button>
+          </div>
+          <button onclick="searchAlongRoute()" style="background:var(--amber);border:none;color:#0D0F14;font-size:13px;font-weight:700;padding:10px 14px;border-radius:10px;cursor:pointer;flex-shrink:0;font-family:inherit">Go →</button>
         </div>
 
         <!-- Filters -->
@@ -2049,17 +2062,9 @@
         </div>
 
         <div class="checkin-screen">
-          <div class="progress-dots">
-            <div class="dot done"></div>
-            <div class="dot active"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-          </div>
-
-          <div class="checkin-step-label">Step 2 of 5</div>
-          <div class="checkin-step-title">How was it overall?</div>
+          <div class="checkin-step-label">Checking in at</div>
           <div class="checkin-stop-name" id="checkin-stop-name"><i data-lucide="map-pin" class="icon"></i> Pilot Travel Center #437, Memphis TN</div>
+          <div class="checkin-step-title" style="margin-top:20px">How was it overall?</div>
 
           <div class="star-row" id="star-row">
             <div class="star" onclick="rateStar(1)">★</div>
@@ -2136,7 +2141,7 @@
             <input type="file" accept="image/*" capture="environment" id="photo-file-input" style="display:none" onchange="handlePhotoSelect(event)">
           </div>
 
-          <div id="draft-banner" style="display:none;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);border-radius:12px;padding:12px 14px;margin-top:12px">
+          <div id="draft-banner" style="display:none;background:rgba(10,199,192,0.08);border:1px solid rgba(10,199,192,0.25);border-radius:12px;padding:12px 14px;margin-top:12px">
             <div style="font-size:11px;font-weight:700;color:var(--amber);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px"><i data-lucide="clipboard" class="icon-sm"></i> Unsaved check-in</div>
             <div style="font-size:13px;color:var(--warm-white);margin-bottom:10px" id="draft-banner-text"></div>
             <div style="display:flex;gap:8px">
@@ -2167,11 +2172,12 @@
           </div>
         <!-- Badge unlock overlay -->
         <div id="badge-unlock" class="badge-unlock-overlay">
-          <div id="buo-icon" style="font-size:72px;margin-bottom:20px;filter:drop-shadow(0 0 32px rgba(139,92,246,0.6))">🦉</div>
+          <div id="buo-icon" style="font-size:72px;margin-bottom:20px;filter:drop-shadow(0 0 32px rgba(10,199,192,0.5))">🦉</div>
           <div style="font-size:11px;color:var(--amber);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">Badge Earned</div>
           <div id="buo-name" style="font-size:26px;font-weight:800;color:var(--warm-white);margin-bottom:10px">Night Owl</div>
           <div id="buo-desc" style="font-size:14px;color:var(--road-dust);line-height:1.6;margin-bottom:36px">10 late-night check-ins. You're living the road life.</div>
           <button class="btn-primary" style="padding:14px 48px;font-size:15px" onclick="dismissBadgeUnlock()">Nice →</button>
+          <button class="btn-secondary" style="padding:10px 32px;font-size:13px;margin-top:10px" onclick="dismissBadgeUnlock(); showScreen('driver', document.querySelectorAll('.screen-nav button')[4])">See all badges →</button>
         </div>
         </div>
       </div>
@@ -2217,6 +2223,14 @@
                 <div class="stat-label">Day streak</div>
               </div>
             </div>
+          </div>
+
+          <!-- Empty state for new users -->
+          <div id="profile-empty-cta" style="display:none;margin:0 16px 16px;background:rgba(10,199,192,0.07);border:1px solid rgba(10,199,192,0.2);border-radius:14px;padding:24px;text-align:center">
+            <div style="font-size:13px;font-weight:700;color:var(--amber);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Founding Driver</div>
+            <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:8px">Your road diary starts now.</div>
+            <div style="font-size:13px;color:var(--road-dust);line-height:1.55;margin-bottom:18px">Check in at your first stop and start building your history on the road.</div>
+            <button class="btn-primary" style="font-size:14px;padding:12px 28px" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])"><i data-lucide="map" class="icon"></i> Find a stop →</button>
           </div>
 
           <!-- Badges -->
@@ -2337,13 +2351,9 @@
           </div>
         </div>
 
-        <!-- Year filter -->
-        <div class="diary-year-bar">
+        <!-- Year filter — built dynamically in loadDiaryScreen() -->
+        <div class="diary-year-bar" id="diary-year-bar">
           <div class="diary-year-btn active" onclick="setDiaryYear(this,'all')">All Time</div>
-          <div class="diary-year-btn" onclick="setDiaryYear(this,'2025')">2025</div>
-          <div class="diary-year-btn" onclick="setDiaryYear(this,'2024')">2024</div>
-          <div class="diary-year-btn" onclick="setDiaryYear(this,'2023')">2023</div>
-          <div class="diary-year-btn" onclick="setDiaryYear(this,'2022')">2022</div>
         </div>
 
         <!-- Stop grid -->
@@ -2527,7 +2537,7 @@
 
           <!-- Invite: Founding Driver moment -->
           <div id="onboard-invite-moment" style="display:none;text-align:center;padding:8px 0">
-            <div style="font-size:72px;margin-bottom:20px;filter:drop-shadow(0 0 32px rgba(139,92,246,0.5))">🐋</div>
+            <div style="font-size:72px;margin-bottom:20px;filter:drop-shadow(0 0 32px rgba(10,199,192,0.45))">🐋</div>
             <div style="font-size:11px;color:var(--amber);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Cover Whale · Founding Driver</div>
             <div style="font-size:26px;font-weight:800;color:var(--warm-white);line-height:1.2;margin-bottom:16px">You've been<br>selected.</div>
             <div style="font-size:14px;color:var(--road-dust);line-height:1.7;margin-bottom:32px">You're one of the first 1,600 Cover Whale drivers invited to Keep Moving.<br><br>Your Founding Driver badge is waiting.</div>
@@ -2862,7 +2872,7 @@ const APP = {
   flag:        { icon: 'square-parking', type: 'Parking Full' },
   feed:        { filter: 'following', pollInterval: null },
   diary:       { checkins: [] },
-  finder:      { loaded: false, map: null, lat: null, lng: null },
+  finder:      { loaded: false, map: null, lat: null, lng: null, markers: [], routeRenderer: null, routeMode: false },
   diesel:      { cache: {} },   // keyed by PADD region code
   screen:      'splash'
 };
@@ -2977,6 +2987,11 @@ function resetCheckinState() {
   const tipEl = document.getElementById('checkin-tip');
   if (tipEl) tipEl.value = '';
   renderPhotoPreviews();
+  // Restore form / hide confirmation for next check-in
+  const formEl = document.querySelector('#screen-checkin .checkin-screen');
+  if (formEl) formEl.style.display = '';
+  const confEl = document.getElementById('conf-screen');
+  if (confEl) { confEl.style.display = 'none'; confEl.style.position = ''; }
 }
 
 function selectStop(name, place_id, address, lat, lng) {
@@ -3033,6 +3048,7 @@ async function submitCheckin() {
     btn.textContent = 'Something went wrong — try again';
     btn.style.background = 'var(--danger)';
     setTimeout(() => { btn.textContent = 'Next →'; btn.style.background = ''; }, 3000);
+    showToast(error.message || 'Check-in failed');
     return;
   }
 
@@ -3255,7 +3271,10 @@ async function react(btn, targetType, targetId) {
 }
 
 function showConfirmation() {
-  document.getElementById('conf-screen').style.display = 'block';
+  document.querySelector('#screen-checkin .checkin-screen').style.display = 'none';
+  const cs = document.getElementById('conf-screen');
+  cs.style.position = 'static';
+  cs.style.display = 'block';
 }
 
 // ── Push Notifications ───────────────────────────────────────
@@ -3652,6 +3671,9 @@ function ratingToStars(r) {
 }
 
 async function loadStopProfile() {
+  // Reset category section visibility from any previous stop
+  const catSec = document.getElementById('sp-cat-section');
+  if (catSec) catSec.style.display = '';
   const { data: { session } } = await _sb.auth.getSession();
   if (session) { APP.user = session.user.id; await getFollowIds(); }
   const { name, place_id, address, googleRating, googleCount } = APP.currentStop;
@@ -3858,13 +3880,9 @@ async function loadStopProfile() {
     }).join('');
     renderIcons(document.getElementById('sp-reviews'));
   } else {
-    // Reset category bars to empty
-    ['parking','showers','food','safety','fuel'].forEach(cat => {
-      const bar = document.getElementById('sp-bar-' + cat);
-      const score = document.getElementById('sp-score-' + cat);
-      if (bar) bar.style.width = '0%';
-      if (score) score.textContent = '—';
-    });
+    // No check-ins — hide category bars, show first-mover prompt
+    const catSection = document.getElementById('sp-cat-section');
+    if (catSection) catSection.style.display = 'none';
     const hereElEmpty = document.getElementById('sp-here-now');
     if (hereElEmpty) hereElEmpty.innerHTML = '';
     const lastActEmpty = document.getElementById('sp-last-activity');
@@ -3876,10 +3894,11 @@ async function loadStopProfile() {
     const tipsElEmpty = document.getElementById('sp-tips');
     if (tipsElEmpty) tipsElEmpty.innerHTML = '';
     document.getElementById('sp-reviews').innerHTML = `
-      <div style="text-align:center;padding:32px 16px;color:var(--road-dust)">
-        <div style="font-size:36px;margin-bottom:12px"><i data-lucide="inbox" class="icon-xl"></i></div>
-        <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">No Keep Moving check-ins yet</div>
-        <div style="font-size:13px">Be the first driver to rate this stop.</div>
+      <div style="text-align:center;padding:40px 20px;color:var(--road-dust)">
+        <div style="margin-bottom:14px;color:var(--amber)"><i data-lucide="clipboard-list" class="icon-xl"></i></div>
+        <div style="font-size:16px;font-weight:700;color:var(--warm-white);margin-bottom:8px">No ratings yet</div>
+        <div style="font-size:13px;line-height:1.6;max-width:240px;margin:0 auto 20px">Be the first driver to check in here and let others know what to expect.</div>
+        <button class="btn-primary" style="font-size:14px;padding:12px 28px" onclick="selectStop('${esc(APP.currentStop.name)}','${APP.currentStop.place_id || ''}','${esc(APP.currentStop.address || '')}',${APP.currentStop.lat || null},${APP.currentStop.lng || null})"><i data-lucide="star" class="icon"></i> Be the first to rate →</button>
       </div>`;
     renderIcons(document.getElementById('sp-reviews'));
   }
@@ -3937,6 +3956,15 @@ async function loadDiaryScreen() {
       .order('created_at', { ascending: false });
 
     APP.diary.checkins = checkins || [];
+
+    // Build year tabs from real data — only show years that have check-ins
+    const years = [...new Set((checkins || []).map(c => new Date(c.created_at).getFullYear()))].sort((a,b) => b-a);
+    const yearBar = document.getElementById('diary-year-bar');
+    if (yearBar) {
+      yearBar.innerHTML = `<div class="diary-year-btn active" onclick="setDiaryYear(this,'all')">All Time</div>`
+        + years.map(y => `<div class="diary-year-btn" onclick="setDiaryYear(this,'${y}')">${y}</div>`).join('');
+    }
+
     renderDiary('all');
   } catch (err) {
     if (countLabel) countLabel.textContent = "Couldn't load — tap Road Diary to retry.";
@@ -4112,15 +4140,31 @@ async function renderFeed() {
   // Empty states per tab
   if (!items.length) {
     const msg = {
-      following: { icon: '<i data-lucide="users" class="icon-md"></i>', title: 'No activity yet',         sub: "Drivers you follow haven't checked in yet." },
-      nearby:    { icon: '<i data-lucide="map-pin" class="icon-md"></i>', title: 'Nothing nearby',          sub: 'No check-ins or flags within 25 miles.' },
-      trending:  { icon: '<i data-lucide="flame" class="icon-md"></i>', title: 'No trending posts today', sub: 'Check back later or switch to Nearby.' },
-    }[filter] || { icon: '<i data-lucide="clipboard-list" class="icon-md"></i>', title: 'Feed is empty', sub: 'Be the first to check in at a stop.' };
+      following: {
+        icon: '<i data-lucide="users" class="icon-xl"></i>',
+        title: 'No one in your network yet',
+        sub: "Tap a driver's handle on any check-in to follow them. Their activity shows up here.",
+        cta: `<button class="btn-secondary" style="margin-top:16px;padding:10px 20px;font-size:13px" onclick="setFeedFilter(document.querySelector('.feed-filter[data-filter=nearby]'))">See what's nearby instead →</button>`
+      },
+      nearby: {
+        icon: '<i data-lucide="map-pin" class="icon-xl"></i>',
+        title: 'Nothing happening nearby',
+        sub: 'No check-ins or flags within 25 miles. Be the first to check in at a stop.',
+        cta: `<button class="btn-primary" style="margin-top:16px;padding:10px 20px;font-size:13px" onclick="showScreen('finder', document.querySelectorAll('.screen-nav button')[1])">Find a stop →</button>`
+      },
+      trending: {
+        icon: '<i data-lucide="flame" class="icon-xl"></i>',
+        title: 'Nothing trending yet',
+        sub: 'Posts need 3+ reactions to trend. Get out there and start rating stops.',
+        cta: `<button class="btn-secondary" style="margin-top:16px;padding:10px 20px;font-size:13px" onclick="setFeedFilter(document.querySelector('.feed-filter[data-filter=nearby]'))">See Nearby →</button>`
+      },
+    }[filter] || { icon: '<i data-lucide="clipboard-list" class="icon-xl"></i>', title: 'Feed is empty', sub: 'Be the first to check in at a stop.', cta: '' };
     feedEl.innerHTML = `
-      <div style="text-align:center;padding:48px 20px;color:var(--road-dust)">
-        <div style="font-size:40px;margin-bottom:14px">${msg.icon}</div>
-        <div style="font-size:15px;font-weight:700;color:var(--warm-white);margin-bottom:6px">${msg.title}</div>
-        <div style="font-size:13px;line-height:1.5">${msg.sub}</div>
+      <div style="text-align:center;padding:56px 24px;color:var(--road-dust)">
+        <div style="margin-bottom:16px;color:var(--amber)">${msg.icon}</div>
+        <div style="font-size:16px;font-weight:700;color:var(--warm-white);margin-bottom:8px">${msg.title}</div>
+        <div style="font-size:13px;line-height:1.6;max-width:260px;margin:0 auto">${msg.sub}</div>
+        ${msg.cta}
       </div>`;
     renderIcons(feedEl);
     return;
@@ -4238,6 +4282,8 @@ async function loadDriverProfile() {
   if (statesEl) statesEl.textContent = stateCount;
   const streakEl = document.getElementById('profile-streak');
   if (streakEl) streakEl.innerHTML = streak > 0 ? `<i data-lucide="flame" class="icon-sm" style="color:#f97316"></i> ${streak}` : '0';
+  const emptyCtaEl = document.getElementById('profile-empty-cta');
+  if (emptyCtaEl) emptyCtaEl.style.display = count === 0 ? 'block' : 'none';
 
   // Load recent check-ins
   const { data: recent } = await _sb.from('checkins')
@@ -4367,14 +4413,15 @@ function initFinderMap(lat, lng) {
     ]
   });
 
-  // User location pin
-  new google.maps.Marker({
+  // User location pin (tracked so we can restore it after route clears)
+  APP.finder.userMarker = new google.maps.Marker({
     position: center,
     map: APP.finder.map,
-    icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#8B5CF6', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 }
+    icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#0ac7c0', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 },
+    zIndex: 10
   });
 
-  // Wire up search input with Places Autocomplete
+  // Wire up stop search input with Places Autocomplete
   const searchInput = document.getElementById('stop-search-input');
   if (searchInput) {
     const autocomplete = new google.maps.places.Autocomplete(searchInput, {
@@ -4389,11 +4436,26 @@ function initFinderMap(lat, lng) {
       APP.finder.map.panTo(place.geometry.location);
       APP.finder.map.setZoom(13);
       searchInput.blur();
-      // Run nearby search around the selected place
+      clearRoute(false);
       document.getElementById('stops-label').textContent = 'Scanning the lot...';
       document.getElementById('stops-list').innerHTML = '';
       searchNearby(newLat, newLng);
     });
+  }
+
+  // Wire up route destination input with Places Autocomplete
+  const routeInput = document.getElementById('route-dest-input');
+  if (routeInput) {
+    const routeAC = new google.maps.places.Autocomplete(routeInput, {
+      types: ['geocode'],
+      fields: ['formatted_address', 'geometry']
+    });
+    routeAC.addListener('place_changed', () => {
+      const place = routeAC.getPlace();
+      if (place.formatted_address) routeInput.value = place.formatted_address;
+      searchAlongRoute();
+    });
+    routeInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); searchAlongRoute(); } });
   }
 
   // Initial nearby search
@@ -4405,7 +4467,171 @@ function toggleFinderFilter(chip) {
   document.querySelectorAll('.filter-row .filter-chip').forEach(c => c.classList.remove('on'));
   if (!wasOn) chip.classList.add('on');
   const keyword = wasOn ? null : chip.dataset.keyword;
-  if (APP.finder.lat) searchNearby(APP.finder.lat, APP.finder.lng, keyword);
+  if (APP.finder.routeMode) {
+    searchAlongRoute(keyword);
+  } else if (APP.finder.lat) {
+    searchNearby(APP.finder.lat, APP.finder.lng, keyword);
+  }
+}
+
+// ── Route-Aware Search ────────────────────────────────────────
+
+function clearRoute(resetMap = true) {
+  if (APP.finder.routeRenderer) { APP.finder.routeRenderer.setMap(null); APP.finder.routeRenderer = null; }
+  APP.finder.routeMode = false;
+  APP.finder.markers.forEach(m => m.setMap(null));
+  APP.finder.markers = [];
+  document.getElementById('route-clear-btn').style.display = 'none';
+  if (resetMap && APP.finder.lat) {
+    APP.finder.map.panTo({ lat: APP.finder.lat, lng: APP.finder.lng });
+    APP.finder.map.setZoom(11);
+    searchNearby(APP.finder.lat, APP.finder.lng);
+  }
+}
+
+// Returns approx index in path closest to a LatLng point
+function distAlongRoute(point, path) {
+  let minDist = Infinity, minIdx = 0;
+  const pLat = typeof point.lat === 'function' ? point.lat() : point.lat;
+  const pLng = typeof point.lng === 'function' ? point.lng() : point.lng;
+  for (let i = 0; i < path.length; i++) {
+    const d = distanceMiles(pLat, pLng, path[i].lat(), path[i].lng());
+    if (d < minDist) { minDist = d; minIdx = i; }
+  }
+  return minIdx;
+}
+
+function searchAlongRoute(filterKeyword) {
+  const destInput = document.getElementById('route-dest-input');
+  const dest = destInput?.value.trim();
+  if (!dest) { destInput?.focus(); return; }
+  if (!APP.finder.lat) { showToast('Location needed — allow access first.'); return; }
+
+  const stopsLabel = document.getElementById('stops-label');
+  const stopsList  = document.getElementById('stops-list');
+  stopsLabel.textContent = 'Planning your route…';
+  stopsList.innerHTML = '<div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Finding stops along your corridor…</div>';
+
+  const dirService = new google.maps.DirectionsService();
+  dirService.route({
+    origin:      { lat: APP.finder.lat, lng: APP.finder.lng },
+    destination: dest,
+    travelMode:  google.maps.TravelMode.DRIVING
+  }, async (result, status) => {
+    if (status !== 'OK') {
+      stopsLabel.textContent = 'Route not found';
+      stopsList.innerHTML = `<div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">Couldn't find that route — try a city name or full address.</div>`;
+      return;
+    }
+
+    // Draw route on map
+    if (APP.finder.routeRenderer) APP.finder.routeRenderer.setMap(null);
+    APP.finder.routeRenderer = new google.maps.DirectionsRenderer({
+      map: APP.finder.map,
+      suppressMarkers: true,
+      polylineOptions: { strokeColor: '#0ac7c0', strokeWeight: 4, strokeOpacity: 0.65 }
+    });
+    APP.finder.routeRenderer.setDirections(result);
+    APP.finder.routeMode = true;
+    document.getElementById('route-clear-btn').style.display = 'block';
+
+    // Sample route path every ~60 miles (max 5 points)
+    const path = result.routes[0].overview_path;
+    const totalMiles = result.routes[0].legs.reduce((s, l) => s + l.distance.value, 0) / 1609.34;
+    const sampleCount = Math.min(5, Math.max(2, Math.ceil(totalMiles / 60)));
+    const samplePoints = Array.from({ length: sampleCount }, (_, i) =>
+      path[Math.round((i / (sampleCount - 1)) * (path.length - 1))]
+    );
+
+    stopsLabel.textContent = `Scanning ${samplePoints.length} corridor points…`;
+
+    // Search each sample point (15-mile radius)
+    const map = APP.finder.map;
+    const service = new google.maps.places.PlacesService(map);
+    const baseKeyword = 'truck stop travel center pilot loves flying j TA petro';
+    const keyword = filterKeyword ? `${baseKeyword} ${filterKeyword}` : baseKeyword;
+    const allStops = new Map();
+
+    await Promise.all(samplePoints.map(pt => new Promise(resolve => {
+      service.nearbySearch({
+        location: { lat: pt.lat(), lng: pt.lng() },
+        radius: 24140,  // 15 miles
+        keyword
+      }, (results, s) => {
+        if (s === google.maps.places.PlacesServiceStatus.OK && results) {
+          results.slice(0, 8).forEach(p => allStops.set(p.place_id, p));
+        }
+        resolve();
+      });
+    })));
+
+    if (!allStops.size) {
+      stopsLabel.textContent = 'No stops found along route';
+      stopsList.innerHTML = `<div style="padding:24px;text-align:center;color:var(--road-dust);font-size:13px">No truck stops found along this corridor.</div>`;
+      return;
+    }
+
+    // Sort stops by position along route
+    const stops = [...allStops.values()].sort((a, b) =>
+      distAlongRoute(a.geometry.location, path) - distAlongRoute(b.geometry.location, path)
+    );
+
+    // Fit map to route bounds
+    APP.finder.map.fitBounds(result.routes[0].bounds);
+
+    // Add stop pins (numbered)
+    APP.finder.markers.forEach(m => m.setMap(null));
+    APP.finder.markers = [];
+    stops.forEach((place, i) => {
+      const m = new google.maps.Marker({
+        position: place.geometry.location,
+        map: APP.finder.map,
+        title: place.name,
+        label: { text: String(i + 1), color: '#0D0F14', fontSize: '10px', fontWeight: '800' },
+        icon: { path: google.maps.SymbolPath.CIRCLE, scale: 11, fillColor: '#F5F0E8', fillOpacity: 1, strokeColor: '#0ac7c0', strokeWeight: 2 }
+      });
+      APP.finder.markers.push(m);
+    });
+
+    // Destination city label
+    const destCity = result.routes[0].legs[result.routes[0].legs.length - 1].end_address.split(',')[0];
+    stopsLabel.textContent = `${stops.length} stops to ${destCity}`;
+
+    // Render stop cards with mile marker badges
+    stopsList.innerHTML = stops.map((place, i) => {
+      const rating = place.rating ? place.rating.toFixed(1) : '—';
+      const count  = place.user_ratings_total || 0;
+      const addr   = place.vicinity || '';
+      const pLat   = place.geometry.location.lat();
+      const pLng   = place.geometry.location.lng();
+      const safeName = place.name.replace(/'/g, "\\'");
+      const safeAddr = addr.replace(/'/g, "\\'");
+      const mile = Math.round(distanceMiles(APP.finder.lat, APP.finder.lng, pLat, pLng));
+
+      return `
+        <div class="stop-card" onclick="viewStop('${safeName}','${place.place_id}','${safeAddr}',${place.rating||0},${count},${pLat},${pLng})">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+            <span style="background:var(--asphalt);border:1px solid #333;color:var(--road-dust);font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;letter-spacing:0.5px">#${i+1}</span>
+            <span style="background:rgba(10,199,192,0.12);border:1px solid rgba(10,199,192,0.3);color:var(--amber);font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px">Mile ~${mile}</span>
+          </div>
+          <div class="stop-card-header">
+            <div>
+              <div class="stop-name">${place.name}</div>
+              <div class="stop-dist"><i data-lucide="map-pin" class="icon-sm"></i> ${addr}</div>
+            </div>
+            <div class="stop-rating">
+              <div class="rating-big">${rating}</div>
+              <div class="rating-count">${count.toLocaleString()} reviews</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="btn-primary" style="flex:1;padding:10px" onclick="event.stopPropagation();viewStop('${safeName}','${place.place_id}','${safeAddr}',${place.rating||0},${count},${pLat},${pLng})">View Stop →</button>
+            <button style="padding:10px 14px;background:var(--steel);border:1px solid #333;border-radius:10px;color:var(--road-dust);font-size:13px;font-weight:700;cursor:pointer" onclick="event.stopPropagation();selectStop('${safeName}','${place.place_id}','${safeAddr}',${pLat},${pLng})">＋ Check In</button>
+          </div>
+        </div>`;
+    }).join('');
+    renderIcons(stopsList);
+  });
 }
 
 function searchNearby(lat, lng, filterKeyword) {
@@ -4431,14 +4657,17 @@ function searchNearby(lat, lng, filterKeyword) {
     const stops = results.slice(0, 8);
     document.getElementById('stops-label').textContent = `Stops near you — ${stops.length} found`;
 
-    // Add map pins
+    // Clear old stop markers, add new ones
+    APP.finder.markers.forEach(m => m.setMap(null));
+    APP.finder.markers = [];
     stops.forEach(place => {
-      new google.maps.Marker({
+      const m = new google.maps.Marker({
         position: place.geometry.location,
         map: APP.finder.map,
         title: place.name,
-        icon: { path: google.maps.SymbolPath.CIRCLE, scale: 6, fillColor: '#F5F0E8', fillOpacity: 1, strokeColor: '#8B5CF6', strokeWeight: 2 }
+        icon: { path: google.maps.SymbolPath.CIRCLE, scale: 6, fillColor: '#F5F0E8', fillOpacity: 1, strokeColor: '#0ac7c0', strokeWeight: 2 }
       });
+      APP.finder.markers.push(m);
     });
 
     // Render stop cards
@@ -4486,6 +4715,15 @@ const _sb = supabase.createClient(
   'https://oytxbbooxoxyaycuhsog.supabase.co',
   'sb_publishable_kN9Q3su8jUSl0t6n6YvZDA_mn3Zr3VE'
 );
+
+// ── Splash counter ───────────────────────────────────────────
+(async () => {
+  try {
+    const { count } = await _sb.from('checkins').select('*', { count: 'exact', head: true });
+    const el = document.getElementById('splash-counter');
+    if (el && count > 0) el.textContent = `${count.toLocaleString()} driver check-ins and counting`;
+  } catch {}
+})();
 
 // ── Sign-in overlay ─────────────────────────────────────────
 function openSignIn() {
@@ -4652,18 +4890,18 @@ function drawPostcard(canvas, { handle, rigIcon, count, stateCount, streak, visi
 
   // Purple gradient (top)
   const tg = ctx.createLinearGradient(0, 0, 0, H * 0.56);
-  tg.addColorStop(0, 'rgba(74,36,114,0.6)'); tg.addColorStop(1, 'rgba(13,15,20,0)');
+  tg.addColorStop(0, 'rgba(98,55,118,0.6)'); tg.addColorStop(1, 'rgba(13,15,20,0)');
   ctx.fillStyle = tg; ctx.fillRect(0, 0, W, H * 0.56);
 
   // Left accent
   const lg = ctx.createLinearGradient(0, 0, 180, 0);
-  lg.addColorStop(0, 'rgba(139,92,246,0.18)'); lg.addColorStop(1, 'rgba(13,15,20,0)');
+  lg.addColorStop(0, 'rgba(10,199,192,0.15)'); lg.addColorStop(1, 'rgba(13,15,20,0)');
   ctx.fillStyle = lg; ctx.fillRect(0, 0, 180, H);
 
   // Logo
   ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
   ctx.font = `bold 30px system-ui,-apple-system,'Helvetica Neue',sans-serif`;
-  ctx.fillStyle = '#8B5CF6'; ctx.fillText('KEEP', PAD, 82);
+  ctx.fillStyle = '#0ac7c0'; ctx.fillText('KEEP', PAD, 82);
   const kw = ctx.measureText('KEEP').width;
   ctx.fillStyle = '#F5F0E8'; ctx.fillText('●MOVING', PAD + kw, 82);
 
@@ -4687,13 +4925,13 @@ function drawPostcard(canvas, { handle, rigIcon, count, stateCount, streak, visi
 
   // @handle
   ctx.font = `bold 60px system-ui,-apple-system,'Helvetica Neue',sans-serif`;
-  ctx.fillStyle = '#8B5CF6'; ctx.fillText('@' + handle, PAD, hy + 100);
+  ctx.fillStyle = '#0ac7c0'; ctx.fillText('@' + handle, PAD, hy + 100);
 
   // Stats row
   const sy = hy + 166;
   ctx.font = `bold 28px system-ui,-apple-system,'Helvetica Neue',sans-serif`;
   let sx = PAD;
-  const dot = () => { ctx.fillStyle = '#4A2472'; ctx.fillText('  ·  ', sx, sy); sx += ctx.measureText('  ·  ').width; };
+  const dot = () => { ctx.fillStyle = '#623776'; ctx.fillText('  ·  ', sx, sy); sx += ctx.measureText('  ·  ').width; };
   const stat = (val, label) => { ctx.fillStyle = '#F5F0E8'; const t = `${val} ${label}`; ctx.fillText(t, sx, sy); sx += ctx.measureText(t).width; };
   stat(count, count === 1 ? 'stop' : 'stops'); dot();
   stat(stateCount, stateCount === 1 ? 'state' : 'states');
