@@ -1,4 +1,4 @@
-const CACHE = 'keepmoving-v6';
+const CACHE = 'keepmoving-v7';
 const ASSETS = [
   '/',
   '/index.html',
