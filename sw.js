@@ -1,9 +1,9 @@
-const CACHE = 'keepmoving-v4';
+const CACHE = 'keepmoving-v6';
 const ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js',
+  'https://unpkg.com/lucide@1.6.0/dist/umd/lucide.min.js',
 ];
 
 self.addEventListener('install', e => {
